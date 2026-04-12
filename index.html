@@ -46,16 +46,6 @@
       .hamburger { display: flex !important; }
     }
 
-    /* LANGUAGE SELECTOR */
-    .lang-selector { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 10px; border-radius: 8px; border: 0.5px solid var(--border); background: var(--surface); position: relative; font-size: 13px; color: var(--text-mid); transition: all 0.2s; }
-    .lang-selector:hover { border-color: var(--blue); color: var(--text); }
-    .lang-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 6px; min-width: 160px; z-index: 200; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-    .lang-dropdown.open { display: block; }
-    .lang-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; color: var(--text-mid); cursor: pointer; transition: all 0.2s; }
-    .lang-item:hover { background: var(--surface2); color: var(--text); }
-    .lang-item.active { color: var(--blue-light); }
-    @media (max-width: 768px) { .lang-selector { display: none; } }
-
     /* USER PROFILE */
     .nav-user { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 5px 10px; border-radius: 10px; transition: background 0.2s; position: relative; }
     .nav-user:hover { background: var(--surface); }
@@ -262,6 +252,24 @@
     .forgot span { font-size: 12px; color: var(--blue-light); cursor: pointer; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    #google_translate_element select { background: var(--surface); color: var(--text-mid); border: 0.5px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 13px; cursor: pointer; outline: none; font-family: 'Inter', sans-serif; }
+    #google_translate_element select:hover { border-color: var(--blue); }
+    .goog-te-banner-frame { display: none !important; }
+    body { top: 0 !important; }
+    .skiptranslate { display: none !important; }
+  </style>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'fr',
+        includedLanguages: 'en,es,de,it,pt,ar,fr',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 <body>
 
@@ -273,19 +281,7 @@
     <button class="nav-link" id="nav-contact" onclick="showPage('contact')">Contact</button>
   </div>
   <div class="nav-right" id="nav-right">
-    <div class="lang-selector" id="lang-selector" onclick="toggleLangMenu(event)">
-      <span id="lang-flag">🇫🇷</span>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      <div class="lang-dropdown" id="lang-dropdown">
-        <div class="lang-item active" onclick="setLang('fr','🇫🇷')">🇫🇷 Français</div>
-        <div class="lang-item" onclick="setLang('en','🇬🇧')">🇬🇧 English</div>
-        <div class="lang-item" onclick="setLang('es','🇪🇸')">🇪🇸 Español</div>
-        <div class="lang-item" onclick="setLang('de','🇩🇪')">🇩🇪 Deutsch</div>
-        <div class="lang-item" onclick="setLang('it','🇮🇹')">🇮🇹 Italiano</div>
-        <div class="lang-item" onclick="setLang('pt','🇧🇷')">🇧🇷 Português</div>
-        <div class="lang-item" onclick="setLang('ar','🇸🇦')">🇸🇦 العربية</div>
-      </div>
-    </div>
+    <div id="google_translate_element"></div>
     <button class="btn-ghost" onclick="showPage('login')">Se connecter</button>
     <button class="btn-primary" onclick="handlePlan('pro')">S'inscrire</button>
   </div>
