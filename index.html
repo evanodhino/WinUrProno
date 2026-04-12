@@ -18,23 +18,32 @@
     @media (min-width: 768px) { :root { --pad: 40px; } }
     @media (min-width: 1200px) { :root { --pad: 60px; } }
 
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; overscroll-behavior: none; } html { background: var(--bg); }
 
     /* NAV */
-    nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 var(--pad); height: 57px; border-bottom: 0.5px solid var(--border-dim); background: var(--bg); position: sticky; top: 0; z-index: 100; gap: 16px; }
-    .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; justify-self: start; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--pad); height: 57px; border-bottom: 0.5px solid var(--border-dim); background: var(--bg); position: sticky; top: 0; z-index: 100; gap: 16px; }
+    .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
-    .nav-links { display: flex; align-items: center; gap: 4px; justify-self: center; }
+    .nav-links { display: flex; align-items: center; gap: 4px; position: absolute; left: 50%; transform: translateX(-50%); }
     .nav-link { font-size: 13px; color: var(--text-mid); cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; border: none; background: none; font-family: 'Inter', sans-serif; white-space: nowrap; }
     .nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface); }
-    .nav-right { display: flex; align-items: center; gap: 8px; justify-self: end; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
     .btn-ghost { font-size: 13px; font-weight: 500; background: none; color: var(--text-mid); border: 0.5px solid var(--border); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
     .btn-ghost:hover { color: var(--text); border-color: var(--blue); }
     .btn-primary { font-size: 13px; font-weight: 500; background: var(--blue); color: #fff; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s; white-space: nowrap; }
     .btn-primary:hover { opacity: 0.85; }
-    @media (max-width: 600px) {
-      nav { grid-template-columns: 1fr auto; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: none; border: none; }
+    .hamburger span { width: 22px; height: 2px; background: var(--text-mid); border-radius: 2px; display: block; transition: all 0.2s; }
+    .mobile-menu { display: none; position: fixed; top: 57px; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 99; flex-direction: column; padding: 24px var(--pad); gap: 8px; border-top: 0.5px solid var(--border-dim); }
+    .mobile-menu.open { display: flex; }
+    .mobile-nav-link { font-size: 16px; color: var(--text-mid); cursor: pointer; padding: 14px 16px; border-radius: 10px; border: none; background: none; font-family: 'Inter', sans-serif; text-align: left; width: 100%; transition: all 0.2s; }
+    .mobile-nav-link:hover, .mobile-nav-link.active { color: var(--text); background: var(--surface); }
+    .mobile-menu-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+    @media (max-width: 768px) {
       .nav-links { display: none; }
+      .btn-ghost { display: none; }
+      .btn-primary { display: none; }
+      .hamburger { display: flex; }
     }
 
     /* USER PROFILE */
@@ -290,7 +299,7 @@
         <div class="teams">
           <div class="team"><img class="team-logo" src="https://media.api-sports.io/football/teams/541.png" alt="Real Madrid" onerror="this.style.display='none'"/><div class="team-name">Real Madrid</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
           <div class="vs">vs</div>
-          <div class="team"><img class="team-logo" src="https://media.api-sports.io/football/teams/130.png" alt="Brest" onerror="this.style.display='none'"/><div class="team-name">Brest</div><div class="team-form"><span class="form-d">D</span> <span class="form-d">D</span> <span class="form-n">N</span> <span class="form-d">D</span> <span class="form-d">D</span></div></div>
+          <div class="team"><img class="team-logo" src="https://foudefoot.fr/wp-content/uploads/2022/11/brest-1536x1536.jpg" alt="Brest" onerror="this.style.display='none'"/><div class="team-name">Brest</div><div class="team-form"><span class="form-d">D</span> <span class="form-d">D</span> <span class="form-n">N</span> <span class="form-d">D</span> <span class="form-d">D</span></div></div>
         </div>
         <div class="prono-section">
           <div class="verdict-box">
@@ -1371,6 +1380,17 @@
 
     suc.textContent = '✓ Email envoyé à ' + email + ' ! Clique sur le lien dans l\'email pour réinitialiser ton mot de passe.';
     suc.style.display = 'block';
+  }
+
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    hamburger.style.opacity = menu.classList.contains('open') ? '1' : '0.6';
+  }
+
+  function closeMobileMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
   }
 
   async function logout() {
