@@ -256,7 +256,7 @@
 <body>
 
 <nav>
-  <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>WinUrProno</div>
+  <div class="logo" onclick="showPage('home');closeMobileMenu()"><div class="logo-dot"></div>WinUrProno</div>
   <div class="nav-links">
     <button class="nav-link active" id="nav-home" onclick="showPage('home')">Accueil</button>
     <button class="nav-link" id="nav-how" onclick="showPage('how')">Comment ça marche</button>
@@ -266,7 +266,20 @@
     <button class="btn-ghost" onclick="showPage('login')">Se connecter</button>
     <button class="btn-primary" onclick="handlePlan('pro')">S'inscrire</button>
   </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-nav-link" id="mob-home" onclick="showPage('home');closeMobileMenu()">🏠 Accueil</button>
+  <button class="mobile-nav-link" id="mob-how" onclick="showPage('how');closeMobileMenu()">❓ Comment ça marche</button>
+  <button class="mobile-nav-link" id="mob-contact" onclick="showPage('contact');closeMobileMenu()">✉️ Contact</button>
+  <div class="mobile-menu-bottom" id="mob-nav-right">
+    <button style="font-size:15px;font-weight:500;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:14px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;width:100%;" onclick="showPage('login');closeMobileMenu()">Se connecter</button>
+    <button style="font-size:15px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:14px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;width:100%;" onclick="showPage('signup');closeMobileMenu()">S'inscrire gratuitement</button>
+  </div>
+</div>
 
 <!-- ===== HOME ===== -->
 <div class="page active" id="page-home">
