@@ -1180,7 +1180,7 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let currentUser = null;
 
-  function showPage(name) {
+  function showPage(name, addHistory = true) {
     const target = document.getElementById('page-' + name);
     if (!target) return;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1191,7 +1191,25 @@
     if (name === 'contact') document.getElementById('nav-contact').classList.add('active');
     window.scrollTo(0, 0);
     closeDropdown();
+    try { if (addHistory) history.pushState({ page: name }, '', '#' + name); } catch(e) {}
   }
+
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', function(e) {
+    const page = e.state ? e.state.page : 'home';
+    showPage(page, false);
+    closeMobileMenu();
+  });
+
+  // Handle initial load with hash
+  window.addEventListener('load', function() {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('page-' + hash)) {
+      showPage(hash, false);
+    } else {
+      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
+    }
+  });
 
   function filterSport(sport, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1302,6 +1320,7 @@
 
   // Auto-login si déjà connecté
   window.addEventListener('load', async function() {
+    // Check Supabase session
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       currentUser = {
@@ -1310,6 +1329,13 @@
         photo: null
       };
       updateNav();
+    }
+    // Handle URL hash for navigation
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('page-' + hash)) {
+      showPage(hash, false);
+    } else {
+      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
     }
   });
 
@@ -1466,6 +1492,7 @@
   }
 
   window.addEventListener('load', async function() {
+    // Check Supabase session
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       currentUser = {
@@ -1474,6 +1501,13 @@
         photo: null
       };
       updateNav();
+    }
+    // Handle URL hash for navigation
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('page-' + hash)) {
+      showPage(hash, false);
+    } else {
+      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
     }
   });
 
