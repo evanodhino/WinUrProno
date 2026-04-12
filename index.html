@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WinUrProno — Pronostics IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0D0F14; --surface: #131720; --surface2: #0F1623;
+      --border: #2A3349; --border-dim: #1E2535;
+      --blue: #2563EB; --blue-light: #60A5FA; --blue-dim: #0C2340;
+      --text: #F1F5FF; --text-mid: #A0AECB; --text-muted: #7B8DB0;
+      --red: #F87171; --yellow: #FBBF24; --green: #34D399;
+      --max: 1280px; --pad: 24px;
+    }
+    @media (min-width: 768px) { :root { --pad: 40px; } }
+    @media (min-width: 1200px) { :root { --pad: 60px; } }
+
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+    /* NAV */
+    nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 var(--pad); height: 57px; border-bottom: 0.5px solid var(--border-dim); background: var(--bg); position: sticky; top: 0; z-index: 100; gap: 16px; }
+    .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; justify-self: start; }
+    .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 4px; justify-self: center; }
+    .nav-link { font-size: 13px; color: var(--text-mid); cursor: pointer; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; border: none; background: none; font-family: 'Inter', sans-serif; white-space: nowrap; }
+    .nav-link:hover, .nav-link.active { color: var(--text); background: var(--surface); }
+    .nav-right { display: flex; align-items: center; gap: 8px; justify-self: end; }
+    .btn-ghost { font-size: 13px; font-weight: 500; background: none; color: var(--text-mid); border: 0.5px solid var(--border); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
+    .btn-ghost:hover { color: var(--text); border-color: var(--blue); }
+    .btn-primary { font-size: 13px; font-weight: 500; background: var(--blue); color: #fff; border: none; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s; white-space: nowrap; }
+    .btn-primary:hover { opacity: 0.85; }
+    @media (max-width: 600px) {
+      nav { grid-template-columns: 1fr auto; }
+      .nav-links { display: none; }
+    }
+
+    /* USER PROFILE */
+    .nav-user { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 5px 10px; border-radius: 10px; transition: background 0.2s; position: relative; }
+    .nav-user:hover { background: var(--surface); }
+    .nav-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; color: #fff; overflow: hidden; flex-shrink: 0; border: 1.5px solid var(--border); }
+    .nav-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .nav-username { font-size: 13px; font-weight: 500; color: var(--text); }
+    .dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 6px; min-width: 190px; z-index: 200; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .dropdown.open { display: block; }
+    .dropdown-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; color: var(--text-mid); cursor: pointer; transition: all 0.2s; }
+    .dropdown-item:hover { background: var(--surface2); color: var(--text); }
+    .dropdown-item svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+    .dropdown-sep { height: 0.5px; background: var(--border-dim); margin: 4px 0; }
+    .dropdown-item.danger { color: var(--red); }
+    .dropdown-item.danger:hover { background: rgba(248,113,113,0.08); color: var(--red); }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* SHARED LAYOUT */
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
+
+    /* HERO */
+    .hero { text-align: center; padding: 56px var(--pad) 36px; max-width: var(--max); margin: 0 auto; width: 100%; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--blue-light); background: var(--blue-dim); padding: 4px 12px; border-radius: 99px; margin-bottom: 20px; }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue-light); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 600; color: #fff; line-height: 1.25; margin-bottom: 12px; }
+    @media (min-width: 768px) { .hero h1 { font-size: 44px; } }
+    .hero h1 span { color: var(--blue-light); }
+    .hero p { font-size: 15px; color: var(--text-mid); line-height: 1.7; max-width: 500px; margin: 0 auto; }
+
+    /* FILTERS */
+    .filters { display: flex; gap: 8px; justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding: 20px var(--pad) 16px; max-width: var(--max); margin: 0 auto; width: 100%; scrollbar-width: none; -ms-overflow-style: none; }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter-btn { font-size: 13px; padding: 7px 16px; border-radius: 99px; border: 0.5px solid var(--border); background: var(--surface); color: var(--text-mid); cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+    @media (min-width: 768px) { .filter-btn { font-size: 15px; padding: 11px 26px; } }
+    .filter-btn:hover { color: var(--text); border-color: var(--blue); }
+    .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    .section-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; display: block; }
+
+    /* CARDS GRID */
+    .cards-wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad) 32px; width: 100%; }
+    .cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 700px) { .cards { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (min-width: 1100px) { .cards { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 18px; transition: border-color 0.2s; display: flex; flex-direction: column; }
+    .card:hover { border-color: #3A4A6A; }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 6px; }
+    .sport-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 99px; }
+    .tag-foot { background: #0C2340; color: #60A5FA; }
+    .tag-tennis { background: #2D1A00; color: #FBBF24; }
+    .tag-basket { background: #1A0A2E; color: #C4B5FD; }
+    .tag-rugby { background: #0A1A0A; color: #86EFAC; }
+    .tag-mma { background: #2D0A0A; color: #FCA5A5; }
+    .tag-boxe { background: #1A0A00; color: #FDBA74; }
+    .card-meta { display: flex; align-items: center; gap: 8px; }
+    .free-badge { font-size: 10px; font-weight: 500; color: #60A5FA; background: #0C2340; padding: 2px 8px; border-radius: 99px; }
+    .match-time { font-size: 12px; color: var(--text-muted); }
+    .teams { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .team { text-align: center; flex: 1; min-width: 0; }
+    .team-logo { width: 40px; height: 40px; object-fit: contain; margin: 0 auto 6px; display: block; }
+    .team-logo-placeholder { width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); border: 0.5px solid var(--border); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    .team-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .team-form { font-size: 11px; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.05em; display: flex; gap: 3px; justify-content: center; }
+    .form-v { color: #34D399; font-weight: 600; }
+    .form-d { color: #F87171; font-weight: 600; }
+    .form-n { color: #60A5FA; font-weight: 600; }
+    .vs { font-size: 12px; color: var(--text-muted); padding: 0 12px; flex-shrink: 0; }
+    .prono-section { border-top: 0.5px solid var(--border-dim); padding-top: 14px; margin-top: auto; }
+    .verdict-box { display: flex; align-items: flex-start; gap: 10px; background: var(--surface2); border: 0.5px solid var(--border-dim); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+    .verdict-winner { font-size: 13px; font-weight: 500; color: var(--green); margin-bottom: 4px; }
+    .verdict-analysis { font-size: 12px; color: var(--text-mid); line-height: 1.65; }
+    .prono-bar { display: flex; gap: 3px; height: 5px; border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+    .bar-home { background: var(--blue); border-radius: 99px 0 0 99px; }
+    .bar-draw { background: #2D3748; }
+    .bar-away { background: #DC2626; border-radius: 0 99px 99px 0; }
+    .prono-percents { display: flex; justify-content: space-between; font-size: 12px; }
+    .p-home { color: var(--blue-light); font-weight: 500; }
+    .p-draw { color: var(--text-muted); }
+    .p-away { color: var(--red); font-weight: 500; }
+    .confidence { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .conf-label { font-size: 11px; color: var(--text-muted); }
+    .conf-stars { display: flex; gap: 3px; }
+    .star { width: 10px; height: 10px; border-radius: 2px; background: var(--yellow); }
+    .star.empty { background: var(--border-dim); }
+    .card-locked { position: relative; overflow: hidden; }
+    .card-locked > *:not(.locked-overlay) { filter: blur(8px); user-select: none; pointer-events: none; }
+    .locked-overlay { position: absolute; inset: 0; background: rgba(13,15,20,0.85); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+    .lock-circle { width: 36px; height: 36px; border: 1.5px solid var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .lock-circle svg { width: 16px; height: 16px; stroke: var(--blue-light); fill: none; stroke-width: 2; }
+    .locked-text { font-size: 13px; color: var(--text-mid); }
+    .btn-unlock { font-size: 13px; font-weight: 500; background: var(--blue); color: #fff; border: none; padding: 9px 22px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .btn-unlock:hover { opacity: 0.85; }
+
+    /* PREVENTION */
+    .prevention { max-width: var(--max); margin: 0 auto 24px; padding: 0 var(--pad); width: 100%; }
+    .prev-inner { background: var(--surface2); border: 0.5px solid var(--border); border-left: 2px solid var(--yellow); border-radius: 10px; padding: 11px 14px; display: flex; align-items: flex-start; gap: 10px; }
+    .prev-text { font-size: 12px; color: var(--text-mid); line-height: 1.6; }
+    .prev-text strong { color: var(--text); }
+    .prev-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+    .prev-link { font-size: 11px; font-weight: 500; color: var(--yellow); background: #2D1A00; padding: 3px 9px; border-radius: 6px; text-decoration: none; }
+
+    /* PRICING */
+    .pricing { max-width: var(--max); margin: 0 auto 32px; padding: 0 var(--pad); width: 100%; }
+    .pricing-box { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 14px; padding: 28px; }
+    .pricing-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; color: var(--text); text-align: center; margin-bottom: 4px; }
+    .pricing-sub { font-size: 13px; color: var(--text-mid); text-align: center; margin-bottom: 20px; }
+    .plans { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 500px) { .plans { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    .plan { border: 0.5px solid var(--border); background: var(--surface); border-radius: 10px; padding: 16px; text-align: center; }
+    .plan.popular { border: 1.5px solid var(--blue); }
+    .popular-badge { font-size: 10px; background: var(--blue); color: #fff; padding: 2px 8px; border-radius: 99px; margin-bottom: 8px; display: inline-block; }
+    .plan-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+    .plan-price { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 600; color: #fff; }
+    .plan-price span { font-size: 12px; color: var(--text-muted); font-weight: 400; font-family: 'Inter', sans-serif; }
+    .plan-desc { font-size: 11px; color: var(--text-mid); margin-top: 4px; }
+
+    @media (min-width: 900px) { .contact-grid { grid-template-columns: 1fr 1.4fr !important; } }
+    footer { text-align: center; padding: 20px var(--pad) 32px; font-size: 12px; color: var(--text-muted); border-top: 0.5px solid var(--border-dim); width: 100%; }
+
+    /* HOW IT WORKS */
+    .how-hero { text-align: center; padding: 56px var(--pad) 40px; max-width: var(--max); margin: 0 auto; width: 100%; }
+    .how-hero h1 { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 600; color: #fff; margin-bottom: 14px; line-height: 1.25; }
+    @media (min-width: 768px) { .how-hero h1 { font-size: 40px; } }
+    .how-hero h1 span { color: var(--blue-light); }
+    .how-hero p { font-size: 15px; color: var(--text-mid); line-height: 1.75; max-width: 600px; margin: 0 auto; }
+
+    .how-stats { display: grid; grid-template-columns: 1fr; gap: 12px; max-width: var(--max); margin: 0 auto 32px; padding: 0 var(--pad); width: 100%; }
+    @media (min-width: 500px) { .how-stats { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    .stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 600; color: var(--blue-light); margin-bottom: 6px; }
+    .stat-label { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
+
+    .how-steps { max-width: var(--max); margin: 0 auto 32px; padding: 0 var(--pad); display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }
+    @media (min-width: 900px) { .how-steps { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    .how-step { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 24px; display: flex; gap: 18px; }
+    .step-num { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 600; color: var(--blue); min-width: 40px; line-height: 1; flex-shrink: 0; }
+    .step-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .step-desc { font-size: 13px; color: var(--text-mid); line-height: 1.7; }
+
+    .how-sports { max-width: var(--max); margin: 0 auto 32px; padding: 0 var(--pad); width: 100%; }
+    .how-sports h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+    .sports-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    @media (min-width: 600px) { .sports-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media (min-width: 900px) { .sports-grid { grid-template-columns: repeat(6, minmax(0,1fr)); } }
+    .sport-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+    .sport-emoji { font-size: 24px; margin-bottom: 8px; }
+    .sport-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .sport-detail { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    .how-cta { max-width: var(--max); margin: 0 auto 32px; padding: 0 var(--pad); width: 100%; }
+    .how-cta-box { background: var(--blue-dim); border: 0.5px solid var(--blue); border-radius: 14px; padding: 40px 32px; text-align: center; }
+    .how-cta-box h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+    .how-cta-box p { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .btn-cta-big { font-size: 14px; font-weight: 500; background: var(--blue); color: #fff; border: none; padding: 13px 32px; border-radius: 10px; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .btn-cta-big:hover { opacity: 0.85; }
+
+    /* AUTH */
+    .auth-wrap { min-height: calc(100vh - 57px); display: flex; width: 100%; }
+    .auth-left { display: none; flex: 1.2; background: var(--surface2); border-right: 0.5px solid var(--border-dim); padding: 60px; flex-direction: column; justify-content: space-between; min-width: 0; }
+    @media (min-width: 900px) { .auth-left { display: flex; } }
+    .auth-left-logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .auth-left-logo-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--blue); }
+    .auth-left-title { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 600; color: #fff; line-height: 1.25; margin-bottom: 16px; }
+    .auth-left-title span { color: var(--blue-light); }
+    .auth-left-sub { font-size: 15px; color: var(--text-mid); line-height: 1.7; margin-bottom: 40px; }
+    .auth-left-perks { display: flex; flex-direction: column; gap: 16px; }
+    .auth-left-perk { display: flex; align-items: center; gap: 14px; }
+    .auth-left-perk-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--blue-dim); border: 0.5px solid var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .auth-left-perk-icon svg { width: 18px; height: 18px; stroke: var(--blue-light); fill: none; stroke-width: 2; }
+    .auth-left-perk-text { font-size: 14px; color: var(--text-mid); line-height: 1.5; }
+    .auth-left-perk-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+    .auth-left-stats { display: flex; gap: 24px; }
+    .auth-left-stat-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 600; color: var(--blue-light); }
+    .auth-left-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .auth-right { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; min-width: 0; }
+    .auth-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 18px; padding: 36px; width: 100%; max-width: 420px; }
+    .auth-logo { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; color: #fff; text-align: center; margin-bottom: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    @media (min-width: 900px) { .auth-logo { display: none; } }
+    .auth-logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+    .auth-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 600; color: var(--text); text-align: center; margin-bottom: 4px; }
+    .auth-subtitle { font-size: 13px; color: var(--text-muted); text-align: center; margin-bottom: 26px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { font-size: 12px; color: var(--text-mid); margin-bottom: 6px; display: block; }
+    .form-input { width: 100%; background: var(--surface2); border: 0.5px solid var(--border); border-radius: 8px; padding: 11px 14px; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
+    .form-input:focus { border-color: var(--blue); }
+    .form-input::placeholder { color: var(--text-muted); }
+    .btn-full { width: 100%; font-size: 14px; font-weight: 500; background: var(--blue); color: #fff; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 4px; }
+    .btn-full:hover { opacity: 0.85; }
+    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; }
+    .auth-divider-line { flex: 1; height: 0.5px; background: var(--border); }
+    .auth-divider-text { font-size: 12px; color: var(--text-muted); }
+    .btn-google { width: 100%; font-size: 13px; font-weight: 500; background: none; color: var(--text-mid); border: 0.5px solid var(--border); padding: 11px; border-radius: 8px; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-google:hover { color: var(--text); border-color: var(--blue-light); }
+    .auth-switch { text-align: center; margin-top: 18px; font-size: 13px; color: var(--text-muted); }
+    .auth-switch-link { color: var(--blue-light); cursor: pointer; }
+    .auth-switch-link:hover { text-decoration: underline; }
+    .auth-perks { margin-top: 22px; border-top: 0.5px solid var(--border-dim); padding-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .perk { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-mid); }
+    .perk-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .forgot { text-align: right; margin-bottom: 14px; }
+    .forgot span { font-size: 12px; color: var(--blue-light); cursor: pointer; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')"><div class="logo-dot"></div>WinUrProno</div>
+  <div class="nav-links">
+    <button class="nav-link active" id="nav-home" onclick="showPage('home')">Accueil</button>
+    <button class="nav-link" id="nav-how" onclick="showPage('how')">Comment ça marche</button>
+    <button class="nav-link" id="nav-contact" onclick="showPage('contact')">Contact</button>
+  </div>
+  <div class="nav-right" id="nav-right">
+    <button class="btn-ghost" onclick="showPage('login')">Se connecter</button>
+    <button class="btn-primary" onclick="handlePlan('pro')">S'inscrire</button>
+  </div>
+</nav>
+
+<!-- ===== HOME ===== -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge"><div class="hero-badge-dot"></div>IA mise à jour en temps réel</div>
+    <h1>Les meilleurs pronostics<br><span>générés par l'IA</span></h1>
+    <p>Notre IA analyse des milliers de statistiques pour prédire les résultats. Football, tennis, basket, MMA, boxe et plus.</p>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterSport('tous',this)">Tous</button>
+    <button class="filter-btn" onclick="filterSport('foot',this)">Football</button>
+    <button class="filter-btn" onclick="filterSport('tennis',this)">Tennis</button>
+    <button class="filter-btn" onclick="filterSport('basket',this)">Basket</button>
+    <button class="filter-btn" onclick="filterSport('rugby',this)">Rugby</button>
+    <button class="filter-btn" onclick="filterSport('mma',this)">MMA</button>
+    <button class="filter-btn" onclick="filterSport('boxe',this)">Boxe</button>
+  </div>
+
+  <div class="cards-wrap">
+    <p class="section-label">Matchs du jour — Mercredi 8 avril 2026</p>
+    <div class="cards" id="cards-container">
+
+      <!-- GRATUIT 1 — Confiance 5/5 -->
+      <div class="card" data-sport="foot">
+        <div class="card-top">
+          <span class="sport-tag tag-foot">Football</span>
+          <div class="card-meta"><span class="free-badge">Gratuit</span><span class="match-time">21h00 · Champions League</span></div>
+        </div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://media.api-sports.io/football/teams/541.png" alt="Real Madrid" onerror="this.style.display='none'"/><div class="team-name">Real Madrid</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><img class="team-logo" src="https://media.api-sports.io/football/teams/130.png" alt="Brest" onerror="this.style.display='none'"/><div class="team-name">Brest</div><div class="team-form"><span class="form-d">D</span> <span class="form-d">D</span> <span class="form-n">N</span> <span class="form-d">D</span> <span class="form-d">D</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>
+            <div><div class="verdict-winner">Victoire Real Madrid</div><div class="verdict-analysis">Le Real Madrid est dans une forme écrasante avec 5 victoires consécutives. Face à un Brest en grande difficulté qui encaisse en moyenne 2,8 buts par match, les Madrilènes devraient s'imposer largement au Bernabéu ce soir.</div></div>
+          </div>
+          <div class="prono-bar"><div class="bar-home" style="width:84%"></div><div class="bar-draw" style="width:10%"></div><div class="bar-away" style="width:6%"></div></div>
+          <div class="prono-percents"><span class="p-home">Real 84%</span><span class="p-draw">Nul 10%</span><span class="p-away">Brest 6%</span></div>
+          <div class="confidence"><span class="conf-label">Confiance IA</span><div class="conf-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div></div>
+        </div>
+      </div>
+
+      <!-- GRATUIT 2 — Confiance 5/5 -->
+      <div class="card" data-sport="tennis">
+        <div class="card-top">
+          <span class="sport-tag tag-tennis">Tennis</span>
+          <div class="card-meta"><span class="free-badge">Gratuit</span><span class="match-time">14h00 · Roland Garros</span></div>
+        </div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://img.sofascore.com/api/v1/player/2986/image" alt="Nadal" onerror="this.style.display='none'"/><div class="team-name">Nadal</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><div class="team-logo-placeholder">M</div><div class="team-name">Muller</div><div class="team-form"><span class="form-d">D</span> <span class="form-d">D</span> <span class="form-d">D</span> <span class="form-d">D</span> <span class="form-d">D</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>
+            <div><div class="verdict-winner">Victoire Nadal</div><div class="verdict-analysis">Sur terre battue, Nadal reste un monstre. Son adversaire n'a remporté aucun de ses 4 derniers matchs et affiche un bilan catastrophique sur cette surface. Une victoire en 3 sets semble inévitable.</div></div>
+          </div>
+          <div class="prono-bar"><div class="bar-home" style="width:91%"></div><div class="bar-away" style="width:9%"></div></div>
+          <div class="prono-percents"><span class="p-home">Nadal 91%</span><span class="p-away">Muller 9%</span></div>
+          <div class="confidence"><span class="conf-label">Confiance IA</span><div class="conf-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div></div>
+        </div>
+      </div>
+
+      <!-- GRATUIT 3 — Confiance 5/5 -->
+      <div class="card" data-sport="basket">
+        <div class="card-top">
+          <span class="sport-tag tag-basket">Basket</span>
+          <div class="card-meta"><span class="free-badge">Gratuit</span><span class="match-time">01h30 · NBA</span></div>
+        </div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612738/global/L/logo.svg" alt="Celtics" onerror="this.style.display='none'"/><div class="team-name">Celtics</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612765/global/L/logo.svg" alt="Pistons" onerror="this.style.display='none'"/><div class="team-name">Pistons</div><div class="team-form"><span class="form-d">D</span> <span class="form-d">D</span> <span class="form-d">D</span> <span class="form-d">D</span> <span class="form-d">D</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>
+            <div><div class="verdict-winner">Victoire Celtics</div><div class="verdict-analysis">Les Celtics sont la meilleure équipe de la ligue cette saison avec 5 victoires de suite. Les Pistons sont en bas de classement et encaissent énormément. Boston devrait dominer ce match de bout en bout à domicile.</div></div>
+          </div>
+          <div class="prono-bar"><div class="bar-home" style="width:88%;border-radius:99px 0 0 99px"></div><div class="bar-away" style="width:12%;border-radius:0 99px 99px 0"></div></div>
+          <div class="prono-percents"><span class="p-home">Celtics 88%</span><span class="p-away">Pistons 12%</span></div>
+          <div class="confidence"><span class="conf-label">Confiance IA</span><div class="conf-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card card-locked" data-sport="tennis">
+        <div class="card-top"><span class="sport-tag tag-tennis">Tennis</span><span class="match-time">15h30 · Roland Garros</span></div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://img.sofascore.com/api/v1/player/398066/image" alt="Alcaraz" onerror="this.style.display='none'"/><div class="team-name">Alcaraz</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><img class="team-logo" src="https://img.sofascore.com/api/v1/player/397878/image" alt="Sinner" onerror="this.style.display='none'"/><div class="team-name">Sinner</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box"><div><div class="verdict-winner">Victoire Alcaraz</div><div class="verdict-analysis">Alcaraz domine la terre battue cette saison avec un taux de victoire exceptionnel et une endurance remarquable.</div></div></div>
+          <div class="prono-bar"><div class="bar-home" style="width:58%;border-radius:99px 0 0 99px"></div><div class="bar-away" style="width:42%;border-radius:0 99px 99px 0"></div></div>
+          <div class="prono-percents"><span class="p-home">Alcaraz 58%</span><span class="p-away">Sinner 42%</span></div>
+        </div>
+        <div class="locked-overlay">
+          <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <span class="locked-text">Prono réservé aux abonnés</span>
+          <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+        </div>
+      </div>
+
+      <div class="card card-locked" data-sport="basket">
+        <div class="card-top"><span class="sport-tag tag-basket">Basket</span><span class="match-time">20h00 · NBA</span></div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612747/global/L/logo.svg" alt="Lakers" onerror="this.style.display='none'"/><div class="team-name">Lakers</div><div class="team-form"><span class="form-d">D</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612744/global/L/logo.svg" alt="Warriors" onerror="this.style.display='none'"/><div class="team-name">Warriors</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-n">N</span> <span class="form-v">V</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box"><div><div class="verdict-winner">Victoire Warriors</div><div class="verdict-analysis">Les Warriors très solides à domicile avec une adresse à 3 points redoutable cette saison.</div></div></div>
+          <div class="prono-bar"><div class="bar-home" style="width:41%;border-radius:99px 0 0 99px"></div><div class="bar-away" style="width:59%;border-radius:0 99px 99px 0"></div></div>
+          <div class="prono-percents"><span class="p-home">Lakers 41%</span><span class="p-away">Warriors 59%</span></div>
+        </div>
+        <div class="locked-overlay">
+          <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <span class="locked-text">Prono réservé aux abonnés</span>
+          <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+        </div>
+      </div>
+
+      <div class="card card-locked" data-sport="rugby">
+        <div class="card-top"><span class="sport-tag tag-rugby">Rugby</span><span class="match-time">17h45 · Top 14</span></div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://media.api-sports.io/rugby/teams/940.png" alt="Toulouse" onerror="this.style.display='none'"/><div class="team-name">Toulouse</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><img class="team-logo" src="https://media.api-sports.io/rugby/teams/960.png" alt="Bordeaux" onerror="this.style.display='none'"/><div class="team-name">Bordeaux</div><div class="team-form"><span class="form-v">V</span> <span class="form-d">D</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-n">N</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box"><div><div class="verdict-winner">Victoire Toulouse</div><div class="verdict-analysis">Toulouse inarrêtable à domicile, leur pack avance avec une puissance physique supérieure à celle de Bordeaux.</div></div></div>
+          <div class="prono-bar"><div class="bar-home" style="width:68%"></div><div class="bar-away" style="width:32%"></div></div>
+          <div class="prono-percents"><span class="p-home">Toulouse 68%</span><span class="p-away">Bordeaux 32%</span></div>
+        </div>
+        <div class="locked-overlay">
+          <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <span class="locked-text">Prono réservé aux abonnés</span>
+          <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+        </div>
+      </div>
+
+      <div class="card card-locked" data-sport="mma">
+        <div class="card-top"><span class="sport-tag tag-mma">MMA</span><span class="match-time">23h00 · UFC 314</span></div>
+        <div class="teams">
+          <div class="team"><div class="team-logo-placeholder">P</div><div class="team-name">Pereira</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><div class="team-logo-placeholder">A</div><div class="team-name">Ankalaev</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box"><div><div class="verdict-winner">Victoire Pereira</div><div class="verdict-analysis">Pereira va conserver sa ceinture. Sa puissance de frappe et sa capacité à terminer les combats rapidement lui donnent un avantage décisif.</div></div></div>
+          <div class="prono-bar"><div class="bar-home" style="width:61%;border-radius:99px 0 0 99px"></div><div class="bar-away" style="width:39%;border-radius:0 99px 99px 0"></div></div>
+          <div class="prono-percents"><span class="p-home">Pereira 61%</span><span class="p-away">Ankalaev 39%</span></div>
+        </div>
+        <div class="locked-overlay">
+          <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <span class="locked-text">Prono réservé aux abonnés</span>
+          <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+        </div>
+      </div>
+
+      <div class="card card-locked" data-sport="boxe">
+        <div class="card-top"><span class="sport-tag tag-boxe">Boxe</span><span class="match-time">22h00 · WBC Heavyweight</span></div>
+        <div class="teams">
+          <div class="team"><div class="team-logo-placeholder">F</div><div class="team-name">Fury</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-n">N</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><div class="team-logo-placeholder">U</div><div class="team-name">Usyk</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box"><div><div class="verdict-winner">Victoire Usyk</div><div class="verdict-analysis">Usyk en forme impeccable. Sa technique supérieure et sa mobilité devraient lui permettre de dominer Fury aux points sur 12 rounds.</div></div></div>
+          <div class="prono-bar"><div class="bar-home" style="width:43%;border-radius:99px 0 0 99px"></div><div class="bar-away" style="width:57%;border-radius:0 99px 99px 0"></div></div>
+          <div class="prono-percents"><span class="p-home">Fury 43%</span><span class="p-away">Usyk 57%</span></div>
+        </div>
+        <div class="locked-overlay">
+          <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <span class="locked-text">Prono réservé aux abonnés</span>
+          <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+        </div>
+      </div>
+
+      <div class="card card-locked" data-sport="foot">
+        <div class="card-top"><span class="sport-tag tag-foot">Football</span><span class="match-time">21h00 · Champions League</span></div>
+        <div class="teams">
+          <div class="team"><img class="team-logo" src="https://media.api-sports.io/football/teams/541.png" alt="Real Madrid" onerror="this.style.display='none'"/><div class="team-name">Real Madrid</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span> <span class="form-v">V</span> <span class="form-v">V</span></div></div>
+          <div class="vs">vs</div>
+          <div class="team"><img class="team-logo" src="https://media.api-sports.io/football/teams/157.png" alt="Bayern" onerror="this.style.display='none'"/><div class="team-name">Bayern</div><div class="team-form"><span class="form-v">V</span> <span class="form-v">V</span> <span class="form-v">V</span> <span class="form-d">D</span> <span class="form-v">V</span></div></div>
+        </div>
+        <div class="prono-section">
+          <div class="verdict-box"><div><div class="verdict-winner">Match nul probable</div><div class="verdict-analysis">Deux mastodontes aux forces très équilibrées. Le Real solide à domicile mais le Bayern est en grande forme en déplacement.</div></div></div>
+          <div class="prono-bar"><div class="bar-home" style="width:38%"></div><div class="bar-draw" style="width:30%"></div><div class="bar-away" style="width:32%"></div></div>
+          <div class="prono-percents"><span class="p-home">Real 38%</span><span class="p-draw">Nul 30%</span><span class="p-away">Bayern 32%</span></div>
+        </div>
+        <div class="locked-overlay">
+          <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <span class="locked-text">Prono réservé aux abonnés</span>
+          <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== PREUVE SOCIALE ===== -->
+  <div style="max-width:var(--max);margin:0 auto 32px;padding:0 var(--pad);">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <p style="font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Résultats vérifiés</p>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:#fff;">Nos derniers pronos gagnants</h2>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:10px 18px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:var(--green);">47/63</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">pronos gagnants ce mois</div>
+      </div>
+    </div>
+
+    <!-- Screenshots pronos gagnants -->
+    <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:28px;">
+
+      <!-- Gagnant 1 -->
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(52,211,153,0.15);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);">Real Madrid vs Brest</span>
+            <span style="font-size:10px;background:#0C2340;color:#60A5FA;padding:2px 8px;border-radius:99px;">Football</span>
+            <span style="font-size:10px;background:rgba(52,211,153,0.1);color:var(--green);padding:2px 8px;border-radius:99px;">✓ Gagné</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-mid);">Prono IA : <strong style="color:var(--text);">Victoire Real Madrid</strong> · Résultat : <strong style="color:var(--green);">3-0</strong></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;color:var(--text-muted);">Confiance IA</div>
+          <div style="display:flex;gap:2px;justify-content:flex-end;margin-top:3px;">
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gagnant 2 -->
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(52,211,153,0.15);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);">Celtics vs Pistons</span>
+            <span style="font-size:10px;background:#1A0A2E;color:#C4B5FD;padding:2px 8px;border-radius:99px;">Basket</span>
+            <span style="font-size:10px;background:rgba(52,211,153,0.1);color:var(--green);padding:2px 8px;border-radius:99px;">✓ Gagné</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-mid);">Prono IA : <strong style="color:var(--text);">Victoire Celtics</strong> · Résultat : <strong style="color:var(--green);">118-94</strong></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;color:var(--text-muted);">Confiance IA</div>
+          <div style="display:flex;gap:2px;justify-content:flex-end;margin-top:3px;">
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gagnant 3 -->
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(52,211,153,0.15);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);">Pereira vs Ankalaev</span>
+            <span style="font-size:10px;background:#2D0A0A;color:#FCA5A5;padding:2px 8px;border-radius:99px;">MMA</span>
+            <span style="font-size:10px;background:rgba(52,211,153,0.1);color:var(--green);padding:2px 8px;border-radius:99px;">✓ Gagné</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-mid);">Prono IA : <strong style="color:var(--text);">Victoire Pereira</strong> · Résultat : <strong style="color:var(--green);">KO Round 2</strong></div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;color:var(--text-muted);">Confiance IA</div>
+          <div style="display:flex;gap:2px;justify-content:flex-end;margin-top:3px;">
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--yellow);"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Avis utilisateurs -->
+    <p style="font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;">Ce que disent nos membres</p>
+    <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--blue-dim);border:1.5px solid var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--blue-light);flex-shrink:0;">T</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--text);">Thomas, 26 ans</div>
+            <div style="display:flex;gap:2px;margin-top:2px;">
+              <span style="color:var(--yellow);font-size:12px;">★★★★★</span>
+            </div>
+          </div>
+          <div style="margin-left:auto;font-size:11px;color:var(--text-muted);">il y a 2 jours</div>
+        </div>
+        <p style="font-size:13px;color:var(--text-mid);line-height:1.6;">"L'IA a prévu la victoire du Real avec une confiance 5/5. Résultat 3-0. Impressionnant, les analyses sont vraiment détaillées et claires."</p>
+      </div>
+
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:#1A0A2E;border:1.5px solid #7C3AED;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:#C4B5FD;flex-shrink:0;">S</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--text);">Sarah, 31 ans</div>
+            <div style="display:flex;gap:2px;margin-top:2px;">
+              <span style="color:var(--yellow);font-size:12px;">★★★★★</span>
+            </div>
+          </div>
+          <div style="margin-left:auto;font-size:11px;color:var(--text-muted);">il y a 5 jours</div>
+        </div>
+        <p style="font-size:13px;color:var(--text-mid);line-height:1.6;">"Je suis fan de basket et les pronos NBA sont vraiment bons. Sur les 10 derniers matchs analysés, 8 bons résultats. L'abonnement Pro vaut vraiment le coup."</p>
+      </div>
+
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:#0A1A0A;border:1.5px solid #16A34A;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:#86EFAC;flex-shrink:0;">K</div>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--text);">Karim, 22 ans</div>
+            <div style="display:flex;gap:2px;margin-top:2px;">
+              <span style="color:var(--yellow);font-size:12px;">★★★★☆</span>
+            </div>
+          </div>
+          <div style="margin-left:auto;font-size:11px;color:var(--text-muted);">il y a 1 semaine</div>
+        </div>
+        <p style="font-size:13px;color:var(--text-mid);line-height:1.6;">"Les analyses sont complètes et bien expliquées. J'apprécie que l'IA soit honnête quand elle n'est pas sûre — elle le dit clairement. Très sérieux."</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="prevention">
+    <div class="prev-inner">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="prev-text"><strong>Jouer comporte des risques.</strong> WinUrProno est un site de divertissement uniquement. Nos pronostics ne garantissent aucun résultat. Les paris peuvent créer une dépendance — ne misez jamais plus que ce que vous pouvez perdre.<div class="prev-links"><a href="https://www.joueurs-info-service.fr" target="_blank" class="prev-link">joueurs-info-service.fr</a><a href="tel:0974750013" class="prev-link">09 74 75 13 13 — Gratuit</a></div></div>
+    </div>
+  </div>
+
+  <div class="pricing">
+    <div class="pricing-box">
+      <div class="pricing-title">Accède à tous les pronos IA</div>
+      <div class="pricing-sub">Choisis la formule qui te convient</div>
+      <div class="plans">
+        <div class="plan" onclick="handlePlan('gratuit')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.borderColor='#3A4A6A';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''"><div class="plan-name">Gratuit</div><div class="plan-price">0€</div><div class="plan-desc">3 pronos / jour</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Commencer →</div></div>
+        <div class="plan popular" onclick="handlePlan('pro')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''"><div class="popular-badge">Populaire</div><div class="plan-name">Pro</div><div class="plan-price">4,99€<span>/mois</span></div><div class="plan-desc">Pronos illimités + analyses</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Choisir Pro →</div></div>
+        <div class="plan" onclick="handlePlan('annuel')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.borderColor='#3A4A6A';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''"><div class="plan-name">Annuel</div><div class="plan-price">39€<span>/an</span></div><div class="plan-desc">2 mois offerts</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Meilleur prix →</div></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+  WinUrProno © 2026 — Pronostics générés par intelligence artificielle. À titre informatif uniquement. Ne constitue pas un conseil de jeu.
+  <div style="margin-top:10px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span>
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Politique de confidentialité</span>
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span>
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('contact')">Contact</span>
+  </div>
+</footer>
+</div>
+
+<!-- ===== COMMENT CA MARCHE ===== -->
+<div class="page" id="page-how">
+  <div class="how-hero">
+    <h1>Comment fonctionne<br><span>WinUrProno ?</span></h1>
+    <p>Une intelligence artificielle de pointe qui analyse en temps réel des milliers de données sportives pour te donner les meilleures prédictions du marché.</p>
+  </div>
+
+  <div class="how-stats">
+    <div class="stat-card"><div class="stat-num">+50 000</div><div class="stat-label">Matchs analysés par l'IA</div></div>
+    <div class="stat-card"><div class="stat-num">Temps réel</div><div class="stat-label">Mis à jour jusqu'au coup d'envoi</div></div>
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Sports couverts en temps réel</div></div>
+  </div>
+
+  <div class="how-steps">
+    <div class="how-step"><div class="step-num">01</div><div><div class="step-title">Collecte des données en temps réel</div><div class="step-desc">Notre IA se connecte à des dizaines de sources officielles — statistiques de matchs, forme récente des équipes et joueurs, historique des confrontations directes, conditions météo, absences et blessures, classements actuels. Tout est mis à jour automatiquement, en permanence, jusqu'au coup d'envoi.</div></div></div>
+    <div class="how-step"><div class="step-num">02</div><div><div class="step-title">Analyse par intelligence artificielle</div><div class="step-desc">L'IA traite ces données avec des modèles entraînés sur des années de résultats sportifs. Elle détecte des patterns invisibles à l'œil humain — les séries positives, les dynamiques de forme, les avantages psychologiques à domicile. Chaque facteur est pondéré selon son impact réel sur le résultat final.</div></div></div>
+    <div class="how-step"><div class="step-num">03</div><div><div class="step-title">Génération du verdict et de l'analyse</div><div class="step-desc">L'IA génère un verdict clair — victoire équipe A, victoire équipe B, ou match nul — accompagné d'une analyse rédigée en français qui t'explique le raisonnement. Tu ne vois pas juste un chiffre, tu comprends pourquoi. Les probabilités sont calculées avec précision pour chaque issue possible.</div></div></div>
+    <div class="how-step"><div class="step-num">04</div><div><div class="step-title">Mise à jour continue jusqu'au coup d'envoi</div><div class="step-desc">Les pronostics évoluent en temps réel. Si une information importante arrive — blessure d'un joueur clé, changement de composition, météo défavorable — l'IA recalcule automatiquement ses prédictions. Tu as toujours l'analyse la plus fraîche possible avant chaque match.</div></div></div>
+  </div>
+
+  <div class="how-sports">
+    <h2>Sports couverts</h2>
+    <div class="sports-grid">
+      <div class="sport-card"><div class="sport-emoji">⚽</div><div class="sport-name">Football</div><div class="sport-detail">Ligue 1, CL, Premier League...</div></div>
+      <div class="sport-card"><div class="sport-emoji">🎾</div><div class="sport-name">Tennis</div><div class="sport-detail">Grand Chelem, ATP, WTA</div></div>
+      <div class="sport-card"><div class="sport-emoji">🏀</div><div class="sport-name">Basket</div><div class="sport-detail">NBA, Euroligue, Pro A</div></div>
+      <div class="sport-card"><div class="sport-emoji">🏉</div><div class="sport-name">Rugby</div><div class="sport-detail">Top 14, Champions Cup</div></div>
+      <div class="sport-card"><div class="sport-emoji">🥊</div><div class="sport-name">MMA</div><div class="sport-detail">UFC, Bellator, PFL</div></div>
+      <div class="sport-card"><div class="sport-emoji">🥋</div><div class="sport-name">Boxe</div><div class="sport-detail">WBC, WBA, IBF, WBO</div></div>
+    </div>
+  </div>
+
+  <div class="how-cta">
+    <div class="how-cta-box">
+      <h2>Prêt à voir les vrais pronos ?</h2>
+      <p>Rejoins des milliers de fans qui utilisent WinUrProno chaque jour pour suivre leurs sports préférés avec une longueur d'avance.</p>
+      <button class="btn-cta-big" onclick="handlePlan('pro')">Commencer gratuitement</button>
+    </div>
+  </div>
+
+  <div class="prevention" style="margin-bottom:0;">
+    <div class="prev-inner">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="prev-text"><strong>Jouer comporte des risques.</strong> WinUrProno est un site de divertissement uniquement. Nos pronostics ne garantissent aucun résultat.<div class="prev-links"><a href="https://www.joueurs-info-service.fr" target="_blank" class="prev-link">joueurs-info-service.fr</a><a href="tel:0974750013" class="prev-link">09 74 75 13 13 — Gratuit</a></div></div>
+    </div>
+  </div>
+  <footer>
+  WinUrProno © 2026 — Pronostics générés par intelligence artificielle. À titre informatif uniquement.
+  <div style="margin-top:10px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span>
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Politique de confidentialité</span>
+    <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span>
+  </div>
+</footer>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-left-logo"><div class="auth-left-logo-dot"></div>WinUrProno</div>
+      <div>
+        <div class="auth-left-title">Bon retour<br>sur <span>WinUrProno</span> !</div>
+        <div class="auth-left-sub">L'IA qui analyse les matchs pour toi. Retrouve tes pronos personnalisés et ne rate plus aucune opportunité.</div>
+        <div class="auth-left-perks">
+          <div class="auth-left-perk">
+            <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div class="auth-left-perk-text"><strong>Analyses en temps réel</strong>Mises à jour jusqu'au coup d'envoi</div>
+          </div>
+          <div class="auth-left-perk">
+            <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="auth-left-perk-text"><strong>Nouveaux pronos chaque jour</strong>Football, tennis, basket, MMA, boxe, rugby</div>
+          </div>
+          <div class="auth-left-perk">
+            <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="auth-left-perk-text"><strong>72% de précision moyenne</strong>Les meilleurs pronos du marché</div>
+          </div>
+        </div>
+      </div>
+      <div class="auth-left-stats">
+        <div><div class="auth-left-stat-num">+50k</div><div class="auth-left-stat-label">Matchs analysés</div></div>
+        <div><div class="auth-left-stat-num">Temps réel</div><div class="auth-left-stat-label">Mises à jour</div></div>
+        <div><div class="auth-left-stat-num">6</div><div class="auth-left-stat-label">Sports couverts</div></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-logo"><div class="auth-logo-dot"></div>WinUrProno</div>
+        <div class="auth-title">Bon retour !</div>
+        <div class="auth-subtitle">Connecte-toi pour accéder à tes pronos</div>
+        <div class="form-group"><label class="form-label">Adresse email</label><input id="login-email" class="form-input" type="email" placeholder="ton@email.com"/></div>
+        <div class="form-group"><label class="form-label">Mot de passe</label><input id="login-pwd" class="form-input" type="password" placeholder="••••••••"/></div>
+        <div class="forgot"><span onclick="showForgotPassword()" style="cursor:pointer;">Mot de passe oublié ?</span></div>
+        <p id="login-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;text-align:center;"></p>
+        <button class="btn-full" onclick="login()">Se connecter</button>
+        <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text">ou</span><div class="auth-divider-line"></div></div>
+        <button class="btn-google">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continuer avec Google
+        </button>
+        <div class="auth-switch">Pas encore de compte ? <span class="auth-switch-link" onclick="handlePlan('pro')">S'inscrire gratuitement</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIGNUP ===== -->
+<div class="page" id="page-signup">
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-left-logo"><div class="auth-left-logo-dot"></div>WinUrProno</div>
+      <div>
+        <div class="auth-left-title">Rejoins des milliers<br>de fans sur <span>WinUrProno</span></div>
+        <div class="auth-left-sub">Crée ton compte gratuit en 30 secondes et accède immédiatement aux meilleurs pronostics générés par l'IA.</div>
+        <div class="auth-left-perks">
+          <div class="auth-left-perk">
+            <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+            <div class="auth-left-perk-text"><strong>3 pronos gratuits par jour</strong>Sans carte bancaire, sans engagement</div>
+          </div>
+          <div class="auth-left-perk">
+            <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+            <div class="auth-left-perk-text"><strong>IA mise à jour en temps réel</strong>Analyses fraîches jusqu'au coup d'envoi</div>
+          </div>
+          <div class="auth-left-perk">
+            <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            <div class="auth-left-perk-text"><strong>Passage Pro quand tu veux</strong>Débloque tous les pronos pour 4,99€/mois</div>
+          </div>
+        </div>
+      </div>
+      <div class="auth-left-stats">
+        <div><div class="auth-left-stat-num">+50k</div><div class="auth-left-stat-label">Matchs analysés</div></div>
+        <div><div class="auth-left-stat-num">Temps réel</div><div class="auth-left-stat-label">Mises à jour</div></div>
+        <div><div class="auth-left-stat-num">6</div><div class="auth-left-stat-label">Sports couverts</div></div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <div class="auth-logo"><div class="auth-logo-dot"></div>WinUrProno</div>
+        <div class="auth-title">Crée ton compte</div>
+        <div class="auth-subtitle">3 pronos gratuits par jour, sans carte bancaire</div>
+        <div class="form-group"><label class="form-label">Prénom</label><input id="signup-prenom" class="form-input" type="text" placeholder="Ton prénom"/></div>
+        <div class="form-group"><label class="form-label">Adresse email</label><input id="signup-email" class="form-input" type="email" placeholder="ton@email.com"/></div>
+        <div class="form-group"><label class="form-label">Mot de passe</label><input id="signup-pwd" class="form-input" type="password" placeholder="8 caractères minimum"/></div>
+        <p id="signup-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;text-align:center;"></p>
+        <button class="btn-full" onclick="signup()">Créer mon compte gratuitement</button>
+        <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text">ou</span><div class="auth-divider-line"></div></div>
+        <button class="btn-google">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continuer avec Google
+        </button>
+        <div class="auth-perks">
+          <div class="perk"><div class="perk-dot"></div>3 pronostics gratuits chaque jour</div>
+          <div class="perk"><div class="perk-dot"></div>Analyses complètes générées par l'IA</div>
+          <div class="perk"><div class="perk-dot"></div>Football, Tennis, Basket, Rugby, MMA, Boxe</div>
+          <div class="perk"><div class="perk-dot"></div>Sans carte bancaire requise</div>
+        </div>
+        <div class="auth-switch">Déjà un compte ? <span class="auth-switch-link" onclick="showPage('login')">Se connecter</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== ABONNEMENT ===== -->
+<div class="page" id="page-abonnement">
+  <div style="max-width:900px;margin:0 auto;padding:52px var(--pad) 60px;">
+    <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Retour
+    </button>
+    <div style="text-align:center;margin-bottom:40px;">
+      <h1 style="font-family:'Syne',sans-serif;font-size:30px;font-weight:600;color:#fff;margin-bottom:10px;">Choisis ton abonnement</h1>
+      <p style="font-size:15px;color:var(--text-mid);">Débloque tous les pronostics générés par l'IA. Sans engagement, résiliable à tout moment.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:40px;">
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Gratuit</div>
+          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">3 pronostics par jour · Analyses IA · Confiance 5/5 uniquement</div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--green);background:rgba(52,211,153,0.1);padding:3px 8px;border-radius:99px;">✓ Accès immédiat</span>
+            <span style="font-size:11px;color:var(--green);background:rgba(52,211,153,0.1);padding:3px 8px;border-radius:99px;">✓ Sans carte bancaire</span>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">0€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">pour toujours</div>
+          <button onclick="showPage('home')" style="font-size:13px;font-weight:500;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Plan actuel</button>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--blue);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;">
+        <div style="position:absolute;top:-12px;left:24px;font-size:11px;background:var(--blue);color:#fff;padding:3px 12px;border-radius:99px;font-weight:500;">⭐ Recommandé</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Pro</div>
+          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">Pronos illimités · Toutes les analyses · Tous les sports · Temps réel</div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--blue-light);background:var(--blue-dim);padding:3px 8px;border-radius:99px;">✓ Sans engagement</span>
+            <span style="font-size:11px;color:var(--blue-light);background:var(--blue-dim);padding:3px 8px;border-radius:99px;">✓ 7 jours satisfait ou remboursé</span>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">4,99€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par mois</div>
+          <button onclick="activatePlan('pro')" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Pro</button>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Annuel <span style="font-size:12px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:2px 8px;border-radius:99px;">-33%</span></div>
+          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">Tout le Pro · 2 mois offerts · Priorité nouvelles fonctionnalités</div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:3px 8px;border-radius:99px;">✓ Meilleur prix</span>
+            <span style="font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:3px 8px;border-radius:99px;">✓ 2 mois gratuits</span>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">39€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par an · soit 3,25€/mois</div>
+          <button onclick="activatePlan('annuel')" style="font-size:13px;font-weight:500;background:none;color:var(--text);border:0.5px solid var(--border);padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Annuel</button>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-left:2px solid var(--yellow);border-radius:10px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div style="font-size:12px;color:var(--text-mid);line-height:1.6;"><strong style="color:var(--text);">Jouer comporte des risques.</strong> WinUrProno est un site de divertissement. <a href="https://www.joueurs-info-service.fr" target="_blank" style="color:var(--yellow);">joueurs-info-service.fr</a> · <a href="tel:0974750013" style="color:var(--yellow);">09 74 75 13 13</a></div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Confidentialité</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('contact')">Contact</span></footer>
+</div>
+
+<!-- ===== CONTACT ===== -->
+<div class="page" id="page-contact">
+  <div style="max-width:800px;margin:0 auto;padding:52px var(--pad) 60px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <p style="font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px;">On est là pour toi</p>
+      <h1 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;margin-bottom:12px;">Contacte-nous</h1>
+      <p style="font-size:15px;color:var(--text-mid);max-width:480px;margin:0 auto;line-height:1.7;">Une question, un problème ou une suggestion ? Remplis le formulaire et on te répond dans les 24h.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr;gap:16px;">
+      <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:var(--blue-dim);border:0.5px solid var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:2px;">Email</div><div style="font-size:14px;font-weight:500;color:var(--text);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="adcec2c3d9ccced9eddac4c3d8dfdddfc2c3c283cbdf">[email&#160;protected]</a></div></div>
+        </div>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:var(--blue-dim);border:0.5px solid var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:2px;">Temps de réponse</div><div style="font-size:14px;font-weight:500;color:var(--text);">Sous 24h en semaine</div></div>
+        </div>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:var(--blue-dim);border:0.5px solid var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:2px;">Support</div><div style="font-size:14px;font-weight:500;color:var(--text);">7j/7 pour les abonnés Pro</div></div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:20px;">Envoie-nous un message</h2>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Prénom *</label>
+              <input id="contact-name" class="form-input" type="text" placeholder="Ton prénom"/>
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Email *</label>
+              <input id="contact-email" class="form-input" type="email" placeholder="ton@email.com"/>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Raison du contact *</label>
+            <select id="contact-reason" class="form-input" style="cursor:pointer;">
+              <option value="" style="background:#131720;">Sélectionne une raison...</option>
+              <option value="question" style="background:#131720;">Question générale</option>
+              <option value="bug" style="background:#131720;">Signaler un bug</option>
+              <option value="abonnement" style="background:#131720;">Problème d'abonnement</option>
+              <option value="prono" style="background:#131720;">Question sur un prono</option>
+              <option value="partenariat" style="background:#131720;">Partenariat</option>
+              <option value="autre" style="background:#131720;">Autre</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Message *</label>
+            <textarea id="contact-message" class="form-input" placeholder="Décris ta demande en détail..." style="resize:vertical;min-height:130px;line-height:1.6;"></textarea>
+          </div>
+          <p id="contact-error" style="display:none;font-size:12px;color:var(--red);"></p>
+          <p id="contact-success" style="display:none;font-size:13px;color:var(--green);background:rgba(52,211,153,0.1);border:0.5px solid rgba(52,211,153,0.3);border-radius:8px;padding:12px 14px;line-height:1.6;"></p>
+          <button onclick="submitContact()" style="font-size:14px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Envoyer le message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Confidentialité</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span></footer>
+</div>
+
+
+<!-- ===== MOT DE PASSE OUBLIÉ ===== -->
+<div class="page" id="page-forgot">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo"><div class="auth-logo-dot"></div>WinUrProno</div>
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--blue-dim);border:1.5px solid var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="auth-title">Mot de passe oublié ?</div>
+        <div class="auth-subtitle" style="margin-top:6px;">Saisis ton email et on t'envoie un lien pour réinitialiser ton mot de passe.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adresse email</label>
+        <input id="forgot-email" class="form-input" type="email" placeholder="ton@email.com"/>
+      </div>
+      <p id="forgot-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;"></p>
+      <p id="forgot-success" style="display:none;font-size:13px;color:var(--green);background:rgba(52,211,153,0.1);border:0.5px solid rgba(52,211,153,0.3);border-radius:8px;padding:12px 14px;line-height:1.6;margin-bottom:12px;"></p>
+      <button onclick="resetPassword()" class="btn-full">Envoyer le lien</button>
+      <div class="auth-switch" style="margin-top:20px;">
+        <span class="auth-switch-link" onclick="showPage('login')">← Retour à la connexion</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== MENTIONS LÉGALES ===== -->
+<div class="page" id="page-mentions">
+  <div style="max-width:800px; margin:0 auto; padding:52px var(--pad) 60px;">
+    <button onclick="history.back() || showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </button>
+    <h1 style="font-family:'Syne',sans-serif;font-size:30px;font-weight:600;color:#fff;margin-bottom:8px;">Mentions légales</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:40px;">Dernière mise à jour : avril 2026</p>
+
+    <div style="display:flex;flex-direction:column;gap:32px;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Éditeur du site</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p><strong style="color:var(--text);">Nom du site :</strong> WinUrProno</p>
+          <p><strong style="color:var(--text);">Statut :</strong> Site en cours de création — éditeur particulier</p>
+          <p><strong style="color:var(--text);">Contact :</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdded2d3c9dcdec9fdcad4d3c8cfcdcfd2d3d293dbcf">[email&#160;protected]</a></p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Activité du site</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>WinUrProno est un site de <strong style="color:var(--text);">divertissement</strong> proposant des pronostics sportifs générés par intelligence artificielle.</p>
+          <p style="margin-top:10px;">Ces pronostics sont fournis à titre purement informatif et ne constituent en aucun cas des conseils de jeu, d'investissement ou d'incitation aux paris d'argent.</p>
+          <p style="margin-top:10px;">WinUrProno n'est pas un site de paris en ligne et ne dispose d'aucun agrément de l'ANJ (Autorité Nationale des Jeux).</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Hébergement</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p><strong style="color:var(--text);">Hébergeur :</strong> Vercel Inc.</p>
+          <p><strong style="color:var(--text);">Adresse :</strong> 340 Pine Street, Suite 701, San Francisco, CA 94104, USA</p>
+          <p><strong style="color:var(--text);">Site :</strong> vercel.com</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Propriété intellectuelle</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>L'ensemble du contenu de ce site (textes, analyses, design, logo) est la propriété exclusive de WinUrProno. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Limitation de responsabilité</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>WinUrProno ne peut être tenu responsable des décisions prises par les utilisateurs sur la base des pronostics affichés. Les pronostics sont générés automatiquement par une IA et peuvent comporter des erreurs.</p>
+          <p style="margin-top:10px;">Les paris sportifs comportent des risques. Si vous avez des difficultés avec le jeu, contactez le <strong style="color:var(--text);">09 74 75 13 13</strong> (gratuit) ou visitez <a href="https://www.joueurs-info-service.fr" target="_blank" style="color:var(--blue-light);">joueurs-info-service.fr</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026<div style="margin-top:10px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;"><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Politique de confidentialité</span><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span></div></footer>
+</div>
+
+<!-- ===== CONFIDENTIALITÉ ===== -->
+<div class="page" id="page-confidentialite">
+  <div style="max-width:800px; margin:0 auto; padding:52px var(--pad) 60px;">
+    <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </button>
+    <h1 style="font-family:'Syne',sans-serif;font-size:30px;font-weight:600;color:#fff;margin-bottom:8px;">Politique de confidentialité</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:40px;">Dernière mise à jour : avril 2026 — Conforme RGPD</p>
+
+    <div style="display:flex;flex-direction:column;gap:32px;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Données collectées</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>Lors de votre inscription, nous collectons uniquement :</p>
+          <ul style="margin-top:10px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+            <li><strong style="color:var(--text);">Prénom</strong> — pour personnaliser votre expérience</li>
+            <li><strong style="color:var(--text);">Adresse email</strong> — pour votre connexion et nos communications</li>
+            <li><strong style="color:var(--text);">Mot de passe</strong> — chiffré, jamais stocké en clair</li>
+          </ul>
+          <p style="margin-top:12px;">Nous ne collectons aucune donnée bancaire, aucun numéro de téléphone, aucune donnée de localisation.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Utilisation des données</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>Vos données sont utilisées uniquement pour :</p>
+          <ul style="margin-top:10px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Gérer votre compte et votre connexion</li>
+            <li>Vous envoyer les pronos du jour si vous l'acceptez</li>
+            <li>Gérer votre abonnement si vous souscrivez</li>
+          </ul>
+          <p style="margin-top:12px;"><strong style="color:var(--text);">Nous ne vendons jamais vos données</strong> à des tiers. Jamais.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Vos droits RGPD</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+          <ul style="margin-top:10px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+            <li><strong style="color:var(--text);">Droit d'accès</strong> — consulter vos données</li>
+            <li><strong style="color:var(--text);">Droit de rectification</strong> — corriger vos données</li>
+            <li><strong style="color:var(--text);">Droit à l'effacement</strong> — supprimer votre compte</li>
+            <li><strong style="color:var(--text);">Droit d'opposition</strong> — refuser certains traitements</li>
+            <li><strong style="color:var(--text);">Droit à la portabilité</strong> — exporter vos données</li>
+          </ul>
+          <p style="margin-top:12px;">Pour exercer ces droits : <strong style="color:var(--text);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="680b07061c090b1c281f01061d1a181a070607460e1a">[email&#160;protected]</a></strong></p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Cookies</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>WinUrProno utilise uniquement des cookies techniques nécessaires au fonctionnement du site (session de connexion). Aucun cookie publicitaire ou de tracking n'est utilisé.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">Conservation des données</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>Vos données sont conservées tant que votre compte est actif. En cas de suppression de compte, toutes vos données sont effacées définitivement sous 30 jours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026<div style="margin-top:10px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;"><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Politique de confidentialité</span><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span></div></footer>
+</div>
+
+<!-- ===== CGU ===== -->
+<div class="page" id="page-cgu">
+  <div style="max-width:800px; margin:0 auto; padding:52px var(--pad) 60px;">
+    <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </button>
+    <h1 style="font-family:'Syne',sans-serif;font-size:30px;font-weight:600;color:#fff;margin-bottom:8px;">Conditions Générales d'Utilisation</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:40px;">Dernière mise à jour : avril 2026</p>
+
+    <div style="display:flex;flex-direction:column;gap:32px;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">1. Objet</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>WinUrProno est une plateforme de divertissement proposant des pronostics sportifs générés par intelligence artificielle. L'utilisation du site implique l'acceptation des présentes CGU.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">2. Nature du service</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>Les pronostics fournis par WinUrProno sont générés automatiquement par une intelligence artificielle à partir de données sportives publiques. Ils sont fournis à titre indicatif et ne constituent en aucun cas :</p>
+          <ul style="margin-top:10px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+            <li>Des conseils de paris ou d'investissement</li>
+            <li>Une garantie de résultat</li>
+            <li>Une incitation aux jeux d'argent</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">3. Inscription et compte</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>L'inscription est réservée aux personnes majeures (+18 ans). En vous inscrivant vous certifiez avoir l'âge légal requis. WinUrProno se réserve le droit de suspendre tout compte en cas d'utilisation abusive.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">4. Abonnement et paiement</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>L'abonnement Pro est sans engagement et résiliable à tout moment. Le paiement est sécurisé via Stripe. Aucune donnée bancaire n'est stockée sur nos serveurs.</p>
+          <p style="margin-top:10px;">En cas d'insatisfaction dans les 7 jours suivant la souscription, un remboursement intégral peut être demandé à <strong style="color:var(--text);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2e2223392c2e390d3a2423383f3d3f222322632b3f">[email&#160;protected]</a></strong>.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">5. Jeu responsable</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>WinUrProno encourage le jeu responsable. Si vous rencontrez des difficultés avec les jeux d'argent, contactez le <strong style="color:var(--text);">09 74 75 13 13</strong> (gratuit, 7j/7) ou visitez <a href="https://www.joueurs-info-service.fr" target="_blank" style="color:var(--blue-light);">joueurs-info-service.fr</a>.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:12px;">6. Modification des CGU</h2>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:20px;font-size:14px;color:var(--text-mid);line-height:1.8;">
+          <p>WinUrProno se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs seront informés par email en cas de modification substantielle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026<div style="margin-top:10px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;"><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Politique de confidentialité</span><span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span></div></footer>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  const SUPABASE_URL = 'https://viocpnpsfkxcrgjvtsep.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let currentUser = null;
+
+  function showPage(name) {
+    const target = document.getElementById('page-' + name);
+    if (!target) return;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    target.classList.add('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    if (name === 'home') document.getElementById('nav-home').classList.add('active');
+    if (name === 'how') document.getElementById('nav-how').classList.add('active');
+    if (name === 'contact') document.getElementById('nav-contact').classList.add('active');
+    window.scrollTo(0, 0);
+    closeDropdown();
+  }
+
+  function filterSport(sport, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#cards-container .card').forEach(card => {
+      card.style.display = (sport === 'tous' || card.dataset.sport === sport) ? 'flex' : 'none';
+    });
+  }
+
+  function updateNav() {
+    const navRight = document.getElementById('nav-right');
+    if (currentUser) {
+      const initials = currentUser.prenom.charAt(0).toUpperCase();
+      const avatarContent = currentUser.photo
+        ? `<img src="${currentUser.photo}" alt="${currentUser.prenom}"/>`
+        : initials;
+      navRight.innerHTML = `
+        <div class="nav-user" onclick="toggleDropdown(event)" id="nav-user-btn">
+          <div class="nav-avatar" id="nav-avatar">${avatarContent}</div>
+          <span class="nav-username">${currentUser.prenom}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${'#7B8DB0'}" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          <div class="dropdown" id="user-dropdown">
+            <div class="dropdown-item" onclick="showPage('home')">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Mon profil
+            </div>
+            <div class="dropdown-item">
+              <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              Mon abonnement
+            </div>
+            <div class="dropdown-sep"></div>
+            <div class="dropdown-item danger" onclick="logout()">
+              <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Se déconnecter
+            </div>
+          </div>
+        </div>`;
+    } else {
+      navRight.innerHTML = `
+        <button class="btn-ghost" onclick="showPage('login')">Se connecter</button>
+        <button class="btn-primary" onclick="handlePlan('pro')">S'inscrire</button>`;
+    }
+  }
+
+  function toggleDropdown(e) {
+    e.stopPropagation();
+    const dd = document.getElementById('user-dropdown');
+    if (dd) dd.classList.toggle('open');
+  }
+
+  function closeDropdown() {
+    const dd = document.getElementById('user-dropdown');
+    if (dd) dd.classList.remove('open');
+  }
+
+  document.addEventListener('click', closeDropdown);
+
+  async function login() {
+    const email = document.getElementById('login-email').value.trim();
+    const pwd = document.getElementById('login-pwd').value.trim();
+    if (!email || !pwd) { showError('login-error', 'Remplis tous les champs.'); return; }
+    const btn = document.querySelector('#page-login .btn-full');
+    btn.textContent = 'Connexion...';
+    btn.disabled = true;
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+    btn.textContent = 'Se connecter';
+    btn.disabled = false;
+    if (error) {
+      showError('login-error', 'Email ou mot de passe incorrect.');
+      return;
+    }
+    currentUser = { prenom: data.user.user_metadata.prenom || email.split('@')[0], email: data.user.email, photo: null };
+    updateNav();
+    showPage('home');
+  }
+
+  async function signup() {
+    const prenom = document.getElementById('signup-prenom').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const pwd = document.getElementById('signup-pwd').value.trim();
+    if (!prenom || !email || !pwd) { showError('signup-error', 'Remplis tous les champs.'); return; }
+    if (pwd.length < 8) { showError('signup-error', 'Le mot de passe doit faire au moins 8 caractères.'); return; }
+    const btn = document.querySelector('#page-signup .btn-full');
+    btn.textContent = 'Création...';
+    btn.disabled = true;
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password: pwd,
+      options: { data: { prenom } }
+    });
+    btn.textContent = 'Créer mon compte gratuitement';
+    btn.disabled = false;
+    if (error) {
+      showError('signup-error', error.message === 'User already registered' ? 'Cet email est déjà utilisé.' : 'Erreur lors de la création du compte.');
+      return;
+    }
+    currentUser = { prenom, email, photo: null };
+    updateNav();
+    showPage('home');
+  }
+
+  function showError(id, msg) {
+    let el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';    setTimeout(() => { el.style.display = 'none'; }, 3500);
+  }
+
+  // Auto-login si déjà connecté
+  window.addEventListener('load', async function() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = {
+        prenom: session.user.user_metadata.prenom || session.user.email.split('@')[0],
+        email: session.user.email,
+        photo: null
+      };
+      updateNav();
+    }
+  });
+
+  function submitContact() {
+    const name = document.getElementById('contact-name').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const reason = document.getElementById('contact-reason').value;
+    const message = document.getElementById('contact-message').value.trim();
+    const err = document.getElementById('contact-error');
+    const suc = document.getElementById('contact-success');
+
+    err.style.display = 'none';
+    suc.style.display = 'none';
+
+    if (!name || !email || !reason || !message) {
+      err.textContent = 'Merci de remplir tous les champs obligatoires.';
+      err.style.display = 'block';
+      return;
+    }
+    if (!email.includes('@')) {
+      err.textContent = 'Adresse email invalide.';
+      err.style.display = 'block';
+      return;
+    }
+
+    // Simulation envoi — on branchera un vrai service email plus tard
+    suc.textContent = '✓ Message envoyé ! On te répond dans les 24h à l\'adresse ' + email + '. Merci ' + name + ' !';
+    suc.style.display = 'block';
+    document.getElementById('contact-name').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-reason').value = '';
+    document.getElementById('contact-message').value = '';
+  }
+
+  function showForgotPassword() {
+    showPage('forgot');
+    setTimeout(() => {
+      const el = document.getElementById('forgot-email');
+      const err = document.getElementById('forgot-error');
+      const suc = document.getElementById('forgot-success');
+      if (el) el.value = '';
+      if (err) err.style.display = 'none';
+      if (suc) suc.style.display = 'none';
+    }, 50);
+  }
+
+  async function resetPassword() {
+    const email = document.getElementById('forgot-email').value.trim();
+    const err = document.getElementById('forgot-error');
+    const suc = document.getElementById('forgot-success');
+    err.style.display = 'none';
+    suc.style.display = 'none';
+
+    if (!email) {
+      err.textContent = 'Saisis ton adresse email.';
+      err.style.display = 'block';
+      return;
+    }
+    if (!email.includes('@')) {
+      err.textContent = 'Email invalide.';
+      err.style.display = 'block';
+      return;
+    }
+
+    const btn = document.querySelector('#page-forgot .btn-full');
+    btn.textContent = 'Envoi en cours...';
+    btn.disabled = true;
+
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href
+    });
+
+    btn.textContent = 'Envoyer le lien de réinitialisation';
+    btn.disabled = false;
+
+    if (error) {
+      err.textContent = 'Erreur lors de l\'envoi. Vérifie ton email.';
+      err.style.display = 'block';
+      return;
+    }
+
+    suc.textContent = '✓ Email envoyé à ' + email + ' ! Clique sur le lien dans l\'email pour réinitialiser ton mot de passe.';
+    suc.style.display = 'block';
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    currentUser = null;
+    updateNav();
+    showPage('home');
+    closeDropdown();
+  }
+
+  function handlePlan(plan) {
+    if (!currentUser) {
+      showPage('signup');
+    } else {
+      showPage('abonnement');
+    }
+  }
+
+  function activatePlan(plan) {
+    if (plan === 'gratuit') {
+        showPage('home');
+    return;
+    }
+    alert('Paiement bientôt disponible ! On branche Stripe prochainement. 🚀');
+  }
+
+  function submitContact() {
+    const name = document.getElementById('contact-name').value.trim();
+    const email = document.getElementById('contact-email').value.trim();
+    const reason = document.getElementById('contact-reason').value;
+    const message = document.getElementById('contact-message').value.trim();
+    const err = document.getElementById('contact-error');
+    const suc = document.getElementById('contact-success');
+    err.style.display = 'none';
+    suc.style.display = 'none';
+    if (!name || !email || !reason || !message) {
+      err.textContent = 'Merci de remplir tous les champs.';
+      err.style.display = 'block';
+      return;
+    }
+    if (!email.includes('@')) {
+      err.textContent = 'Email invalide.';
+      err.style.display = 'block';
+      return;
+    }
+    suc.textContent = '✓ Message envoyé ! On te répond dans les 24h à ' + email + '. Merci ' + name + ' !';
+    suc.style.display = 'block';
+    document.getElementById('contact-name').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-reason').value = '';
+    document.getElementById('contact-message').value = '';
+  }
+
+  function showError(id, msg) {
+    let el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+    setTimeout(() => { el.style.display = 'none'; }, 3500);
+  }
+
+  window.addEventListener('load', async function() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = {
+        prenom: session.user.user_metadata.prenom || session.user.email.split('@')[0],
+        email: session.user.email,
+        photo: null
+      };
+      updateNav();
+    }
+  });
+
+</script>
+</body>
+</html>
