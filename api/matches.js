@@ -1,31 +1,18 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
   
-  const today = '2026-04-26';
-  const leagueIds = [61, 39, 140, 78, 135, 2, 3];
-  const API_KEY = '1198041d6af647866b261840e19aead8';
-  
-  const allMatches = [];
-  
-  for (const league of leagueIds) {
-    try {
-      const response = await fetch(
-        `https://v3.football.api-sports.io/fixtures?date=${today}&league=${league}&season=2026`,
-        {
-          headers: {
-            'x-apisports-key': API_KEY
-          }
+  try {
+    const response = await fetch(
+      'https://v3.football.api-sports.io/status',
+      {
+        headers: {
+          'x-apisports-key': '1198041d6af647866b261840e19aead8'
         }
-      );
-      const data = await response.json();
-      if (data.response && data.response.length > 0) {
-        allMatches.push(...data.response);
       }
-    } catch(e) {
-      console.log('Error league', league, e);
-    }
+    );
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
   }
-  
-  res.status(200).json({ matches: allMatches });
 }
