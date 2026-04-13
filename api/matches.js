@@ -1,6 +1,8 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(req) {
   const today = '2024-03-30';
   const leagueIds = [61, 39, 140, 78, 135, 2, 3];
   const API_KEY = '1198041d6af647866b261840e19aead8';
@@ -19,9 +21,14 @@ export default async function handler(req, res) {
         allMatches.push(...data.response);
       }
     } catch(e) {
-      console.log('Error league', league, e);
+      console.log('Error league', league);
     }
   }
   
-  res.status(200).json({ matches: allMatches });
+  return new Response(JSON.stringify({ matches: allMatches }), {
+    headers: { 
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
+  });
 }
