@@ -986,6 +986,102 @@
 </div>
 
 
+<!-- ===== ADMIN ===== -->
+<div class="page" id="page-admin">
+  <div style="max-width:var(--max);margin:0 auto;padding:40px var(--pad) 60px;">
+    <div id="admin-auth">
+      <div style="max-width:400px;margin:0 auto;text-align:center;padding:60px 0;">
+        <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;">Page Admin</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Accès réservé</div>
+        <input id="admin-pwd-input" class="form-input" type="password" placeholder="Mot de passe admin" style="margin-bottom:12px;"/>
+        <button onclick="checkAdminPwd()" class="btn-full">Accéder</button>
+        <p id="admin-pwd-error" style="display:none;font-size:12px;color:var(--red);margin-top:8px;"></p>
+      </div>
+    </div>
+    <div id="admin-dashboard" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+        <h1 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:#fff;">Dashboard Admin</h1>
+        <button onclick="adminLogout()" style="font-size:13px;background:none;color:var(--red);border:0.5px solid var(--red);padding:7px 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Déconnexion</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:32px;">
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+          <div id="admin-stat-total" style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--blue-light);">0</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Total matchs</div>
+        </div>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+          <div id="admin-stat-today" style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--green);">0</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Matchs aujourd'hui</div>
+        </div>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+          <div id="admin-stat-week" style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--yellow);">0</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Cette semaine</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;margin-bottom:28px;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:20px;">Ajouter un match</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Sport *</label>
+            <select id="admin-sport" class="form-input" style="cursor:pointer;">
+              <option value="foot" style="background:#131720;">Football</option>
+              <option value="basket" style="background:#131720;">Basket</option>
+              <option value="tennis" style="background:#131720;">Tennis</option>
+              <option value="rugby" style="background:#131720;">Rugby</option>
+              <option value="mma" style="background:#131720;">MMA</option>
+              <option value="boxe" style="background:#131720;">Boxe</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Compétition *</label>
+            <input id="admin-competition" class="form-input" type="text" placeholder="Ligue 1, NBA, UFC..."/>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 1 *</label>
+            <input id="admin-home" class="form-input" type="text" placeholder="PSG, Nadal..."/>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 2 *</label>
+            <input id="admin-away" class="form-input" type="text" placeholder="Lyon, Alcaraz..."/>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Date *</label>
+            <input id="admin-date" class="form-input" type="date"/>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Heure *</label>
+            <input id="admin-heure" class="form-input" type="time"/>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Forme équipe 1</label>
+            <input id="admin-form-home" class="form-input" type="text" placeholder="VVVDV"/>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Forme équipe 2</label>
+            <input id="admin-form-away" class="form-input" type="text" placeholder="DVVND"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding-top:24px;">
+            <input id="admin-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
+            <label style="font-size:13px;color:var(--text-mid);cursor:pointer;">Prono gratuit</label>
+          </div>
+        </div>
+        <p id="admin-form-error" style="display:none;font-size:12px;color:var(--red);margin-top:12px;"></p>
+        <p id="admin-form-success" style="display:none;font-size:13px;color:var(--green);background:rgba(52,211,153,0.1);border:0.5px solid rgba(52,211,153,0.3);border-radius:8px;padding:10px 14px;margin-top:12px;"></p>
+        <button onclick="adminAddMatch()" style="margin-top:18px;font-size:14px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">+ Ajouter le match</button>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+          <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);">Matchs programmés</h2>
+          <button onclick="loadAdminMatches()" style="font-size:12px;background:none;color:var(--blue-light);border:0.5px solid var(--border);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Actualiser</button>
+        </div>
+        <div id="admin-matches-list">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Chargement...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('home')">Retour au site</span></footer>
+</div>
+
 <!-- ===== MENTIONS LÉGALES ===== -->
 <div class="page" id="page-mentions">
   <div style="max-width:var(--max); margin:0 auto; padding:52px var(--pad) 60px;">
@@ -1197,7 +1293,12 @@
 
   async function fetchTodayMatches() {
     try {
-      const res = await fetch('/api/matches');
+      const res = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/get-matches', {
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ',
+          'Content-Type': 'application/json'
+        }
+      });
       const data = await res.json();
       return data.matches || [];
     } catch(e) {
@@ -1437,6 +1538,10 @@
     const hash = window.location.hash.replace('#', '');
     if (hash && document.getElementById('page-' + hash)) {
       showPage(hash, false);
+      if (hash === 'admin') {
+        document.getElementById('admin-auth').style.display = 'block';
+        document.getElementById('admin-dashboard').style.display = 'none';
+      }
     } else {
       try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
     }
@@ -1689,6 +1794,125 @@
     if (dd) dd.classList.remove('open');
   });
 
+
+  // ===== ADMIN =====
+  const ADMIN_PASSWORD = 'winurprono2026admin';
+
+  function checkAdminPwd() {
+    const pwd = document.getElementById('admin-pwd-input').value;
+    if (pwd === ADMIN_PASSWORD) {
+      document.getElementById('admin-auth').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'block';
+      loadAdminMatches();
+    } else {
+      const err = document.getElementById('admin-pwd-error');
+      err.textContent = 'Mot de passe incorrect.';
+      err.style.display = 'block';
+    }
+  }
+
+  function adminLogout() {
+    document.getElementById('admin-auth').style.display = 'block';
+    document.getElementById('admin-dashboard').style.display = 'none';
+    document.getElementById('admin-pwd-input').value = '';
+  }
+
+  async function adminAddMatch() {
+    const sport = document.getElementById('admin-sport').value;
+    const competition = document.getElementById('admin-competition').value.trim();
+    const home = document.getElementById('admin-home').value.trim();
+    const away = document.getElementById('admin-away').value.trim();
+    const date = document.getElementById('admin-date').value;
+    const heure = document.getElementById('admin-heure').value;
+    const formHome = document.getElementById('admin-form-home').value.trim().toUpperCase();
+    const formAway = document.getElementById('admin-form-away').value.trim().toUpperCase();
+    const isFree = document.getElementById('admin-is-free').checked;
+    const err = document.getElementById('admin-form-error');
+    const suc = document.getElementById('admin-form-success');
+
+    err.style.display = 'none';
+    suc.style.display = 'none';
+
+    if (!competition || !home || !away || !date || !heure) {
+      err.textContent = 'Remplis tous les champs obligatoires.';
+      err.style.display = 'block';
+      return;
+    }
+
+    const { error } = await sb.from('matches').insert({
+      sport, competition,
+      equipe_home: home,
+      equipe_away: away,
+      date, heure,
+      logo_home: '',
+      logo_away: '',
+      is_free: isFree,
+      form_home: formHome,
+      form_away: formAway
+    });
+
+    if (error) {
+      err.textContent = 'Erreur: ' + error.message;
+      err.style.display = 'block';
+      return;
+    }
+
+    suc.textContent = '✓ Match ajouté ! ' + home + ' vs ' + away + ' le ' + date;
+    suc.style.display = 'block';
+
+    // Reset form
+    document.getElementById('admin-competition').value = '';
+    document.getElementById('admin-home').value = '';
+    document.getElementById('admin-away').value = '';
+    document.getElementById('admin-date').value = '';
+    document.getElementById('admin-heure').value = '';
+    document.getElementById('admin-form-home').value = '';
+    document.getElementById('admin-form-away').value = '';
+    document.getElementById('admin-is-free').checked = false;
+
+    loadAdminMatches();
+  }
+
+  async function loadAdminMatches() {
+    const list = document.getElementById('admin-matches-list');
+    if (!list) return;
+
+    const { data, error } = await sb.from('matches').select('*').order('date', { ascending: true });
+
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Aucun match programmé</div>';
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const weekEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    document.getElementById('admin-stat-total').textContent = data.length;
+    document.getElementById('admin-stat-today').textContent = data.filter(m => m.date === today).length;
+    document.getElementById('admin-stat-week').textContent = data.filter(m => m.date >= today && m.date <= weekEnd).length;
+
+    const sportEmoji = { foot: '⚽', basket: '🏀', tennis: '🎾', rugby: '🏉', mma: '🥊', boxe: '🥋' };
+
+    list.innerHTML = data.map(match => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:0.5px solid var(--border-dim);flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+          <span style="font-size:20px;">${sportEmoji[match.sport] || '🏆'}</span>
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--text);">${match.equipe_home} vs ${match.equipe_away}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${match.competition} · ${match.date} · ${match.heure} ${match.is_free ? '· <span style="color:var(--green);">Gratuit</span>' : ''}</div>
+          </div>
+        </div>
+        <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;">Supprimer</button>
+      </div>
+    `).join('');
+  }
+
+  async function adminDeleteMatch(id) {
+    if (!confirm('Supprimer ce match ?')) return;
+    await sb.from('matches').delete().eq('id', id);
+    loadAdminMatches();
+  }
+
   async function logout() {
     await sb.auth.signOut();
     currentUser = null;
@@ -1766,6 +1990,10 @@
     const hash = window.location.hash.replace('#', '');
     if (hash && document.getElementById('page-' + hash)) {
       showPage(hash, false);
+      if (hash === 'admin') {
+        document.getElementById('admin-auth').style.display = 'block';
+        document.getElementById('admin-dashboard').style.display = 'none';
+      }
     } else {
       try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
     }
