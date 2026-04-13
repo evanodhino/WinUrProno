@@ -1022,7 +1022,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Sport *</label>
-            <select id="admin-sport" class="form-input" style="cursor:pointer;">
+            <select id="admin-sport" class="form-input" style="cursor:pointer;" onchange="updateCompetitions()">
               <option value="foot" style="background:#131720;">Football</option>
               <option value="basket" style="background:#131720;">Basket</option>
               <option value="tennis" style="background:#131720;">Tennis</option>
@@ -1033,7 +1033,9 @@
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Compétition *</label>
-            <input id="admin-competition" class="form-input" type="text" placeholder="Ligue 1, NBA, UFC..."/>
+            <select id="admin-competition" class="form-input" style="cursor:pointer;">
+              <option value="" style="background:#131720;">Sélectionne une compétition...</option>
+            </select>
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 1 *</label>
@@ -1797,6 +1799,28 @@
 
   // ===== ADMIN =====
   const ADMIN_PASSWORD = 'winurprono2026admin';
+
+  const competitions = {
+    foot: ['Ligue 1', 'Ligue 2', 'Champions League', 'Europa League', 'Conference League', 'Premier League', 'La Liga', 'Bundesliga', 'Serie A', 'Coupe de France', 'Coupe du Monde'],
+    basket: ['NBA', 'Euroligue', 'Pro A', 'Coupe du Monde FIBA', 'NCAA'],
+    tennis: ['Roland Garros', 'Wimbledon', 'US Open', 'Australian Open', 'ATP Masters', 'WTA Finals', 'Davis Cup'],
+    rugby: ['Top 14', 'Champions Cup', 'Challenge Cup', 'Pro D2', 'Six Nations', 'Coupe du Monde Rugby'],
+    mma: ['UFC', 'Bellator', 'PFL', 'ONE Championship', 'UFC Fight Night'],
+    boxe: ['WBC', 'WBA', 'IBF', 'WBO', 'Combat sans titre']
+  };
+
+  function updateCompetitions() {
+    const sport = document.getElementById('admin-sport').value;
+    const select = document.getElementById('admin-competition');
+    select.innerHTML = '<option value="" style="background:#131720;">Sélectionne une compétition...</option>';
+    (competitions[sport] || []).forEach(comp => {
+      const opt = document.createElement('option');
+      opt.value = comp;
+      opt.textContent = comp;
+      opt.style.background = '#131720';
+      select.appendChild(opt);
+    });
+  }
 
   function checkAdminPwd() {
     const pwd = document.getElementById('admin-pwd-input').value;
