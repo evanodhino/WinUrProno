@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   for (const league of leagueIds) {
     try {
       const response = await fetch(
-        `https://v3.football.api-sports.io/fixtures?date=${today}&league=${league}&season=2025`,
+        `https://v3.football.api-sports.io/fixtures?date=${today}&league=${league}&season=2026`,
         {
           headers: {
             'x-apisports-key': API_KEY
