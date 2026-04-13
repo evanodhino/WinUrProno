@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   
-  const today = new Date().toISOString().split('T')[0];
+  const today = '2026-04-18';
   const leagueIds = [61, 39, 140, 78, 135, 2, 3];
   const API_KEY = '1198041d6af647866b261840e19aead8';
   const allMatches = [];
