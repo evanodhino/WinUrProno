@@ -1342,7 +1342,7 @@
       
       const { data: matches, error } = await sb
         .from('matches')
-        .select('*, pronos(*)')
+        .select('*')
         .eq('date', today)
         .order('heure', { ascending: true });
 
