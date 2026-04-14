@@ -1997,9 +1997,75 @@
             <div style="font-size:12px;color:var(--text-muted);">${match.competition} · ${match.date} · ${match.heure} ${match.is_free ? '· <span style="color:var(--green);">Gratuit</span>' : ''}</div>
           </div>
         </div>
-        <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;">Supprimer</button>
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <button onclick="generateAnalysis('${match.id}','${match.equipe_home}','${match.equipe_away}','${match.sport}','${match.competition}','${match.form_home || ''}','${match.form_away || ''}')" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">IA Analyser</button>
+          <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
+        </div>
       </div>
     `).join('');
+  }
+
+  async function generateAnalysis(matchId, home, away, sport, competition, formHome, formAway) {
+    const btn = event.target;
+    btn.textContent = 'Génération...';
+    btn.disabled = true;
+
+    try {
+      const prompt = `Tu es un expert en pronostics sportifs. Analyse ce match et génère un pronostic précis.
+
+Match: ${home} vs ${away}
+Sport: ${sport}
+Compétition: ${competition}
+Forme ${home}: ${formHome || 'inconnue'}
+Forme ${away}: ${formAway || 'inconnue'}
+
+Réponds UNIQUEMENT en JSON avec ce format exact:
+{
+  "verdict": "Victoire ${home}" ou "Victoire ${away}" ou "Match nul probable",
+  "analyse": "Explication de 2-3 phrases maximum en français",
+  "proba_home": nombre entre 0 et 100,
+  "proba_draw": nombre entre 0 et 100 (0 si pas de match nul possible),
+  "proba_away": nombre entre 0 et 100,
+  "confiance": nombre entre 1 et 5
+}
+Les probabilités doivent totaliser 100.`;
+
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ home, away, sport, competition, formHome, formAway })
+      });
+
+      const prono = await response.json();
+      if (prono.error) throw new Error(prono.error);
+
+      // Save to Supabase
+      const { error } = await sb.from('pronos').upsert({
+        match_id: matchId,
+        verdict: prono.verdict,
+        analyse: prono.analyse,
+        proba_home: prono.proba_home,
+        proba_draw: prono.proba_draw || 0,
+        proba_away: prono.proba_away,
+        confiance: prono.confiance,
+        is_free: false
+      }, { onConflict: 'match_id' });
+
+      if (error) throw error;
+
+      btn.textContent = 'Généré !';
+      btn.style.background = 'rgba(52,211,153,0.2)';
+      btn.style.color = 'var(--green)';
+      btn.style.borderColor = 'var(--green)';
+      
+      setTimeout(() => loadAdminMatches(), 1000);
+
+    } catch(e) {
+      console.log('Error generating analysis:', e);
+      btn.textContent = 'Erreur';
+      btn.style.color = 'var(--red)';
+      btn.disabled = false;
+    }
   }
 
   async function adminDeleteMatch(id) {
