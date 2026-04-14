@@ -1346,10 +1346,11 @@
         .eq('date', today)
         .order('heure', { ascending: true });
 
-      console.log('Supabase response:', { matches, error });
+      console.log('Matches found:', matches ? matches.length : 0);
+      console.log('Error:', error ? JSON.stringify(error) : 'none');
 
       if (error) {
-        console.log('Supabase error:', error.message);
+        console.log('Supabase error:', JSON.stringify(error));
         return;
       }
       if (!matches || matches.length === 0) {
