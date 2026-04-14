@@ -1337,14 +1337,23 @@
       const today = now.getFullYear() + '-' + 
         String(now.getMonth() + 1).padStart(2, '0') + '-' + 
         String(now.getDate()).padStart(2, '0');
+      
+      console.log('Looking for matches on date:', today);
+      
       const { data: matches, error } = await sb
         .from('matches')
         .select('*, pronos(*)')
         .eq('date', today)
         .order('heure', { ascending: true });
 
-      if (error || !matches || matches.length === 0) {
-        console.log('No matches today in Supabase, keeping demo matches');
+      console.log('Supabase response:', { matches, error });
+
+      if (error) {
+        console.log('Supabase error:', error.message);
+        return;
+      }
+      if (!matches || matches.length === 0) {
+        console.log('No matches today in Supabase for date:', today);
         return;
       }
 
