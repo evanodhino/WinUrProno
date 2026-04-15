@@ -1966,15 +1966,21 @@
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0;">
-          <button onclick="generateAnalysis('${match.id}','${match.equipe_home}','${match.equipe_away}','${match.sport}','${match.competition}','${match.form_home || ''}','${match.form_away || ''}')" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">IA Analyser</button>
+          <button onclick="generateAnalysis(this)" data-id="${match.id}" data-home="${match.equipe_home}" data-away="${match.equipe_away}" data-sport="${match.sport}" data-comp="${match.competition}" data-fh="${match.form_home || ''}" data-fa="${match.form_away || ''}" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">IA Analyser</button>
           <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
         </div>
       </div>
     `).join('');
   }
 
-  async function generateAnalysis(matchId, home, away, sport, competition, formHome, formAway) {
-    const btn = event.target;
+  async function generateAnalysis(btn) {
+    const matchId = btn.dataset.id;
+    const home = btn.dataset.home;
+    const away = btn.dataset.away;
+    const sport = btn.dataset.sport;
+    const competition = btn.dataset.comp;
+    const formHome = btn.dataset.fh;
+    const formAway = btn.dataset.fa;
     btn.textContent = 'Génération...';
     btn.disabled = true;
 
