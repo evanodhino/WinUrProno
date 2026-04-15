@@ -1460,14 +1460,7 @@
   });
 
   // Handle initial load with hash
-  window.addEventListener('load', function() {
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById('page-' + hash)) {
-      showPage(hash, false);
-    } else {
-      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
-    }
-  });
+
 
   function filterSport(sport, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1577,32 +1570,7 @@
   }
 
   // Auto-login si déjà connecté
-  window.addEventListener('load', async function() {
-    // Load real matches from API
-    loadAndDisplayMatches();
 
-    // Check Supabase session
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-      currentUser = {
-        prenom: session.user.user_metadata.prenom || session.user.email.split('@')[0],
-        email: session.user.email,
-        photo: null
-      };
-      updateNav();
-    }
-    // Handle URL hash for navigation
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById('page-' + hash)) {
-      showPage(hash, false);
-      if (hash === 'admin') {
-        document.getElementById('admin-auth').style.display = 'block';
-        document.getElementById('admin-dashboard').style.display = 'none';
-      }
-    } else {
-      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
-    }
-  });
 
   function submitContact() {
     const name = document.getElementById('contact-name').value.trim();
@@ -2040,7 +2008,8 @@ Les probabilités doivent totaliser 100.`;
       if (prono.error) throw new Error(prono.error);
 
       // Save to Supabase
-      const { error } = await sb.from('pronos').upsert({
+      const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const { error } = await sbClient.from('pronos').upsert({
         match_id: matchId,
         verdict: prono.verdict,
         analyse: prono.analyse,
@@ -2098,41 +2067,7 @@ Les probabilités doivent totaliser 100.`;
     alert('Paiement bientôt disponible ! On branche Stripe prochainement. 🚀');
   }
 
-  function submitContact() {
-    const name = document.getElementById('contact-name').value.trim();
-    const email = document.getElementById('contact-email').value.trim();
-    const reason = document.getElementById('contact-reason').value;
-    const message = document.getElementById('contact-message').value.trim();
-    const err = document.getElementById('contact-error');
-    const suc = document.getElementById('contact-success');
-    err.style.display = 'none';
-    suc.style.display = 'none';
-    if (!name || !email || !reason || !message) {
-      err.textContent = 'Merci de remplir tous les champs.';
-      err.style.display = 'block';
-      return;
-    }
-    if (!email.includes('@')) {
-      err.textContent = 'Email invalide.';
-      err.style.display = 'block';
-      return;
-    }
-    suc.textContent = '✓ Message envoyé ! On te répond dans les 24h à ' + email + '. Merci ' + name + ' !';
-    suc.style.display = 'block';
-    document.getElementById('contact-name').value = '';
-    document.getElementById('contact-email').value = '';
-    document.getElementById('contact-reason').value = '';
-    document.getElementById('contact-message').value = '';
-  }
-
-  function showError(id, msg) {
-    let el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = msg;
-    el.style.display = 'block';
-    setTimeout(() => { el.style.display = 'none'; }, 3500);
-  }
-
+    
   window.addEventListener('load', async function() {
     // Load real matches from API
     loadAndDisplayMatches();
