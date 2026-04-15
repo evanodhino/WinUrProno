@@ -1342,7 +1342,7 @@
       
       const { data: matches, error } = await sb
         .from('matches')
-        .select('*')
+        .select('*, pronos(*)')
         .eq('date', today)
         .order('heure', { ascending: true });
 
@@ -1362,7 +1362,7 @@
       container.innerHTML = '';
 
       matches.forEach(match => {
-        const prono = match.pronos && match.pronos.length > 0 ? match.pronos[0] : null;
+        const prono = match.pronos && match.pronos.length > 0 ? match.pronos[0] : null; console.log('Prono for', match.equipe_home, ':', prono);
         const isFree = match.is_free;
         const tag = sportTags[match.sport] || 'tag-foot';
         const label = sportLabels[match.sport] || 'Sport';
