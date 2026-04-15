@@ -2007,20 +2007,30 @@ Les probabilités doivent totaliser 100.`;
       const prono = await response.json();
       if (prono.error) throw new Error(prono.error);
 
-      // Save to Supabase
-      const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      const { error } = await sbClient.from('pronos').upsert({
-        match_id: matchId,
-        verdict: prono.verdict,
-        analyse: prono.analyse,
-        proba_home: prono.proba_home,
-        proba_draw: prono.proba_draw || 0,
-        proba_away: prono.proba_away,
-        confiance: prono.confiance,
-        is_free: false
-      }, { onConflict: 'match_id' });
-
-      if (error) throw error;
+      // Save to Supabase via fetch
+      const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/pronos?on_conflict=match_id`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          match_id: matchId,
+          verdict: prono.verdict,
+          analyse: prono.analyse,
+          proba_home: prono.proba_home,
+          proba_draw: prono.proba_draw || 0,
+          proba_away: prono.proba_away,
+          confiance: prono.confiance,
+          is_free: false
+        })
+      });
+      if (!saveRes.ok) {
+        const errText = await saveRes.text();
+        throw new Error('Supabase save error: ' + errText);
+      }
 
       btn.textContent = 'Généré !';
       btn.style.background = 'rgba(52,211,153,0.2)';
