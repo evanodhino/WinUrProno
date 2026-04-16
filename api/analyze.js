@@ -7,22 +7,13 @@ export default async function handler(req, res) {
   const { home, away, sport, competition, formHome, formAway } = req.body;
 
   const prompt = `Tu es un expert en pronostics sportifs. Analyse ce match et génère un pronostic précis.
-
 Match: ${home} vs ${away}
 Sport: ${sport}
 Compétition: ${competition}
 Forme ${home}: ${formHome || 'inconnue'}
 Forme ${away}: ${formAway || 'inconnue'}
-
-Réponds UNIQUEMENT en JSON avec ce format exact:
-{
-  "verdict": "Victoire ${home}" ou "Victoire ${away}" ou "Match nul probable",
-  "analyse": "Explication de 2-3 phrases en français",
-  "proba_home": nombre entre 0 et 100,
-  "proba_draw": nombre entre 0 et 100,
-  "proba_away": nombre entre 0 et 100,
-  "confiance": nombre entre 1 et 5
-}
+Réponds UNIQUEMENT en JSON:
+{"verdict":"Victoire ${home} ou Victoire ${away} ou Match nul probable","analyse":"2-3 phrases en français","proba_home":65,"proba_draw":20,"proba_away":15,"confiance":4}
 Les probabilités doivent totaliser 100.`;
 
   try {
@@ -30,12 +21,12 @@ Les probabilités doivent totaliser 100.`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': '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',
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-6',
-        max_tokens: 500,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 300,
         messages: [{ role: 'user', content: prompt }]
       })
     });
