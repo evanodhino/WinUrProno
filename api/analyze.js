@@ -40,6 +40,9 @@ Les probabilités doivent totaliser 100.`;
       })
     });
     const data = await response.json();
+    if (!data.content || !data.content[0]) {
+      return res.status(500).json({ error: JSON.stringify(data) });
+    }
     const text = data.content[0].text;
     const clean = text.replace(/```json|```/g, '').trim();
     const prono = JSON.parse(clean);
