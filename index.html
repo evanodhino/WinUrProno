@@ -62,7 +62,7 @@
     .dropdown-item.danger:hover { background: rgba(248,113,113,0.08); color: var(--red); }
 
     .page { display: none; }
-    .page.active { display: flex; flex-direction: column; min-height: calc(100vh - 57px); }
+    .page.active { display: block; }
 
     /* SHARED LAYOUT */
     .container { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
@@ -807,7 +807,7 @@
 
 <!-- ===== ADMIN ===== -->
 <div class="page" id="page-admin">
-  <div style="max-width:var(--max);margin:0 auto;padding:40px var(--pad) 60px;flex:1;">
+  <div style="max-width:var(--max);margin:0 auto;padding:40px var(--pad) 60px;">
     <div id="admin-auth">
       <div style="max-width:400px;margin:0 auto;text-align:center;padding:60px 0;">
         <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;">Page Admin</div>
@@ -1823,9 +1823,12 @@ Réponds UNIQUEMENT en JSON avec ce format exact:
 }
 Les probabilités doivent totaliser 100.`;
 
-      const response = await fetch('/api/analyze', {
+      const response = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/analyze', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ'
+        },
         body: JSON.stringify({ home, away, sport, competition, formHome, formAway })
       });
 
