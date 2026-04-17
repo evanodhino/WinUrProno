@@ -4,6 +4,8 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  console.log('KEY:', process.env.ANTHROPIC_API_KEY ? 'EXISTS' : 'MISSING');
+
   const { home, away, sport, competition, formHome, formAway } = req.body;
 
   const prompt = `Tu es un expert en pronostics sportifs. Analyse ce match et génère un pronostic précis.
@@ -33,15 +35,15 @@ Les probabilités doivent totaliser exactement 100.`;
     });
 
     const data = await response.json();
-    
+
     if (!data.content || !data.content[0]) {
       return res.status(500).json({ error: JSON.stringify(data) });
     }
 
     const text = data.content[0].text;
     const match = text.match(/\{[\s\S]*\}/);
-    if (!match) return res.status(500).json({ error: 'JSON non trouvé dans: ' + text });
-    
+    if (!match) return res.status(500).json({ error: 'JSON non trouvé: ' + text });
+
     const prono = JSON.parse(match[0]);
     res.status(200).json(prono);
 
