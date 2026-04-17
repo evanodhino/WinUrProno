@@ -22,7 +22,7 @@ Les probabilités doivent totaliser exactement 100.`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': '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',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
