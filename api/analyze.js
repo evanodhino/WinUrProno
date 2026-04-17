@@ -4,6 +4,10 @@ const handler = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: 'NO API KEY FOUND' });
+  }
+
   const { home, away, sport, competition, formHome, formAway } = req.body;
 
   const prompt = `Tu es un expert en pronostics sportifs. Analyse ce match et génère un pronostic précis.
