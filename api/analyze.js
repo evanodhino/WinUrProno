@@ -1,10 +1,8 @@
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-
-  console.log('KEY:', process.env.ANTHROPIC_API_KEY ? 'EXISTS' : 'MISSING');
 
   const { home, away, sport, competition, formHome, formAway } = req.body;
 
@@ -41,13 +39,15 @@ Les probabilités doivent totaliser exactement 100.`;
     }
 
     const text = data.content[0].text;
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) return res.status(500).json({ error: 'JSON non trouvé: ' + text });
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'JSON non trouve: ' + text });
 
-    const prono = JSON.parse(match[0]);
+    const prono = JSON.parse(jsonMatch[0]);
     res.status(200).json(prono);
 
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
+
+module.exports = handler;
