@@ -12,16 +12,17 @@ Sport: ${sport}
 Compétition: ${competition}
 Forme ${home}: ${formHome || 'inconnue'}
 Forme ${away}: ${formAway || 'inconnue'}
-Réponds UNIQUEMENT en JSON:
-{"verdict":"Victoire ${home} ou Victoire ${away} ou Match nul probable","analyse":"2-3 phrases en français","proba_home":65,"proba_draw":20,"proba_away":15,"confiance":4}
-Les probabilités doivent totaliser 100.`;
+
+Réponds UNIQUEMENT en JSON valide avec ce format:
+{"verdict":"Victoire ${home}","analyse":"Explication en 2-3 phrases en français.","proba_home":65,"proba_draw":20,"proba_away":15,"confiance":4}
+Les probabilités doivent totaliser exactement 100.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': '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',
+        'x-api-key': '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',
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
@@ -30,14 +31,20 @@ Les probabilités doivent totaliser 100.`;
         messages: [{ role: 'user', content: prompt }]
       })
     });
+
     const data = await response.json();
+    
     if (!data.content || !data.content[0]) {
       return res.status(500).json({ error: JSON.stringify(data) });
     }
+
     const text = data.content[0].text;
-    const clean = text.replace(/```json|```/g, '').trim();
-    const prono = JSON.parse(clean);
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return res.status(500).json({ error: 'JSON non trouvé dans: ' + text });
+    
+    const prono = JSON.parse(match[0]);
     res.status(200).json(prono);
+
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
