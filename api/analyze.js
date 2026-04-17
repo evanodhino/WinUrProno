@@ -1,14 +1,25 @@
-const handler = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+export const config = { runtime: 'edge' };
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(500).json({ error: 'NO API KEY FOUND' });
+export default async function handler(req) {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      }
+    });
   }
 
-  const { home, away, sport, competition, formHome, formAway } = req.body;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'NO API KEY' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+  }
+
+  const { home, away, sport, competition, formHome, formAway } = await req.json();
 
   const prompt = `Tu es un expert en pronostics sportifs. Analyse ce match et génère un pronostic précis.
 Match: ${home} vs ${away}
@@ -26,7 +37,7 @@ Les probabilités doivent totaliser exactement 100.`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
@@ -39,19 +50,30 @@ Les probabilités doivent totaliser exactement 100.`;
     const data = await response.json();
 
     if (!data.content || !data.content[0]) {
-      return res.status(500).json({ error: JSON.stringify(data) });
+      return new Response(JSON.stringify({ error: JSON.stringify(data) }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
     }
 
     const text = data.content[0].text;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return res.status(500).json({ error: 'JSON non trouve: ' + text });
+    if (!jsonMatch) {
+      return new Response(JSON.stringify({ error: 'JSON non trouve: ' + text }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
 
     const prono = JSON.parse(jsonMatch[0]);
-    res.status(200).json(prono);
+    return new Response(JSON.stringify(prono), {
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
 
   } catch(e) {
-    res.status(500).json({ error: e.message });
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
   }
-};
-
-module.exports = handler;
+}
