@@ -261,6 +261,7 @@
   <div class="nav-links">
     <button class="nav-link active" id="nav-home" onclick="showPage('home')">Accueil</button>
     <button class="nav-link" id="nav-how" onclick="showPage('how')">Comment ça marche</button>
+    <button class="nav-link" id="nav-faq" onclick="showPage('faq')">FAQ</button>
     <button class="nav-link" id="nav-contact" onclick="showPage('contact')">Contact</button>
   </div>
   <div class="nav-right" id="nav-right">
@@ -275,6 +276,7 @@
 <div class="mobile-menu" id="mobile-menu">
   <button class="mobile-nav-link" id="mob-home" onclick="showPage('home');closeMobileMenu()">🏠 Accueil</button>
   <button class="mobile-nav-link" id="mob-how" onclick="showPage('how');closeMobileMenu()">❓ Comment ça marche</button>
+  <button class="mobile-nav-link" id="mob-faq" onclick="showPage('faq');closeMobileMenu()">❓ FAQ</button>
   <button class="mobile-nav-link" id="mob-contact" onclick="showPage('contact');closeMobileMenu()">✉️ Contact</button>
   <div class="mobile-menu-bottom" id="mob-nav-right">
     <button style="font-size:15px;font-weight:500;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:14px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;width:100%;" onclick="showPage('login');closeMobileMenu()">Se connecter</button>
@@ -1393,6 +1395,7 @@
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
     if (name === 'how') document.getElementById('nav-how').classList.add('active');
+    if (name === 'faq') { const el = document.getElementById('nav-faq'); if(el) el.classList.add('active'); }
     if (name === 'contact') document.getElementById('nav-contact').classList.add('active');
     window.scrollTo(0, 0);
     closeDropdown();
