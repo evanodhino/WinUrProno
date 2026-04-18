@@ -877,11 +877,11 @@
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Forme équipe 1</label>
-            <input id="admin-form-home" class="form-input" type="text" placeholder="VVVDV"/>
+            <input id="admin-form-home" class="form-input" type="text" placeholder="VVVDV" maxlength="5"/>
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Forme équipe 2</label>
-            <input id="admin-form-away" class="form-input" type="text" placeholder="DVVND"/>
+            <input id="admin-form-away" class="form-input" type="text" placeholder="DVVND" maxlength="5"/>
           </div>
           <div style="display:flex;align-items:center;gap:10px;padding-top:24px;">
             <input id="admin-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
@@ -1839,8 +1839,8 @@
     const away = document.getElementById('admin-away').value.trim();
     const date = document.getElementById('admin-date').value;
     const heure = document.getElementById('admin-heure').value;
-    const formHome = document.getElementById('admin-form-home').value.trim().toUpperCase();
-    const formAway = document.getElementById('admin-form-away').value.trim().toUpperCase();
+    const formHome = document.getElementById('admin-form-home').value.trim().toUpperCase().slice(0, 5);
+    const formAway = document.getElementById('admin-form-away').value.trim().toUpperCase().slice(0, 5);
     const isFree = document.getElementById('admin-is-free').checked;
     const err = document.getElementById('admin-form-error');
     const suc = document.getElementById('admin-form-success');
