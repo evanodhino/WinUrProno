@@ -1161,9 +1161,23 @@
       
       const { data: matches, error } = await sb
         .from('matches')
-        .select('*, pronos(*)')
+        .select('*')
         .eq('date', today)
         .order('heure', { ascending: true });
+
+      if (!error && matches && matches.length > 0) {
+        const matchIds = matches.map(m => m.id);
+        const { data: pronos } = await sb
+          .from('pronos')
+          .select('*')
+          .in('match_id', matchIds);
+        
+        if (pronos) {
+          matches.forEach(match => {
+            match.pronos = pronos.filter(p => p.match_id === match.id);
+          });
+        }
+      }
 
       console.log('Matches found:', matches ? matches.length : 0);
       console.log('Error:', error ? JSON.stringify(error) : 'none');
