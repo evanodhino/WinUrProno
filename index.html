@@ -1506,7 +1506,7 @@
     btn.textContent = 'Créer mon compte gratuitement';
     btn.disabled = false;
     if (error) {
-      if (error.message.includes('already registered') || error.message.includes('already exists') || error.message.includes('duplicate')) {
+      if (error.message.includes('already registered') || error.message.includes('already exists') || error.message.includes('duplicate') || error.message.includes('email') || error.status === 422) {
         showError('signup-error', 'Cet email est déjà utilisé. Connecte-toi plutôt !');
       } else {
         showError('signup-error', error.message);
