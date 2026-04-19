@@ -252,6 +252,7 @@
     .forgot span { font-size: 12px; color: var(--blue-light); cursor: pointer; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://js.stripe.com/v3/"></script>
 
 </head>
 <body>
@@ -466,8 +467,8 @@
       <div class="pricing-sub">Choisis la formule qui te convient</div>
       <div class="plans">
         <div class="plan" onclick="handlePlan('gratuit')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.borderColor='#3A4A6A';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''"><div class="plan-name">Gratuit</div><div class="plan-price">0€</div><div class="plan-desc">3 pronos / jour</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Commencer →</div></div>
-        <div class="plan popular" onclick="handlePlan('pro')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''"><div class="popular-badge">Populaire</div><div class="plan-name">Pro</div><div class="plan-price">4,99€<span>/mois</span></div><div class="plan-desc">Pronos illimités + analyses</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Choisir Pro →</div></div>
-        <div class="plan" onclick="handlePlan('annuel')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.borderColor='#3A4A6A';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''"><div class="plan-name">Annuel</div><div class="plan-price">39€<span>/an</span></div><div class="plan-desc">2 mois offerts</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Meilleur prix →</div></div>
+        <div class="plan popular" onclick="handlePlan('pro')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''"><div class="popular-badge">Populaire</div><div class="plan-name">Pro</div><div class="plan-price">9,99€<span>/mois</span></div><div class="plan-desc">Pronos illimités + analyses</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Choisir Pro →</div></div>
+        <div class="plan" onclick="handlePlan('annuel')" style="cursor:pointer;transition:border-color 0.2s,transform 0.15s;" onmouseover="this.style.borderColor='#3A4A6A';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''"><div class="plan-name">Annuel</div><div class="plan-price">60€<span>/an</span></div><div class="plan-desc">Économisez 60€/an · soit 5€/mois</div><div style="margin-top:10px;font-size:11px;color:var(--blue-light);">Meilleur prix →</div></div>
       </div>
     </div>
   </div>
@@ -608,7 +609,7 @@
           </div>
           <div class="auth-left-perk">
             <div class="auth-left-perk-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
-            <div class="auth-left-perk-text"><strong>Passage Pro quand tu veux</strong>Débloque tous les pronos pour 4,99€/mois</div>
+            <div class="auth-left-perk-text"><strong>Passage Pro quand tu veux</strong>Débloque tous les pronos pour 9,99€/mois</div>
           </div>
         </div>
       </div>
@@ -683,23 +684,23 @@
           </div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">4,99€</div>
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">9,99€</div>
           <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par mois</div>
           <button onclick="activatePlan('pro')" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Pro</button>
         </div>
       </div>
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Annuel <span style="font-size:12px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:2px 8px;border-radius:99px;">-33%</span></div>
-          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">Tout le Pro · 2 mois offerts · Priorité nouvelles fonctionnalités</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Annuel <span style="font-size:12px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:2px 8px;border-radius:99px;">-50%</span></div>
+          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">Tout le Pro · Économisez 60€/an · soit 5€/mois · Priorité nouvelles fonctionnalités</div>
           <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
             <span style="font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:3px 8px;border-radius:99px;">✓ Meilleur prix</span>
             <span style="font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:3px 8px;border-radius:99px;">✓ 2 mois gratuits</span>
           </div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">39€</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par an · soit 3,25€/mois</div>
+          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">60€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par an · soit 5€/mois</div>
           <button onclick="activatePlan('annuel')" style="font-size:13px;font-weight:500;background:none;color:var(--text);border:0.5px solid var(--border);padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Annuel</button>
         </div>
       </div>
@@ -1193,7 +1194,7 @@
           <span style="font-size:14px;font-weight:500;color:var(--text);">Quelle est la différence entre Gratuit et Pro ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Le plan Gratuit donne accès à 3 pronostics par jour. Le plan Pro à 4,99€/mois débloque tous les pronostics sans limite, pour tous les sports et toutes les compétitions disponibles.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Le plan Gratuit donne accès à 3 pronostics par jour. Le plan Pro à 9,99€/mois débloque tous les pronostics sans limite, pour tous les sports et toutes les compétitions disponibles.</div>
       </div>
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
@@ -1370,7 +1371,7 @@
           <div class="locked-overlay">
             <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <span class="locked-text">Prono réservé aux abonnés</span>
-            <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 4,99€/mois</button>
+            <button class="btn-unlock" onclick="handlePlan('pro')">Débloquer — 9,99€/mois</button>
           </div>` : ''}
         `;
         container.appendChild(card);
@@ -1631,12 +1632,12 @@
       hero_title: "Les meilleurs pronostics<br><span>generes par l IA</span>",
       hero_sub: "Notre IA analyse des milliers de statistiques. Football, tennis, basket, MMA, boxe et plus.",
       free_badge: "Gratuit", locked_text: "Prono reserve aux abonnes",
-      unlock_btn: "Debloquer - 4,99 euros/mois",
+      unlock_btn: "Debloquer - 9,99€/mois",
       conf_label: "Confiance IA",
       pricing_title: "Accede a tous les pronos IA",
       pricing_sub: "Choisis la formule qui te convient",
       plan_free: "Gratuit", plan_pro: "Pro", plan_annual: "Annuel",
-      plan_free_desc: "3 pronos / jour", plan_pro_desc: "Pronos illimites + analyses", plan_annual_desc: "2 mois offerts"
+      plan_free_desc: "3 pronos / jour", plan_pro_desc: "Pronos illimites + analyses", plan_annual_desc: "Économisez 60€/an · soit 5€/mois"
     },
     en: {
       nav_home: 'Home', nav_how: 'How it works', nav_contact: 'Contact',
@@ -1650,7 +1651,7 @@
       pricing_title: 'Access all AI predictions',
       pricing_sub: 'Choose the plan that suits you',
       plan_free: 'Free', plan_pro: 'Pro', plan_annual: 'Annual',
-      plan_free_desc: '3 predictions / day', plan_pro_desc: 'Unlimited + analysis', plan_annual_desc: '2 months free',
+      plan_free_desc: '3 predictions / day', plan_pro_desc: 'Unlimited + analysis', plan_annual_desc: 'Save €60/year',
     },
     es: {
       nav_home: 'Inicio', nav_how: 'Cómo funciona', nav_contact: 'Contacto',
@@ -1659,12 +1660,12 @@
       hero_title: 'Los mejores pronósticos<br><span>generados por IA</span>',
       hero_sub: 'Nuestra IA analiza miles de estadísticas para predecir resultados. Fútbol, tenis, baloncesto, MMA, boxeo y más.',
       free_badge: 'Gratis', locked_text: 'Pronóstico para suscriptores',
-      unlock_btn: 'Desbloquear — 4,99€/mes',
+      unlock_btn: 'Desbloquear — 9,99€/mes',
       conf_label: 'Confianza IA',
       pricing_title: 'Accede a todos los pronósticos',
       pricing_sub: 'Elige el plan que te convenga',
       plan_free: 'Gratis', plan_pro: 'Pro', plan_annual: 'Anual',
-      plan_free_desc: '3 pronósticos / día', plan_pro_desc: 'Ilimitado + análisis', plan_annual_desc: '2 meses gratis',
+      plan_free_desc: '3 pronósticos / día', plan_pro_desc: 'Ilimitado + análisis', plan_annual_desc: '5 meses gratis',
     },
     de: {
       nav_home: 'Startseite', nav_how: 'Wie es funktioniert', nav_contact: 'Kontakt',
@@ -1673,12 +1674,12 @@
       hero_title: 'Die besten Prognosen<br><span>von KI generiert</span>',
       hero_sub: 'Unsere KI analysiert Tausende von Statistiken. Fußball, Tennis, Basketball, MMA, Boxen und mehr.',
       free_badge: 'Kostenlos', locked_text: 'Prognose nur für Abonnenten',
-      unlock_btn: 'Freischalten — 4,99€/Monat',
+      unlock_btn: 'Freischalten — 9,99€/Monat',
       conf_label: 'KI-Vertrauen',
       pricing_title: 'Alle KI-Prognosen freischalten',
       pricing_sub: 'Wähle deinen Plan',
       plan_free: 'Kostenlos', plan_pro: 'Pro', plan_annual: 'Jährlich',
-      plan_free_desc: '3 Prognosen / Tag', plan_pro_desc: 'Unbegrenzt + Analysen', plan_annual_desc: '2 Monate gratis',
+      plan_free_desc: '3 Prognosen / Tag', plan_pro_desc: 'Unbegrenzt + Analysen', plan_annual_desc: '5 Monate gratis',
     },
     it: {
       nav_home: 'Home', nav_how: 'Come funziona', nav_contact: 'Contatto',
@@ -1687,12 +1688,12 @@
       hero_title: "I migliori pronostici<br><span>generati dall'IA</span>",
       hero_sub: 'La nostra IA analizza migliaia di statistiche. Calcio, tennis, basket, MMA, boxe e altro.',
       free_badge: 'Gratuito', locked_text: 'Pronostico per abbonati',
-      unlock_btn: 'Sblocca — 4,99€/mese',
+      unlock_btn: 'Sblocca — 9,99€/mese',
       conf_label: 'Fiducia IA',
       pricing_title: 'Accedi a tutti i pronostici',
       pricing_sub: 'Scegli il piano adatto a te',
       plan_free: 'Gratuito', plan_pro: 'Pro', plan_annual: 'Annuale',
-      plan_free_desc: '3 pronostici / giorno', plan_pro_desc: 'Illimitato + analisi', plan_annual_desc: '2 mesi gratis',
+      plan_free_desc: '3 pronostici / giorno', plan_pro_desc: 'Illimitato + analisi', plan_annual_desc: '5 mesi gratis',
     },
     pt: {
       nav_home: 'Início', nav_how: 'Como funciona', nav_contact: 'Contato',
@@ -1701,12 +1702,12 @@
       hero_title: 'Os melhores prognósticos<br><span>gerados por IA</span>',
       hero_sub: 'Nossa IA analisa milhares de estatísticas. Futebol, tênis, basquete, MMA, boxe e mais.',
       free_badge: 'Grátis', locked_text: 'Prognóstico para assinantes',
-      unlock_btn: 'Desbloquear — 4,99€/mês',
+      unlock_btn: 'Desbloquear — 9,99€/mês',
       conf_label: 'Confiança IA',
       pricing_title: 'Acesse todos os prognósticos',
       pricing_sub: 'Escolha o plano ideal',
       plan_free: 'Grátis', plan_pro: 'Pro', plan_annual: 'Anual',
-      plan_free_desc: '3 prognósticos / dia', plan_pro_desc: 'Ilimitado + análises', plan_annual_desc: '2 meses grátis',
+      plan_free_desc: '3 prognósticos / dia', plan_pro_desc: 'Ilimitado + análises', plan_annual_desc: '5 meses grátis',
     },
     ar: {
       nav_home: "الرئيسية", nav_how: "كيف يعمل", nav_contact: "اتصل بنا",
@@ -1720,7 +1721,7 @@
       pricing_title: "الوصول الى جميع التوقعات",
       pricing_sub: "اختر الخطة المناسبة",
       plan_free: "مجاني", plan_pro: "برو", plan_annual: "سنوي",
-      plan_free_desc: "3 توقعات / يوم", plan_pro_desc: "غير محدود + تحليلات", plan_annual_desc: "شهران مجانا"
+      plan_free_desc: "3 توقعات / يوم", plan_pro_desc: "غير محدود + تحليلات", plan_annual_desc: "5 أشهر مجاناً"
     }
   };
 
@@ -2093,12 +2094,45 @@ Les probabilités doivent totaliser 100.`;
     }
   }
 
-  function activatePlan(plan) {
+  const STRIPE_PK = 'pk_test_51TNawX6OOFaWha7Pb1aSKGNvOCeU5Ef8LKl9AnYvWZpH6AH6nvAsPpRPSU3oT2b1Y8msZEd73uGoJD7JGJigatlT00YYgkBqw0';
+  const PRICE_MONTHLY = 'price_1TNbJA6OOFaWha7P3tKTjQlt';
+  const PRICE_ANNUAL = 'price_1TNrtf6OOFaWha7PKCBhJEFt';
+
+  async function activatePlan(plan) {
     if (plan === 'gratuit') {
-        showPage('home');
-    return;
+      showPage('home');
+      return;
     }
-    alert('Paiement bientôt disponible ! On branche Stripe prochainement. 🚀');
+
+    if (!currentUser) {
+      showPage('signup');
+      return;
+    }
+
+    const priceId = plan === 'annuel' ? PRICE_ANNUAL : PRICE_MONTHLY;
+
+    try {
+      const stripe = Stripe(STRIPE_PK);
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          email: currentUser.email,
+          successUrl: window.location.origin + '/#home',
+          cancelUrl: window.location.origin + '/#abonnement'
+        })
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Erreur lors du paiement. Réessaie.');
+      }
+    } catch(e) {
+      console.log('Stripe error:', e);
+      alert('Erreur lors du paiement. Réessaie.');
+    }
   }
 
     
