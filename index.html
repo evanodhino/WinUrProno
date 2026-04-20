@@ -1369,7 +1369,7 @@
             </div>
             `}
           </div>
-          ${!isFree ? `
+          ${isLocked ? `
           <div class="locked-overlay">
             <div class="lock-circle"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <span class="locked-text">Prono réservé aux abonnés</span>
@@ -2159,7 +2159,8 @@ Les probabilités doivent totaliser 100.`;
       currentUser = null;
     }
     updateNav();
-    loadAndDisplayMatches();
+    // Reload matches to update paywall status
+    if (document.getElementById("cards-container")) loadAndDisplayMatches();
   });
 
   window.addEventListener('load', async function() {
