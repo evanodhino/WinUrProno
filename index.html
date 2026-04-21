@@ -2002,6 +2002,15 @@ Les probabilités doivent totaliser 100.`;
       if (prono.error) throw new Error(prono.error);
 
       // Save to Supabase via fetch
+      // Force no draw for certain sports
+      const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe'];
+      if (noDrawSports.includes(sport)) {
+        prono.proba_draw = 0;
+        const total = prono.proba_home + prono.proba_away;
+        prono.proba_home = Math.round(prono.proba_home * 100 / total);
+        prono.proba_away = 100 - prono.proba_home;
+      }
+
       const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/pronos?on_conflict=match_id`, {
         method: 'POST',
         headers: {
@@ -2015,7 +2024,7 @@ Les probabilités doivent totaliser 100.`;
           verdict: prono.verdict,
           analyse: prono.analyse,
           proba_home: prono.proba_home,
-          proba_draw: prono.proba_draw || 0,
+          proba_draw: prono.proba_draw,
           proba_away: prono.proba_away,
           confiance: prono.confiance,
           is_free: false
