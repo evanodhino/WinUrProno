@@ -305,7 +305,7 @@
   </div>
 
   <div class="cards-wrap">
-    <p class="section-label">Matchs du jour — Mercredi 8 avril 2026</p>
+    <p class="section-label" id="matches-date-label">Matchs du jour</p>
     <div class="cards" id="cards-container">
     </div>
   </div>
@@ -1281,6 +1281,14 @@
   }
 
   async function loadAndDisplayMatches() {
+    // Update date label
+    const dateLabel = document.getElementById('matches-date-label');
+    if (dateLabel) {
+      const now = new Date();
+      const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+      const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+      dateLabel.textContent = 'Matchs du jour — ' + days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+    }
     const container = document.getElementById('cards-container');
     if (!container) return;
 
