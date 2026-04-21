@@ -884,6 +884,14 @@
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Forme équipe 2</label>
             <input id="admin-form-away" class="form-input" type="text" placeholder="DVVND" maxlength="5"/>
           </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 1 (blessés, effectif, infos...)</label>
+            <textarea id="admin-contexte-home" class="form-input" placeholder="Ex: Sans Mbappé (blessé), Vinícius en forme, 3e dans le championnat..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 2 (blessés, effectif, infos...)</label>
+            <textarea id="admin-contexte-away" class="form-input" placeholder="Ex: Haaland incertain, équipe en pleine confiance, 2e au classement..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+          </div>
           <div style="display:flex;align-items:center;gap:10px;padding-top:24px;">
             <input id="admin-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
             <label style="font-size:13px;color:var(--text-mid);cursor:pointer;">Prono gratuit</label>
@@ -1224,6 +1232,14 @@
     </div>
   </div>
   <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span></footer>
+</div>
+
+<!-- ===== MODAL ANALYSE COMPLETE ===== -->
+<div id="modal-analyse" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;overflow-y:auto;padding:20px;">
+  <div style="max-width:600px;margin:40px auto;background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:32px;position:relative;">
+    <button onclick="closeAnalysis()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-mid);cursor:pointer;font-size:20px;">✕</button>
+    <div id="modal-content"></div>
+  </div>
 </div>
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   const API_SPORTS_KEY = '1198041d6af647866b261840e19aead8';
@@ -1870,7 +1886,11 @@
       logo_away: '',
       is_free: isFree,
       form_home: formHome,
-      form_away: formAway
+      form_away: formAway,
+      contexte_home: document.getElementById('admin-contexte-home').value.trim(),
+      contexte_away: document.getElementById('admin-contexte-away').value.trim(),
+      contexte_home: document.getElementById('admin-contexte-home').value.trim(),
+      contexte_away: document.getElementById('admin-contexte-away').value.trim()
     });
 
     if (error) {
@@ -1890,6 +1910,10 @@
     document.getElementById('admin-heure').value = '';
     document.getElementById('admin-form-home').value = '';
     document.getElementById('admin-form-away').value = '';
+    document.getElementById('admin-contexte-home').value = '';
+    document.getElementById('admin-contexte-away').value = '';
+    document.getElementById('admin-contexte-home').value = '';
+    document.getElementById('admin-contexte-away').value = '';
     document.getElementById('admin-is-free').checked = false;
 
     loadAdminMatches();
@@ -1925,7 +1949,7 @@
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0;">
-          <button onclick="generateAnalysis(this)" data-id="${match.id}" data-home="${match.equipe_home}" data-away="${match.equipe_away}" data-sport="${match.sport}" data-comp="${match.competition}" data-fh="${match.form_home || ''}" data-fa="${match.form_away || ''}" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">IA Analyser</button>
+          <button onclick="generateAnalysis(this)" data-id="${match.id}" data-home="${match.equipe_home}" data-away="${match.equipe_away}" data-sport="${match.sport}" data-comp="${match.competition}" data-fh="${match.form_home || ''}" data-fa="${match.form_away || ''}" data-ch="${match.contexte_home || ''}" data-ca="${match.contexte_away || ''}" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">IA Analyser</button>
           <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
         </div>
       </div>
@@ -1940,6 +1964,8 @@
     const competition = btn.dataset.comp;
     const formHome = btn.dataset.fh;
     const formAway = btn.dataset.fa;
+    const contexteHome = btn.dataset.ch || '';
+    const contexteAway = btn.dataset.ca || '';
     btn.textContent = 'Génération...';
     btn.disabled = true;
 
@@ -1969,7 +1995,7 @@ Les probabilités doivent totaliser 100.`;
           'Content-Type': 'application/json',
           'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ'
         },
-        body: JSON.stringify({ home, away, sport, competition, formHome, formAway })
+        body: JSON.stringify({ home, away, sport, competition, formHome, formAway, contexteHome, contexteAway })
       });
 
       const prono = await response.json();
@@ -2086,6 +2112,72 @@ Les probabilités doivent totaliser 100.`;
     toast.textContent = msg;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 4000);
+  }
+
+  function showFullAnalysis(data) {
+    const modal = document.getElementById('modal-analyse');
+    const content = document.getElementById('modal-content');
+    const stars = Array.from({length:5}, (_,i) => 
+      `<span style="color:${i < data.confiance ? '#FBBF24' : '#2A3040'};">★</span>`
+    ).join('');
+    
+    content.innerHTML = `
+      <div style="margin-bottom:24px;">
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">${data.competition} · ${data.sport}</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;">${data.home} vs ${data.away}</h2>
+        <div style="font-size:14px;color:var(--blue-light);font-weight:500;">${data.verdict}</div>
+      </div>
+
+      <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Analyse IA</div>
+        <p style="font-size:14px;color:var(--text);line-height:1.7;">${data.analyse}</p>
+      </div>
+
+      <div style="background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;">
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Probabilités</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:var(--text);">${data.home}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:120px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;">
+                <div style="width:${data.proba_home}%;height:100%;background:var(--blue);border-radius:99px;"></div>
+              </div>
+              <span style="font-size:13px;font-weight:600;color:var(--blue-light);min-width:32px;text-align:right;">${data.proba_home}%</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:var(--text);">Nul</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:120px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;">
+                <div style="width:${data.proba_draw}%;height:100%;background:#7B8DB0;border-radius:99px;"></div>
+              </div>
+              <span style="font-size:13px;font-weight:600;color:var(--text-mid);min-width:32px;text-align:right;">${data.proba_draw}%</span>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:13px;color:var(--text);">${data.away}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:120px;height:6px;background:var(--border);border-radius:99px;overflow:hidden;">
+                <div style="width:${data.proba_away}%;height:100%;background:#F87171;border-radius:99px;"></div>
+              </div>
+              <span style="font-size:13px;font-weight:600;color:#F87171;min-width:32px;text-align:right;">${data.proba_away}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border:0.5px solid var(--border);border-radius:12px;padding:16px 20px;">
+        <span style="font-size:13px;color:var(--text-muted);">Indice de confiance IA</span>
+        <div style="font-size:20px;">${stars}</div>
+      </div>
+    `;
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeAnalysis() {
+    document.getElementById('modal-analyse').style.display = 'none';
+    document.body.style.overflow = '';
   }
 
   async function logout() {
