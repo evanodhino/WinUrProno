@@ -1330,6 +1330,13 @@
       matches.forEach(match => {
         const prono = match.pronos && match.pronos.length > 0 ? match.pronos[0] : null; console.log('Prono for', match.equipe_home, ':', prono);
         const isFree = match.is_free;
+        const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe'];
+        if (prono && noDrawSports.includes(match.sport)) {
+          const total = prono.proba_home + prono.proba_away;
+          prono.proba_home = Math.round(prono.proba_home * 100 / total);
+          prono.proba_away = 100 - prono.proba_home;
+          prono.proba_draw = 0;
+        }
         const tag = sportTags[match.sport] || 'tag-foot';
         const label = sportLabels[match.sport] || 'Sport';
         const stars = prono ? Array.from({length:5}, (_,i) =>
