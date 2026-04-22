@@ -862,7 +862,7 @@
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 1 *</label>
-            <input id="admin-home" class="form-input" type="text" placeholder="PSG, Nadal..."/>
+            <div style="position:relative;"><input id="admin-home" class="form-input" type="text" placeholder="PSG, Nadal..."/>
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 2 *</label>
@@ -2202,6 +2202,60 @@ Les probabilités doivent totaliser 100.`;
   function closeAnalysis() {
     document.getElementById('modal-analyse').style.display = 'none';
     document.body.style.overflow = '';
+  }
+
+  async function searchEquipe(input, side) {
+    const query = input.value.trim();
+    const dropdownId = 'autocomplete-' + side;
+    const dropdown = document.getElementById(dropdownId);
+    
+    if (query.length < 2) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    const { data: equipes } = await sb
+      .from('equipes')
+      .select('*')
+      .ilike('nom', `%${query}%`)
+      .limit(5);
+
+    if (!equipes || equipes.length === 0) {
+      dropdown.style.display = 'none';
+      return;
+    }
+
+    dropdown.innerHTML = equipes.map(e => `
+      <div onclick="selectEquipe('${side}', ${JSON.stringify(e).replace(/"/g, '&quot;')})" 
+           style="padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text);border-bottom:0.5px solid var(--border-dim);"
+           onmouseover="this.style.background='var(--surface)'" 
+           onmouseout="this.style.background=''">
+        ${e.nom} <span style="font-size:11px;color:var(--text-muted);">${e.sport || ''}</span>
+      </div>
+    `).join('');
+    dropdown.style.display = 'block';
+  }
+
+  function selectEquipe(side, equipe) {
+    document.getElementById('admin-' + side).value = equipe.nom;
+    document.getElementById('autocomplete-' + side).style.display = 'none';
+    
+    const formSuffix = side === 'home' ? 'home' : 'away';
+    if (equipe.forme) document.getElementById('admin-form-' + formSuffix).value = equipe.forme;
+    if (equipe.contexte) document.getElementById('admin-contexte-' + formSuffix).value = equipe.contexte;
+    if (equipe.logo) document.getElementById('admin-logo-' + formSuffix).value = equipe.logo;
+  }
+
+  async function saveEquipe(nom, sport, logo, forme, contexte) {
+    if (!nom) return;
+    await sb.from('equipes').upsert({
+      nom,
+      sport,
+      logo,
+      forme,
+      contexte,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'nom' });
   }
 
   async function logout() {
