@@ -862,12 +862,12 @@
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 1 *</label>
-            <div style="position:relative;"><input id="admin-home" class="form-input" type="text" placeholder="PSG, Nadal..."/>
-          </div>
+            <input id="admin-home" class="form-input" type="text" placeholder="Ex: PSG" autocomplete="off" oninput="searchEquipe(this, 'home')"/>
+            <div id="autocomplete-home" style="position:absolute;z-index:100;width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;"></div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 2 *</label>
-            <input id="admin-away" class="form-input" type="text" placeholder="Lyon, Alcaraz..."/>
-          </div>
+            <input id="admin-away" class="form-input" type="text" placeholder="Ex: Marseille" autocomplete="off" oninput="searchEquipe(this, 'away')"/>
+            <div id="autocomplete-away" style="position:absolute;z-index:100;width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;"></div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Date *</label>
             <input id="admin-date" class="form-input" type="date"/>
@@ -911,6 +911,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
   <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('home')">Retour au site</span></footer>
 </div>
@@ -1173,7 +1174,7 @@
 </div>
 
 <!-- ===== FAQ ===== -->
-<div class="page" id="page-faq">
+<div class="page" id="page-faq" style="width:100%;min-height:100vh;display:block;">
   <div style="max-width:800px;margin:0 auto;padding:52px var(--pad) 60px;">
     <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Retour
