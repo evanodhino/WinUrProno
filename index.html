@@ -863,11 +863,13 @@
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 1 *</label>
             <input id="admin-home" class="form-input" type="text" placeholder="Ex: PSG" autocomplete="off" oninput="searchEquipe(this, 'home')"/>
-            <div id="autocomplete-home" style="position:absolute;z-index:100;width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;"></div>
+            <div id="autocomplete-home" style="position:absolute;z-index:100;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;min-width:200px;"></div>
+          </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 2 *</label>
             <input id="admin-away" class="form-input" type="text" placeholder="Ex: Marseille" autocomplete="off" oninput="searchEquipe(this, 'away')"/>
-            <div id="autocomplete-away" style="position:absolute;z-index:100;width:100%;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;"></div>
+            <div id="autocomplete-away" style="position:absolute;z-index:100;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;min-width:200px;"></div>
+          </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Date *</label>
             <input id="admin-date" class="form-input" type="date"/>
@@ -886,11 +888,11 @@
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 1 (blessés, effectif, infos...)</label>
-            <textarea id="admin-contexte-home" class="form-input" placeholder="Ex: Sans Mbappé (blessé), Vinícius en forme, 3e dans le championnat..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+            <textarea id="admin-contexte-home" class="form-input" placeholder="Ex: Sans Mbappé (blessé), Vinícius en forme..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 2 (blessés, effectif, infos...)</label>
-            <textarea id="admin-contexte-away" class="form-input" placeholder="Ex: Haaland incertain, équipe en pleine confiance, 2e au classement..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+            <textarea id="admin-contexte-away" class="form-input" placeholder="Ex: Haaland incertain, équipe en pleine confiance..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
           </div>
           <div style="display:flex;align-items:center;gap:10px;padding-top:24px;">
             <input id="admin-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
@@ -911,7 +913,6 @@
         </div>
       </div>
     </div>
-  </div>
   </div>
   <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('home')">Retour au site</span></footer>
 </div>
@@ -1174,65 +1175,73 @@
 </div>
 
 <!-- ===== FAQ ===== -->
-<div class="page" id="page-faq" style="width:100%;min-height:100vh;display:block;">
-  <div style="max-width:800px;margin:0 auto;padding:52px var(--pad) 60px;">
+<div class="page" id="page-faq">
+<nav style="display:none;"></nav>
+  <div style="max-width:800px;margin:40px auto;padding:0 var(--pad) 60px;">
     <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Retour
     </button>
     <div style="text-align:center;margin-bottom:48px;">
-      <h1 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;margin-bottom:12px;">Questions fréquentes</h1>
-      <p style="font-size:15px;color:var(--text-mid);max-width:480px;margin:0 auto;line-height:1.7;">Tout ce que tu dois savoir sur WinUrProno et nos pronostics.</p>
+      <h1 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#F1F5FF;margin-bottom:12px;">Questions fréquentes</h1>
+      <p style="font-size:15px;color:#A0AECB;max-width:480px;margin:0 auto;line-height:1.7;">Tout ce que tu dois savoir sur WinUrProno et nos pronostics.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px;">
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
+
+      <div style="background:#131720;border:0.5px solid #2A3349;border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;font-weight:500;color:var(--text);">Comment sont générés les pronostics ?</span>
+          <span style="font-size:14px;font-weight:500;color:#F1F5FF;">Comment sont générés les pronostics ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Nos pronostics sont générés par une intelligence artificielle avancée qui analyse les statistiques des équipes, leur forme récente, l'historique des confrontations et de nombreux autres facteurs pour produire une analyse détaillée et des probabilités précises.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:#A0AECB;line-height:1.7;">Nos pronostics sont générés par une intelligence artificielle avancée qui analyse les statistiques des équipes, leur forme récente, l'historique des confrontations et de nombreux autres facteurs pour produire une analyse détaillée et des probabilités précises.</div>
       </div>
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
+
+      <div style="background:#131720;border:0.5px solid #2A3349;border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;font-weight:500;color:var(--text);">Les pronostics sont-ils garantis ?</span>
+          <span style="font-size:14px;font-weight:500;color:#F1F5FF;">Les pronostics sont-ils garantis ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Non. WinUrProno est un site de divertissement. Aucun pronostic sportif ne peut garantir un résultat. Notre IA fournit des analyses basées sur des données statistiques mais le sport reste imprévisible par nature.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:#A0AECB;line-height:1.7;">Non. WinUrProno est un site de divertissement. Aucun pronostic sportif ne peut garantir un résultat. Notre IA fournit des analyses basées sur des données statistiques mais le sport reste imprévisible par nature.</div>
       </div>
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
+
+      <div style="background:#131720;border:0.5px solid #2A3349;border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;font-weight:500;color:var(--text);">Quelle est la différence entre Gratuit et Pro ?</span>
+          <span style="font-size:14px;font-weight:500;color:#F1F5FF;">Quelle est la différence entre Gratuit et Pro ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Le plan Gratuit donne accès à 3 pronostics par jour. Le plan Pro à 9,99€/mois débloque tous les pronostics sans limite, pour tous les sports et toutes les compétitions disponibles.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:#A0AECB;line-height:1.7;">Le plan Gratuit donne accès à 3 pronostics par jour. Le plan Pro à 9,99€/mois débloque tous les pronostics sans limite, pour tous les sports et toutes les compétitions disponibles.</div>
       </div>
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
+
+      <div style="background:#131720;border:0.5px solid #2A3349;border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;font-weight:500;color:var(--text);">Quels sports sont couverts ?</span>
+          <span style="font-size:14px;font-weight:500;color:#F1F5FF;">Quels sports sont couverts ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Football, Tennis, Basketball, Rugby, MMA et Boxe. Nous couvrons les principales compétitions mondiales : Ligue 1, Champions League, Premier League, NBA, Roland Garros, UFC et bien d'autres.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:#A0AECB;line-height:1.7;">Football, Tennis, Basketball, Rugby, MMA et Boxe. Nous couvrons les principales compétitions mondiales : Ligue 1, Champions League, Premier League, NBA, Roland Garros, UFC et bien d'autres.</div>
       </div>
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
+
+      <div style="background:#131720;border:0.5px solid #2A3349;border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;font-weight:500;color:var(--text);">Comment annuler mon abonnement ?</span>
+          <span style="font-size:14px;font-weight:500;color:#F1F5FF;">Comment annuler mon abonnement ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Depuis ton espace profil, rubrique "Mon abonnement". Résiliation immédiate, sans frais. Tu conserves l'accès Pro jusqu'à la fin de la période payée.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:#A0AECB;line-height:1.7;">Depuis ton espace profil, rubrique "Mon abonnement". Résiliation immédiate, sans frais. Tu conserves l'accès Pro jusqu'à la fin de la période payée.</div>
       </div>
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;">
+
+      <div style="background:#131720;border:0.5px solid #2A3349;border-radius:12px;overflow:hidden;">
         <div onclick="toggleFaq(this)" style="padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:14px;font-weight:500;color:var(--text);">Mes données sont-elles sécurisées ?</span>
+          <span style="font-size:14px;font-weight:500;color:#F1F5FF;">Mes données sont-elles sécurisées ?</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B8DB0" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div style="display:none;padding:0 20px 18px;font-size:13px;color:var(--text-mid);line-height:1.7;">Oui. Nous ne collectons que ton prénom et email. Ton mot de passe est chiffré. Nous ne vendons jamais tes données à des tiers. Conformément au RGPD, tu peux demander la suppression de ton compte à tout moment.</div>
+        <div style="display:none;padding:0 20px 18px;font-size:13px;color:#A0AECB;line-height:1.7;">Oui. Nous ne collectons que ton prénom et email. Ton mot de passe est chiffré. Nous ne vendons jamais tes données à des tiers. Conformément au RGPD, tu peux demander la suppression de ton compte à tout moment.</div>
       </div>
+
     </div>
     <div style="text-align:center;margin-top:40px;">
-      <p style="font-size:14px;color:var(--text-mid);margin-bottom:16px;">Tu n'as pas trouvé ta réponse ?</p>
-      <button onclick="showPage('contact')" style="font-size:14px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;">Contacter le support</button>
+      <p style="font-size:14px;color:#A0AECB;margin-bottom:16px;">Tu n'as pas trouvé ta réponse ?</p>
+      <button onclick="showPage('contact')" style="font-size:14px;font-weight:500;background:#2563EB;color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;">Contacter le support</button>
     </div>
   </div>
-  <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span></footer>
+  <footer style="text-align:center;padding:20px 24px 32px;font-size:12px;color:#7B8DB0;border-top:0.5px solid #1E2535;">WinUrProno © 2026 — <span style="color:#60A5FA;cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:#60A5FA;cursor:pointer;" onclick="showPage('cgu')">CGU</span></footer>
 </div>
 
 <!-- ===== MODAL ANALYSE COMPLETE ===== -->
