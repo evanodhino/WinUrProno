@@ -1,3 +1,14 @@
 {
-  "version": 2
+  "version": 2,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "x-robots-tag",
+          "value": "index"
+        }
+      ]
+    }
+  ]
 }
