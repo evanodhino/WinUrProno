@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text y='75' x='50' text-anchor='middle' font-size='60' fill='white'>W</text></svg>"/>
   <title>WinUrProno — Pronostics IA</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -1148,8 +1149,8 @@
             <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Email</div><div id="profil-email2" style="font-size:14px;color:var(--text);font-weight:500;"></div></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Abonnement</div><div style="font-size:14px;color:var(--green);font-weight:500;">Gratuit — 3 pronos/jour</div></div>
-            <button onclick="showPage('abonnement')" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Passer Pro</button>
+            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Abonnement</div><div id="profil-plan" style="font-size:14px;color:var(--green);font-weight:500;">Gratuit — 3 pronos/jour</div></div>
+            <button id="profil-upgrade-btn" onclick="showPage('abonnement')" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Passer Pro</button>
           </div>
         </div>
       </div>
@@ -2149,6 +2150,15 @@ Les probabilités doivent totaliser 100.`;
     if (els.email) els.email.textContent = currentUser.email;
     if (els.prenom) els.prenom.textContent = currentUser.prenom;
     if (els.email2) els.email2.textContent = currentUser.email;
+
+    const planEl = document.getElementById('profil-plan');
+    const upgradeBtn = document.getElementById('profil-upgrade-btn');
+    const isPro = currentUser.plan === 'pro' || currentUser.plan === 'annuel';
+    if (planEl) {
+      planEl.textContent = isPro ? 'Pro — Pronos illimités ✨' : 'Gratuit — 3 pronos/jour';
+      planEl.style.color = isPro ? 'var(--blue-light)' : 'var(--green)';
+    }
+    if (upgradeBtn) upgradeBtn.style.display = isPro ? 'none' : 'block';
   }
 
   async function loginWithGoogle() {
