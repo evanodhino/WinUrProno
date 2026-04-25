@@ -2519,8 +2519,26 @@ Auxerre"
   });
 
   window.addEventListener('load', async function() {
-    // Load real matches from API
-    loadAndDisplayMatches();
+    // Handle URL hash FIRST before anything else
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('page-' + hash)) {
+      showPage(hash, false);
+      if (hash === 'admin') {
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+          document.getElementById('admin-auth').style.display = 'none';
+          document.getElementById('admin-dashboard').style.display = 'block';
+          loadAdminMatches();
+        } else {
+          document.getElementById('admin-auth').style.display = 'block';
+          document.getElementById('admin-dashboard').style.display = 'none';
+        }
+      }
+    } else {
+      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
+    }
+
+    // Load real matches from API (only if on home page)
+    if (!hash || hash === 'home') loadAndDisplayMatches();
 
     // Check Supabase session
     const { data: { session } } = await sb.auth.getSession();
@@ -2542,24 +2560,7 @@ Auxerre"
       updateNav();
       showToast('🎉 Abonnement Pro activé ! Bienvenue !');
     }
-    // Handle URL hash for navigation
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById('page-' + hash)) {
-      showPage(hash, false);
-      if (hash === 'admin') {
-        // Check if admin was already logged in
-        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-          document.getElementById('admin-auth').style.display = 'none';
-          document.getElementById('admin-dashboard').style.display = 'block';
-          loadAdminMatches();
-        } else {
-          document.getElementById('admin-auth').style.display = 'block';
-          document.getElementById('admin-dashboard').style.display = 'none';
-        }
-      }
-    } else {
-      try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
-    }
+    // Hash already handled at start of load event
   });
 
 </script>
