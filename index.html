@@ -1467,7 +1467,7 @@
 
   // Handle browser back/forward buttons
   window.addEventListener('popstate', function(e) {
-    const page = e.state ? e.state.page : 'home';
+    const page = e.state ? e.state.page : (window.location.hash.replace('#','') || 'home');
     showPage(page, false);
     closeMobileMenu();
   });
