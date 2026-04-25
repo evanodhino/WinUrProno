@@ -2513,8 +2513,9 @@ Auxerre"
       currentUser = null;
     }
     updateNav();
-    // Reload matches to update paywall status
-    if (document.getElementById("cards-container")) loadAndDisplayMatches();
+    // Reload matches only if on home page
+    const activePage = document.querySelector('.page.active');
+    if (activePage && activePage.id === 'page-home') loadAndDisplayMatches();
   });
 
   window.addEventListener('load', async function() {
