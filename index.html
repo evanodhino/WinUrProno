@@ -905,6 +905,21 @@
         <p id="admin-form-success" style="display:none;font-size:13px;color:var(--green);background:rgba(52,211,153,0.1);border:0.5px solid rgba(52,211,153,0.3);border-radius:8px;padding:10px 14px;margin-top:12px;"></p>
         <button onclick="adminAddMatch()" style="margin-top:18px;font-size:14px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">+ Ajouter le match</button>
       </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;margin-bottom:28px;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;">⚡ Import rapide de matchs</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Colle les matchs un par ligne : <span style="color:var(--blue-light);">PSG vs Bayern · Real Madrid vs Arsenal · Lakers vs Celtics</span></p>
+        <textarea id="import-calendar-text" class="form-input" placeholder="PSG vs Bayern&#10;Real Madrid vs Arsenal&#10;Lakers vs Celtics&#10;Nadal vs Djokovic" style="resize:vertical;min-height:120px;line-height:1.6;margin-bottom:12px;"></textarea>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input id="import-date" class="form-input" type="date" style="width:auto;"/>
+          <input id="import-heure" class="form-input" type="time" style="width:auto;"/>
+          <input id="import-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
+          <label style="font-size:13px;color:var(--text-mid);">Pronos gratuits</label>
+        </div>
+        <p id="import-error" style="display:none;font-size:12px;color:var(--red);margin-top:8px;"></p>
+        <p id="import-success" style="display:none;font-size:13px;color:var(--green);background:rgba(52,211,153,0.1);border:0.5px solid rgba(52,211,153,0.3);border-radius:8px;padding:10px 14px;margin-top:12px;"></p>
+        <button onclick="importCalendar()" style="margin-top:14px;font-size:14px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:12px 28px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">⚡ Importer les matchs</button>
+      </div>
+
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
           <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);">Matchs programmés</h2>
@@ -2094,6 +2109,93 @@ Les probabilités doivent totaliser 100.`;
       btn.textContent = 'Erreur';
       btn.style.color = 'var(--red)';
       btn.disabled = false;
+    }
+  }
+
+  async function importCalendar() {
+    const text = document.getElementById('import-calendar-text').value.trim();
+    const date = document.getElementById('import-date').value;
+    const heure = document.getElementById('import-heure').value;
+    const isFree = document.getElementById('import-is-free').checked;
+    const err = document.getElementById('import-error');
+    const suc = document.getElementById('import-success');
+    err.style.display = 'none';
+    suc.style.display = 'none';
+
+    if (!text || !date || !heure) {
+      err.textContent = 'Remplis la date et l\'heure !';
+      err.style.display = 'block';
+      return;
+    }
+
+    const lines = text.split('\n').filter(l => l.trim());
+    const sportDetect = {
+      // Football
+      'PSG': 'foot', 'Real Madrid': 'foot', 'Barcelona': 'foot', 'Bayern': 'foot',
+      'Arsenal': 'foot', 'Chelsea': 'foot', 'Liverpool': 'foot', 'Manchester': 'foot',
+      'Juventus': 'foot', 'Inter': 'foot', 'Milan': 'foot', 'Marseille': 'foot',
+      'Lyon': 'foot', 'Monaco': 'foot', 'Lens': 'foot', 'Lille': 'foot',
+      // Basket
+      'Lakers': 'basket', 'Celtics': 'basket', 'Warriors': 'basket', 'Bulls': 'basket',
+      'Heat': 'basket', 'Nets': 'basket', 'Knicks': 'basket', 'Spurs': 'basket',
+      // Tennis
+      'Nadal': 'tennis', 'Djokovic': 'tennis', 'Federer': 'tennis', 'Alcaraz': 'tennis',
+      'Sinner': 'tennis', 'Medvedev': 'tennis', 'Zverev': 'tennis', 'Swiatek': 'tennis',
+      // MMA
+      'UFC': 'mma', 'Pereira': 'mma', 'Jones': 'mma', 'Adesanya': 'mma',
+      // Boxe
+      'Fury': 'boxe', 'Usyk': 'boxe', 'Joshua': 'boxe', 'Canelo': 'boxe',
+      // Rugby
+      'Toulouse': 'rugby', 'Leinster': 'rugby', 'Racing': 'rugby', 'Bordeaux': 'rugby'
+    };
+
+    const competitionDetect = {
+      'foot': 'Ligue 1', 'basket': 'NBA', 'tennis': 'ATP', 'mma': 'UFC', 
+      'boxe': 'Combat sans titre', 'rugby': 'Top 14'
+    };
+
+    let imported = 0;
+    let errors = 0;
+
+    for (const line of lines) {
+      const match = line.match(/(.+?)\s+vs\.?\s+(.+)/i);
+      if (!match) { errors++; continue; }
+
+      const home = match[1].trim();
+      const away = match[2].trim();
+
+      // Detect sport
+      let sport = 'foot';
+      for (const [key, val] of Object.entries(sportDetect)) {
+        if (home.includes(key) || away.includes(key)) { sport = val; break; }
+      }
+
+      const competition = competitionDetect[sport] || 'Ligue 1';
+
+      const { error } = await sb.from('matches').insert({
+        sport, competition,
+        equipe_home: home,
+        equipe_away: away,
+        date, heure,
+        logo_home: '', logo_away: '',
+        is_free: isFree,
+        form_home: '', form_away: '',
+        contexte_home: '', contexte_away: ''
+      });
+
+      if (error) errors++;
+      else imported++;
+    }
+
+    if (imported > 0) {
+      suc.textContent = '✓ ' + imported + ' match(s) importé(s) avec succès !';
+      suc.style.display = 'block';
+      document.getElementById('import-calendar-text').value = '';
+      loadAdminMatches();
+    }
+    if (errors > 0) {
+      err.textContent = errors + ' ligne(s) ignorée(s) — format incorrect.';
+      err.style.display = 'block';
     }
   }
 
