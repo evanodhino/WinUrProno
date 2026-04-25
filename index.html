@@ -2156,10 +2156,7 @@ Les probabilités doivent totaliser 100.`;
     };
 
     // Parse Flashscore format - extract team names from lines
-    // Flashscore repeats team name twice: "Lyon
-Lyon
-Auxerre
-Auxerre"
+    // Flashscore repeats team name twice: Lyon / Lyon / Auxerre / Auxerre
     // Also handles simple "Lyon vs Auxerre" format
     const lines = text.split('\n').map(l => l.trim()).filter(l => l);
     
