@@ -1573,7 +1573,9 @@
   // Auto-login si déjà connecté
 
 
-  function submitContact() {
+  emailjs.init('nrOLDielmTtoc6rdT');
+
+  async function submitContact() {
     const name = document.getElementById('contact-name').value.trim();
     const email = document.getElementById('contact-email').value.trim();
     const reason = document.getElementById('contact-reason').value;
@@ -1595,13 +1597,31 @@
       return;
     }
 
-    // Simulation envoi — on branchera un vrai service email plus tard
-    suc.textContent = '✓ Message envoyé ! On te répond dans les 24h à l\'adresse ' + email + '. Merci ' + name + ' !';
-    suc.style.display = 'block';
-    document.getElementById('contact-name').value = '';
-    document.getElementById('contact-email').value = '';
-    document.getElementById('contact-reason').value = '';
-    document.getElementById('contact-message').value = '';
+    const btn = document.querySelector('#page-contact button[onclick="submitContact()"]');
+    btn.textContent = 'Envoi en cours...';
+    btn.disabled = true;
+
+    try {
+      await emailjs.send('service_85qio7c', 'template_nacqryh', {
+        from_name: name,
+        from_email: email,
+        reason: reason,
+        message: message
+      });
+      suc.textContent = '✓ Message envoyé ! On te répond dans les 24h. Merci ' + name + ' !';
+      suc.style.display = 'block';
+      document.getElementById('contact-name').value = '';
+      document.getElementById('contact-email').value = '';
+      document.getElementById('contact-reason').value = '';
+      document.getElementById('contact-message').value = '';
+    } catch(e) {
+      console.log('EmailJS error:', e);
+      err.textContent = 'Erreur lors de l\'envoi. Réessaie ou écris-nous directement.';
+      err.style.display = 'block';
+    }
+
+    btn.textContent = 'Envoyer le message';
+    btn.disabled = false;
   }
 
   function showForgotPassword() {
