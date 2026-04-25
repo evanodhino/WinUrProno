@@ -1901,6 +1901,7 @@
   function checkAdminPwd() {
     const pwd = document.getElementById('admin-pwd-input').value;
     if (pwd === ADMIN_PASSWORD) {
+      sessionStorage.setItem('adminLoggedIn', 'true');
       document.getElementById('admin-auth').style.display = 'none';
       document.getElementById('admin-dashboard').style.display = 'block';
       loadAdminMatches();
@@ -1912,6 +1913,7 @@
   }
 
   function adminLogout() {
+    sessionStorage.removeItem('adminLoggedIn');
     document.getElementById('admin-auth').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
     document.getElementById('admin-pwd-input').value = '';
@@ -2544,8 +2546,15 @@ Auxerre"
     if (hash && document.getElementById('page-' + hash)) {
       showPage(hash, false);
       if (hash === 'admin') {
-        document.getElementById('admin-auth').style.display = 'block';
-        document.getElementById('admin-dashboard').style.display = 'none';
+        // Check if admin was already logged in
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+          document.getElementById('admin-auth').style.display = 'none';
+          document.getElementById('admin-dashboard').style.display = 'block';
+          loadAdminMatches();
+        } else {
+          document.getElementById('admin-auth').style.display = 'block';
+          document.getElementById('admin-dashboard').style.display = 'none';
+        }
       }
     } else {
       try { history.replaceState({ page: 'home' }, '', '#home'); } catch(e) {}
