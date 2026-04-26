@@ -2239,6 +2239,8 @@ Les probabilités doivent totaliser 100.`;
 
   async function adminDeleteMatch(id) {
     if (!confirm('Supprimer ce match ?')) return;
+    // Delete prono first, then match
+    await sb.from('pronos').delete().eq('match_id', id);
     await sb.from('matches').delete().eq('id', id);
     loadAdminMatches();
   }
