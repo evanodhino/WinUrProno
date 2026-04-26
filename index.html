@@ -889,12 +889,16 @@
             <input id="admin-form-away" class="form-input" type="text" placeholder="DVVND" maxlength="5"/>
           </div>
           <div>
-            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 1 (blessés, effectif, infos...)</label>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 1 (blessés, effectif...)</label>
             <textarea id="admin-contexte-home" class="form-input" placeholder="Ex: Sans Mbappé (blessé), Vinícius en forme..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
           </div>
           <div>
-            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 2 (blessés, effectif, infos...)</label>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte équipe 2 (blessés, effectif...)</label>
             <textarea id="admin-contexte-away" class="form-input" placeholder="Ex: Haaland incertain, équipe en pleine confiance..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte général (infos supplémentaires, météo, enjeu...)</label>
+            <textarea id="admin-contexte-general" class="form-input" placeholder="Ex: Match décisif pour le titre, pelouse dégradée, arbitre connu pour être sévère..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
           </div>
           <div style="display:flex;align-items:center;gap:10px;padding-top:24px;">
             <input id="admin-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
@@ -909,6 +913,10 @@
         <h2 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;">⚡ Import rapide de matchs</h2>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Colle les matchs un par ligne : <span style="color:var(--blue-light);">PSG vs Bayern · Real Madrid vs Arsenal · Lakers vs Celtics</span></p>
         <textarea id="import-calendar-text" class="form-input" placeholder="PSG vs Bayern&#10;Real Madrid vs Arsenal&#10;Lakers vs Celtics&#10;Nadal vs Djokovic" style="resize:vertical;min-height:120px;line-height:1.6;margin-bottom:12px;"></textarea>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Contexte général (blessés, infos clés pour tous les matchs importés)</label>
+          <textarea id="import-contexte" class="form-input" placeholder="Ex: Matchs de Ligue 1 J34. PSG sans Vitinha. Monaco en pleine forme. Toulouse en crise..." style="resize:vertical;min-height:80px;line-height:1.6;"></textarea>
+        </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <input id="import-date" class="form-input" type="date" style="width:auto;"/>
           <input id="import-heure" class="form-input" type="time" style="width:auto;"/>
@@ -1951,10 +1959,8 @@
       is_free: isFree,
       form_home: formHome,
       form_away: formAway,
-      contexte_home: document.getElementById('admin-contexte-home').value.trim(),
-      contexte_away: document.getElementById('admin-contexte-away').value.trim(),
-      contexte_home: document.getElementById('admin-contexte-home').value.trim(),
-      contexte_away: document.getElementById('admin-contexte-away').value.trim()
+      contexte_home: document.getElementById('admin-contexte-home').value.trim() + (document.getElementById('admin-contexte-general').value.trim() ? ' | ' + document.getElementById('admin-contexte-general').value.trim() : ''),
+      contexte_away: document.getElementById('admin-contexte-away').value.trim() + (document.getElementById('admin-contexte-general').value.trim() ? ' | ' + document.getElementById('admin-contexte-general').value.trim() : '')
     });
 
     if (error) {
@@ -1976,8 +1982,7 @@
     document.getElementById('admin-form-away').value = '';
     document.getElementById('admin-contexte-home').value = '';
     document.getElementById('admin-contexte-away').value = '';
-    document.getElementById('admin-contexte-home').value = '';
-    document.getElementById('admin-contexte-away').value = '';
+    document.getElementById('admin-contexte-general').value = '';
     document.getElementById('admin-is-free').checked = false;
 
     loadAdminMatches();
@@ -2210,6 +2215,7 @@ Les probabilités doivent totaliser 100.`;
       const competition = competitionDetect[sport] || 'Ligue 1';
       const matchHeure = heure || '20:00';
 
+      const importContexte = document.getElementById('import-contexte').value.trim();
       const { error } = await sb.from('matches').insert({
         sport, competition,
         equipe_home: home,
@@ -2218,7 +2224,8 @@ Les probabilités doivent totaliser 100.`;
         logo_home: '', logo_away: '',
         is_free: isFree,
         form_home: '', form_away: '',
-        contexte_home: '', contexte_away: ''
+        contexte_home: importContexte,
+        contexte_away: importContexte
       });
 
       if (error) errors++;
