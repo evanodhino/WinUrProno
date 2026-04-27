@@ -868,9 +868,17 @@
             <div id="autocomplete-home" style="position:absolute;z-index:100;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;min-width:200px;"></div>
           </div>
           <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Logo équipe 1 (URL)</label>
+            <input id="admin-logo-home" class="form-input" type="text" placeholder="https://...logo.png"/>
+          </div>
+          <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Équipe / Joueur 2 *</label>
             <input id="admin-away" class="form-input" type="text" placeholder="Ex: Marseille" autocomplete="off" oninput="searchEquipe(this, 'away')"/>
             <div id="autocomplete-away" style="position:absolute;z-index:100;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;margin-top:2px;display:none;min-width:200px;"></div>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Logo équipe 2 (URL)</label>
+            <input id="admin-logo-away" class="form-input" type="text" placeholder="https://...logo.png"/>
           </div>
           <div>
             <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Date *</label>
@@ -1930,8 +1938,8 @@
   async function adminAddMatch() {
     const sport = document.getElementById('admin-sport').value;
     const competition = document.getElementById('admin-competition').value.trim();
-    const home = document.getElementById('admin-home').value.trim();
-    const away = document.getElementById('admin-away').value.trim();
+    const home = document.getElementById('admin-home').value.trim().replace(/\b\w/g, c => c.toUpperCase());
+    const away = document.getElementById('admin-away').value.trim().replace(/\b\w/g, c => c.toUpperCase());
     const date = document.getElementById('admin-date').value;
     const heure = document.getElementById('admin-heure').value;
     const formHome = document.getElementById('admin-form-home').value.trim().toUpperCase().slice(0, 5);
@@ -1954,8 +1962,8 @@
       equipe_home: home,
       equipe_away: away,
       date, heure,
-      logo_home: '',
-      logo_away: '',
+      logo_home: document.getElementById('admin-logo-home').value.trim(),
+      logo_away: document.getElementById('admin-logo-away').value.trim(),
       is_free: isFree,
       form_home: formHome,
       form_away: formAway,
@@ -1968,6 +1976,12 @@
       err.style.display = 'block';
       return;
     }
+
+    // Save teams for future autocomplete
+    const logoHome = document.getElementById('admin-logo-home').value.trim();
+    const logoAway = document.getElementById('admin-logo-away').value.trim();
+    await saveEquipe(home, sport, logoHome, formHome, document.getElementById('admin-contexte-home').value.trim());
+    await saveEquipe(away, sport, logoAway, formAway, document.getElementById('admin-contexte-away').value.trim());
 
     suc.textContent = '✓ Match ajouté ! ' + home + ' vs ' + away + ' le ' + date;
     suc.style.display = 'block';
@@ -1983,6 +1997,8 @@
     document.getElementById('admin-contexte-home').value = '';
     document.getElementById('admin-contexte-away').value = '';
     document.getElementById('admin-contexte-general').value = '';
+    document.getElementById('admin-logo-home').value = '';
+    document.getElementById('admin-logo-away').value = '';
     document.getElementById('admin-is-free').checked = false;
 
     loadAdminMatches();
