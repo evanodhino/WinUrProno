@@ -94,8 +94,9 @@
     @media (min-width: 700px) { .cards { grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (min-width: 1100px) { .cards { grid-template-columns: repeat(3, minmax(0,1fr)); } }
 
-    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 14px; padding: 18px; transition: border-color 0.2s; display: flex; flex-direction: column; }
-    .card:hover { border-color: #3A4A6A; }
+    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 18px; transition: border-color 0.2s, transform 0.2s; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #2563EB, #7C3AED); }
+    .card:hover { border-color: #3A4A6A; transform: translateY(-2px); }
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 6px; }
     .sport-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 99px; }
     .tag-foot { background: #0C2340; color: #60A5FA; }
@@ -111,7 +112,7 @@
     .teams { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .team { text-align: center; flex: 1; min-width: 0; }
     .team-logo { width: 44px; height: 44px; object-fit: contain; margin: 0 auto 6px; display: block; border-radius: 50%; }
-    .team-logo-placeholder { width: 44px; height: 44px; border-radius: 50%; background: var(--blue-dim); border: 1.5px solid var(--blue); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: var(--blue-light); }
+    .team-logo-placeholder { width: 46px; height: 46px; border-radius: 50%; background: var(--blue-dim); border: 2px solid var(--blue); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; color: var(--blue-light); }
     .team-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .team-form { font-size: 11px; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.05em; display: flex; gap: 3px; justify-content: center; }
     .form-v { color: #34D399; font-weight: 600; }
@@ -119,10 +120,10 @@
     .form-n { color: #60A5FA; font-weight: 600; }
     .vs { font-size: 12px; color: var(--text-muted); padding: 0 12px; flex-shrink: 0; }
     .prono-section { border-top: 0.5px solid var(--border-dim); padding-top: 14px; margin-top: auto; }
-    .verdict-box { display: flex; align-items: flex-start; gap: 10px; background: var(--surface2); border: 0.5px solid var(--border-dim); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+    .verdict-box { display: flex; align-items: flex-start; gap: 10px; background: var(--surface2); border: 0.5px solid var(--border-dim); border-left: 2px solid var(--green); border-radius: 0 10px 10px 0; padding: 12px 14px; margin-bottom: 12px; }
     .verdict-winner { font-size: 13px; font-weight: 500; color: var(--green); margin-bottom: 4px; }
     .verdict-analysis { font-size: 12px; color: var(--text-mid); line-height: 1.65; }
-    .prono-bar { display: flex; gap: 3px; height: 5px; border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+    .prono-bar { display: flex; gap: 2px; height: 7px; border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
     .bar-home { background: var(--blue); border-radius: 99px 0 0 99px; }
     .bar-draw { background: #2D3748; }
     .bar-away { background: #DC2626; border-radius: 0 99px 99px 0; }
@@ -1453,9 +1454,11 @@
         card.dataset.sport = match.sport;
         card.innerHTML = `
           <div class="card-top">
-            <span class="sport-tag ${tag}">${label}</span>
-            <div class="card-meta">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="sport-tag ${tag}">${label}</span>
               ${isFree ? '<span class="free-badge">Gratuit</span>' : ''}
+            </div>
+            <div class="card-meta">
               <span class="match-time">${match.heure} · ${match.competition}</span>
             </div>
           </div>
