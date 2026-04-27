@@ -104,6 +104,7 @@
     .tag-rugby { background: #0A1A0A; color: #86EFAC; }
     .tag-mma { background: #2D0A0A; color: #FCA5A5; }
     .tag-boxe { background: #1A0A00; color: #FDBA74; }
+    .tag-nfl { background: #0A1A0A; color: #86EFAC; }
     .card-meta { display: flex; align-items: center; gap: 8px; }
     .free-badge { font-size: 10px; font-weight: 500; color: #60A5FA; background: #0C2340; padding: 2px 8px; border-radius: 99px; }
     .match-time { font-size: 12px; color: var(--text-muted); }
@@ -304,6 +305,7 @@
     <button class="filter-btn" onclick="filterSport('rugby',this)">Rugby</button>
     <button class="filter-btn" onclick="filterSport('mma',this)">MMA</button>
     <button class="filter-btn" onclick="filterSport('boxe',this)">Boxe</button>
+    <button class="filter-btn" onclick="filterSport('nfl',this)">NFL</button>
   </div>
 
   <div class="cards-wrap">
@@ -515,6 +517,7 @@
       <div class="sport-card"><div class="sport-emoji">🏉</div><div class="sport-name">Rugby</div><div class="sport-detail">Top 14, Champions Cup</div></div>
       <div class="sport-card"><div class="sport-emoji">🥊</div><div class="sport-name">MMA</div><div class="sport-detail">UFC, Bellator, PFL</div></div>
       <div class="sport-card"><div class="sport-emoji">🥋</div><div class="sport-name">Boxe</div><div class="sport-detail">WBC, WBA, IBF, WBO</div></div>
+      <div class="sport-card"><div class="sport-emoji">🏈</div><div class="sport-name">NFL</div><div class="sport-detail">NFL, Super Bowl, Playoffs</div></div>
     </div>
   </div>
 
@@ -854,6 +857,7 @@
               <option value="rugby" style="background:#131720;">Rugby</option>
               <option value="mma" style="background:#131720;">MMA</option>
               <option value="boxe" style="background:#131720;">Boxe</option>
+              <option value="nfl" style="background:#131720;">Football Américain</option>
             </select>
           </div>
           <div>
@@ -1310,11 +1314,11 @@
 
   const sportTags = {
     foot: 'tag-foot', basket: 'tag-basket', tennis: 'tag-tennis',
-    rugby: 'tag-rugby', mma: 'tag-mma', boxe: 'tag-boxe'
+    rugby: 'tag-rugby', mma: 'tag-mma', boxe: 'tag-boxe', nfl: 'tag-nfl'
   };
   const sportLabels = {
     foot: 'Football', basket: 'Basket', tennis: 'Tennis',
-    rugby: 'Rugby', mma: 'MMA', boxe: 'Boxe'
+    rugby: 'Rugby', mma: 'MMA', boxe: 'Boxe', nfl: 'Football Américain'
   };
 
   function colorizeForm(form) {
@@ -1385,7 +1389,7 @@
       matches.forEach(match => {
         const prono = match.pronos && match.pronos.length > 0 ? match.pronos[0] : null; console.log('Prono for', match.equipe_home, ':', prono);
         const isFree = match.is_free;
-        const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe'];
+        const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe', 'Football Américain', 'nfl'];
         if (prono && noDrawSports.includes(match.sport)) {
           const total = prono.proba_home + prono.proba_away;
           prono.proba_home = Math.round(prono.proba_home * 100 / total);
@@ -1902,7 +1906,8 @@
     tennis: ['Roland Garros', 'Wimbledon', 'US Open', 'Australian Open', 'ATP Masters', 'WTA Finals', 'Davis Cup'],
     rugby: ['Top 14', 'Champions Cup', 'Challenge Cup', 'Pro D2', 'Six Nations', 'Coupe du Monde Rugby'],
     mma: ['UFC', 'Bellator', 'PFL', 'ONE Championship', 'UFC Fight Night'],
-    boxe: ['WBC', 'WBA', 'IBF', 'WBO', 'Combat sans titre']
+    boxe: ['WBC', 'WBA', 'IBF', 'WBO', 'Combat sans titre'],
+    nfl: ['NFL', 'Super Bowl', 'NFL Playoffs', 'NFC', 'AFC']
   };
 
   function updateCompetitions() {
@@ -2092,7 +2097,7 @@ Les probabilités doivent totaliser 100.`;
 
       // Save to Supabase via fetch
       // Force no draw for certain sports
-      const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe'];
+      const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe', 'Football Américain', 'nfl'];
       if (noDrawSports.includes(sport)) {
         prono.proba_draw = 0;
         const total = prono.proba_home + prono.proba_away;
@@ -2171,6 +2176,7 @@ Les probabilités doivent totaliser 100.`;
       'Medvedev': 'tennis', 'Zverev': 'tennis', 'Swiatek': 'tennis', 'Gauff': 'tennis',
       'Pereira': 'mma', 'Jones': 'mma', 'Adesanya': 'mma', 'Poirier': 'mma',
       'Fury': 'boxe', 'Usyk': 'boxe', 'Joshua': 'boxe', 'Canelo': 'boxe',
+      'Chiefs': 'nfl', 'Patriots': 'nfl', '49ers': 'nfl', 'Cowboys': 'nfl', 'Eagles': 'nfl', 'Packers': 'nfl', 'Bills': 'nfl', 'Ravens': 'nfl',
       'Toulouse': 'rugby', 'Leinster': 'rugby', 'Racing': 'rugby', 'Bordeaux': 'rugby',
       'Stade Francais': 'rugby', 'Clermont': 'rugby', 'La Rochelle': 'rugby'
     };
