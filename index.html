@@ -110,8 +110,8 @@
     .match-time { font-size: 12px; color: var(--text-muted); }
     .teams { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .team { text-align: center; flex: 1; min-width: 0; }
-    .team-logo { width: 40px; height: 40px; object-fit: contain; margin: 0 auto 6px; display: block; }
-    .team-logo-placeholder { width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); border: 0.5px solid var(--border); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    .team-logo { width: 44px; height: 44px; object-fit: contain; margin: 0 auto 6px; display: block; border-radius: 50%; }
+    .team-logo-placeholder { width: 44px; height: 44px; border-radius: 50%; background: var(--blue-dim); border: 1.5px solid var(--blue); margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: var(--blue-light); }
     .team-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .team-form { font-size: 11px; color: var(--text-muted); margin-top: 4px; letter-spacing: 0.05em; display: flex; gap: 3px; justify-content: center; }
     .form-v { color: #34D399; font-weight: 600; }
@@ -1416,13 +1416,19 @@
           </div>
           <div class="teams">
             <div class="team">
-              ${match.logo_home ? `<img class="team-logo" src="${match.logo_home}" onerror="this.style.display='none'"/>` : ''}
+              ${match.logo_home 
+                ? `<img class="team-logo" src="${match.logo_home}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="team-logo-placeholder" style="display:none;">${match.equipe_home.charAt(0)}</div>`
+                : `<div class="team-logo-placeholder">${match.equipe_home.charAt(0)}</div>`
+              }
               <div class="team-name">${match.equipe_home}</div>
               <div class="team-form">${colorizeForm(match.form_home)}</div>
             </div>
             <div class="vs">vs</div>
             <div class="team">
-              ${match.logo_away ? `<img class="team-logo" src="${match.logo_away}" onerror="this.style.display='none'"/>` : ''}
+              ${match.logo_away 
+                ? `<img class="team-logo" src="${match.logo_away}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="team-logo-placeholder" style="display:none;">${match.equipe_away.charAt(0)}</div>`
+                : `<div class="team-logo-placeholder">${match.equipe_away.charAt(0)}</div>`
+              }
               <div class="team-name">${match.equipe_away}</div>
               <div class="team-form">${colorizeForm(match.form_away)}</div>
             </div>
