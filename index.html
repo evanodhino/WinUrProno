@@ -857,7 +857,7 @@
               <option value="rugby" style="background:#131720;">Rugby</option>
               <option value="mma" style="background:#131720;">MMA</option>
               <option value="boxe" style="background:#131720;">Boxe</option>
-              <option value="nfl" style="background:#131720;">Football Américain</option>
+              <option value="nfl" style="background:#131720;">NFL</option>
             </select>
           </div>
           <div>
@@ -1318,7 +1318,7 @@
   };
   const sportLabels = {
     foot: 'Football', basket: 'Basket', tennis: 'Tennis',
-    rugby: 'Rugby', mma: 'MMA', boxe: 'Boxe', nfl: 'Football Américain'
+    rugby: 'Rugby', mma: 'MMA', boxe: 'Boxe', nfl: 'NFL'
   };
 
   function colorizeForm(form) {
@@ -1389,7 +1389,7 @@
       matches.forEach(match => {
         const prono = match.pronos && match.pronos.length > 0 ? match.pronos[0] : null; console.log('Prono for', match.equipe_home, ':', prono);
         const isFree = match.is_free;
-        const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe', 'Football Américain', 'nfl'];
+        const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe', 'NFL', 'nfl'];
         if (prono && noDrawSports.includes(match.sport)) {
           const total = prono.proba_home + prono.proba_away;
           prono.proba_home = Math.round(prono.proba_home * 100 / total);
@@ -2097,7 +2097,7 @@ Les probabilités doivent totaliser 100.`;
 
       // Save to Supabase via fetch
       // Force no draw for certain sports
-      const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe', 'Football Américain', 'nfl'];
+      const noDrawSports = ['Basket', 'Basketball', 'Tennis', 'MMA', 'Boxe', 'NFL', 'nfl'];
       if (noDrawSports.includes(sport)) {
         prono.proba_draw = 0;
         const total = prono.proba_home + prono.proba_away;
