@@ -658,62 +658,78 @@
     <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Retour
     </button>
-    <div style="text-align:center;margin-bottom:40px;">
-      <h1 style="font-family:'Syne',sans-serif;font-size:30px;font-weight:600;color:#fff;margin-bottom:10px;">Choisis ton abonnement</h1>
-      <p style="font-size:15px;color:var(--text-mid);">Débloque tous les pronostics générés par l'IA. Sans engagement, résiliable à tout moment.</p>
+    <div style="text-align:center;margin-bottom:48px;">
+      <div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);border:0.5px solid rgba(251,191,36,0.3);padding:4px 14px;border-radius:99px;margin-bottom:16px;">✨ Accès illimité à tous les pronos</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:34px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-0.3px;">Choisis ton abonnement</h1>
+      <p style="font-size:15px;color:var(--text-mid);">Sans engagement, résiliable à tout moment.</p>
     </div>
+
     <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:40px;">
+
+      <!-- Gratuit -->
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Gratuit</div>
-          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">3 pronostics par jour · Analyses IA · Confiance 5/5 uniquement</div>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <span style="font-size:11px;color:var(--green);background:rgba(52,211,153,0.1);padding:3px 8px;border-radius:99px;">✓ Accès immédiat</span>
-            <span style="font-size:11px;color:var(--green);background:rgba(52,211,153,0.1);padding:3px 8px;border-radius:99px;">✓ Sans carte bancaire</span>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:var(--text);margin-bottom:8px;">Gratuit</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--green);">✓</span> 3 pronostics par jour</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--green);">✓</span> Analyses IA complètes</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--green);">✓</span> Sans carte bancaire</div>
           </div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">0€</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">pour toujours</div>
+          <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:700;color:#fff;">0€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">pour toujours</div>
           <button onclick="showPage('home')" style="font-size:13px;font-weight:500;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Plan actuel</button>
         </div>
       </div>
-      <div style="background:var(--surface);border:1.5px solid var(--blue);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;">
-        <div style="position:absolute;top:-12px;left:24px;font-size:11px;background:var(--blue);color:#fff;padding:3px 12px;border-radius:99px;font-weight:500;">⭐ Recommandé</div>
+
+      <!-- Pro -->
+      <div style="background:linear-gradient(135deg,#0C2340 0%,#131720 100%);border:1.5px solid var(--blue);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;">
+        <div style="position:absolute;top:-13px;left:24px;font-size:11px;font-weight:600;background:var(--blue);color:#fff;padding:4px 14px;border-radius:99px;">⭐ Recommandé</div>
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Pro</div>
-          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">Pronos illimités · Toutes les analyses · Tous les sports · Temps réel</div>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <span style="font-size:11px;color:var(--blue-light);background:var(--blue-dim);padding:3px 8px;border-radius:99px;">✓ Sans engagement</span>
-            <span style="font-size:11px;color:var(--blue-light);background:var(--blue-dim);padding:3px 8px;border-radius:99px;">✓ Sans engagement</span>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:#fff;margin-bottom:8px;">Pro</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--blue-light);">✓</span> Pronos <strong style="color:#fff;">illimités</strong></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--blue-light);">✓</span> Toutes les analyses IA</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--blue-light);">✓</span> 7 sports couverts</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--blue-light);">✓</span> Sans engagement</div>
           </div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">9,99€</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par mois</div>
-          <button onclick="activatePlan('pro')" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Pro</button>
+          <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:700;color:#fff;">9,99€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">par mois</div>
+          <button onclick="activatePlan('pro')" style="font-size:14px;font-weight:600;background:var(--blue);color:#fff;border:none;padding:10px 28px;border-radius:9px;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 4px 14px rgba(37,99,235,0.4);">Choisir Pro →</button>
         </div>
       </div>
+
+      <!-- Annuel -->
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;">Annuel <span style="font-size:12px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:2px 8px;border-radius:99px;">-50%</span></div>
-          <div style="font-size:13px;color:var(--text-mid);line-height:1.7;">Tout le Pro · Économisez 60€/an · soit 5€/mois · Priorité nouvelles fonctionnalités</div>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <span style="font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:3px 8px;border-radius:99px;">✓ Meilleur prix</span>
-            <span style="font-size:11px;color:var(--yellow);background:rgba(251,191,36,0.1);padding:3px 8px;border-radius:99px;">✓ 2 mois gratuits</span>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:var(--text);">Annuel</div>
+            <span style="font-size:11px;font-weight:600;color:var(--yellow);background:rgba(251,191,36,0.1);border:0.5px solid rgba(251,191,36,0.3);padding:3px 10px;border-radius:99px;">-50%</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--yellow);">✓</span> Tout le plan Pro inclus</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--yellow);">✓</span> Économisez 60€/an</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);"><span style="color:var(--yellow);">✓</span> Soit seulement 5€/mois</div>
           </div>
         </div>
         <div style="text-align:center;">
-          <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;">60€</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">par an · soit 5€/mois</div>
-          <button onclick="activatePlan('annuel')" style="font-size:13px;font-weight:500;background:none;color:var(--text);border:0.5px solid var(--border);padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Annuel</button>
+          <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:700;color:#fff;">60€</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">par an · 5€/mois</div>
+          <button onclick="activatePlan('annuel')" style="font-size:13px;font-weight:500;background:none;color:var(--yellow);border:0.5px solid rgba(251,191,36,0.5);padding:9px 22px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Choisir Annuel →</button>
         </div>
       </div>
+
     </div>
-    <div style="background:var(--surface2);border:0.5px solid var(--border);border-left:2px solid var(--yellow);border-radius:10px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+
+    <!-- Garantie -->
+    <div style="background:var(--surface2);border:0.5px solid var(--border);border-left:2px solid var(--yellow);border-radius:10px;padding:14px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       <div style="font-size:12px;color:var(--text-mid);line-height:1.6;"><strong style="color:var(--text);">Jouer comporte des risques.</strong> WinUrProno est un site de divertissement. <a href="https://www.joueurs-info-service.fr" target="_blank" style="color:var(--yellow);">joueurs-info-service.fr</a> · <a href="tel:0974750013" style="color:var(--yellow);">09 74 75 13 13</a></div>
     </div>
+
   </div>
   <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('confidentialite')">Confidentialité</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('cgu')">CGU</span> · <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('contact')">Contact</span></footer>
 </div>
@@ -1162,51 +1178,80 @@
 
 <!-- ===== PROFIL ===== -->
 <div class="page" id="page-profil">
-  <div style="max-width:700px;margin:0 auto;padding:52px var(--pad) 60px;">
+  <div style="max-width:750px;margin:0 auto;padding:52px var(--pad) 60px;">
     <button onclick="showPage('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-mid);background:none;border:none;cursor:pointer;margin-bottom:32px;font-family:'Inter',sans-serif;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Retour
     </button>
-    <div style="display:flex;align-items:center;gap:20px;margin-bottom:40px;flex-wrap:wrap;">
-      <div id="profil-avatar" style="width:72px;height:72px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:#fff;flex-shrink:0;border:2px solid var(--blue-light);"></div>
-      <div>
-        <h1 id="profil-name" style="font-family:'Syne',sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:4px;"></h1>
-        <p id="profil-email" style="font-size:14px;color:var(--text-muted);"></p>
+
+    <!-- Header profil -->
+    <div style="background:linear-gradient(135deg,#0C2340 0%,#131720 100%);border:0.5px solid var(--blue);border-radius:18px;padding:28px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div id="profil-avatar" style="width:80px;height:80px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:32px;font-weight:700;color:#fff;flex-shrink:0;border:3px solid var(--blue-light);box-shadow:0 0 20px rgba(37,99,235,0.3);"></div>
+      <div style="flex:1;min-width:0;">
+        <h1 id="profil-name" style="font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:#fff;margin-bottom:4px;"></h1>
+        <p id="profil-email" style="font-size:13px;color:var(--text-muted);margin-bottom:10px;"></p>
+        <div id="profil-plan-badge" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--green);background:rgba(52,211,153,0.1);border:0.5px solid rgba(52,211,153,0.3);padding:4px 12px;border-radius:99px;"></div>
       </div>
     </div>
+
+    <!-- Stats rapides -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--blue-light);">∞</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Pronos/jour</div>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--yellow);">7</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Sports couverts</div>
+      </div>
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--green);">80%</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Taux de réussite</div>
+      </div>
+    </div>
+
     <div style="display:flex;flex-direction:column;gap:14px;">
+      <!-- Infos compte -->
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:24px;">
-        <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:18px;">Informations du compte</h2>
+        <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue-light)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Informations du compte
+        </h2>
         <div style="display:flex;flex-direction:column;gap:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:0.5px solid var(--border-dim);">
-            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Prénom</div><div id="profil-prenom" style="font-size:14px;color:var(--text);font-weight:500;"></div></div>
+            <div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Prénom</div><div id="profil-prenom" style="font-size:15px;color:var(--text);font-weight:500;"></div></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:0.5px solid var(--border-dim);">
-            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Email</div><div id="profil-email2" style="font-size:14px;color:var(--text);font-weight:500;"></div></div>
+            <div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Email</div><div id="profil-email2" style="font-size:15px;color:var(--text);font-weight:500;"></div></div>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div><div style="font-size:12px;color:var(--text-muted);margin-bottom:3px;">Abonnement</div><div id="profil-plan" style="font-size:14px;color:var(--green);font-weight:500;">Gratuit — 3 pronos/jour</div></div>
-            <button id="profil-upgrade-btn" onclick="showPage('abonnement')" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Passer Pro</button>
+            <div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Abonnement</div><div id="profil-plan" style="font-size:15px;color:var(--green);font-weight:500;">Gratuit — 3 pronos/jour</div></div>
+            <button id="profil-upgrade-btn" onclick="showPage('abonnement')" style="font-size:12px;background:var(--blue);color:#fff;border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Passer Pro ✨</button>
           </div>
         </div>
       </div>
+
+      <!-- Actions -->
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:24px;">
-        <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:18px;">Actions</h2>
+        <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue-light)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Actions
+        </h2>
         <div style="display:flex;flex-direction:column;gap:10px;">
-          <button onclick="showPage('abonnement')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;">
+          <button onclick="showPage('abonnement')" style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-            <span style="font-size:13px;color:var(--text);">Gérer mon abonnement</span>
+            <div><div style="font-size:13px;color:var(--text);font-weight:500;">Gérer mon abonnement</div><div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Changer de plan ou annuler</div></div>
           </button>
-          <button onclick="window.open('https://billing.stripe.com/p/login/test_00w9AMazWc3nePQ3Sg2sM00', '_blank')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;">
+          <button onclick="window.open('https://billing.stripe.com/p/login/test_00w9AMazWc3nePQ3Sg2sM00','_blank')" style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-            <span style="font-size:13px;color:var(--red);">Annuler mon abonnement</span>
+            <div><div style="font-size:13px;color:var(--red);font-weight:500;">Annuler mon abonnement</div><div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Via le portail sécurisé Stripe</div></div>
           </button>
-          <button onclick="showPage('contact')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;">
+          <button onclick="showPage('contact')" style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <span style="font-size:13px;color:var(--text);">Contacter le support</span>
+            <div><div style="font-size:13px;color:var(--text);font-weight:500;">Contacter le support</div><div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Réponse sous 24h</div></div>
           </button>
-          <button onclick="logout()" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(248,113,113,0.05);border:0.5px solid rgba(248,113,113,0.3);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;">
+          <button onclick="logout()" style="display:flex;align-items:center;gap:12px;padding:13px 16px;background:rgba(248,113,113,0.05);border:0.5px solid rgba(248,113,113,0.2);border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <span style="font-size:13px;color:var(--red);">Se déconnecter</span>
+            <div><div style="font-size:13px;color:var(--red);font-weight:500;">Se déconnecter</div><div style="font-size:11px;color:var(--text-muted);margin-top:1px;">Fermer la session</div></div>
           </button>
         </div>
       </div>
@@ -2319,22 +2364,29 @@ Les probabilités doivent totaliser 100.`;
   function initProfil() {
     if (!currentUser) return;
     const initial = currentUser.prenom.charAt(0).toUpperCase();
-    const els = {
-      avatar: document.getElementById('profil-avatar'),
-      name: document.getElementById('profil-name'),
-      email: document.getElementById('profil-email'),
-      prenom: document.getElementById('profil-prenom'),
-      email2: document.getElementById('profil-email2')
-    };
-    if (els.avatar) els.avatar.textContent = initial;
-    if (els.name) els.name.textContent = currentUser.prenom;
-    if (els.email) els.email.textContent = currentUser.email;
-    if (els.prenom) els.prenom.textContent = currentUser.prenom;
-    if (els.email2) els.email2.textContent = currentUser.email;
-
-    const planEl = document.getElementById('profil-plan');
-    const upgradeBtn = document.getElementById('profil-upgrade-btn');
     const isPro = currentUser.plan === 'pro' || currentUser.plan === 'annuel';
+    
+    const avatar = document.getElementById('profil-avatar');
+    const name = document.getElementById('profil-name');
+    const email = document.getElementById('profil-email');
+    const prenom = document.getElementById('profil-prenom');
+    const email2 = document.getElementById('profil-email2');
+    const planEl = document.getElementById('profil-plan');
+    const planBadge = document.getElementById('profil-plan-badge');
+    const upgradeBtn = document.getElementById('profil-upgrade-btn');
+    
+    if (avatar) {
+      if (currentUser.photo) {
+        avatar.innerHTML = `<img src="${currentUser.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>`;
+      } else {
+        avatar.textContent = initial;
+      }
+    }
+    if (name) name.textContent = currentUser.prenom;
+    if (email) email.textContent = currentUser.email;
+    if (prenom) prenom.textContent = currentUser.prenom;
+    if (email2) email2.textContent = currentUser.email;
+    if (planBadge) planBadge.textContent = isPro ? '⭐ Abonnement Pro actif' : '🔓 Plan Gratuit';
     if (planEl) {
       planEl.textContent = isPro ? 'Pro — Pronos illimités ✨' : 'Gratuit — 3 pronos/jour';
       planEl.style.color = isPro ? 'var(--blue-light)' : 'var(--green)';
