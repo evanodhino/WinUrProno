@@ -1485,7 +1485,13 @@
             ${prono ? `
             <div class="verdict-box">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>
-              <div><div class="verdict-winner">${prono.verdict}</div><div class="verdict-analysis">${prono.analyse}</div></div>
+              <div>
+                <div class="verdict-winner">${prono.verdict}</div>
+                <div class="verdict-analysis">
+                  <span class="analyse-short">${prono.analyse.length > 90 ? prono.analyse.substring(0, 90) + '...' : prono.analyse}</span>
+                  ${prono.analyse.length > 90 ? `<span class="analyse-full" style="display:none;">${prono.analyse}</span><span onclick="toggleAnalyse(this)" style="color:var(--blue-light);font-size:11px;cursor:pointer;margin-left:4px;">Voir plus</span>` : ''}
+                </div>
+              </div>
             </div>
             <div class="prono-bar">
               <div class="bar-home" style="width:${prono.proba_home}%"></div>
@@ -2332,6 +2338,20 @@ Les probabilités doivent totaliser 100.`;
     loadAdminMatches();
   }
 
+  function toggleAnalyse(btn) {
+    const short = btn.previousElementSibling.previousElementSibling;
+    const full = btn.previousElementSibling;
+    if (full.style.display === 'none') {
+      full.style.display = 'inline';
+      short.style.display = 'none';
+      btn.textContent = 'Voir moins';
+    } else {
+      full.style.display = 'none';
+      short.style.display = 'inline';
+      btn.textContent = 'Voir plus';
+    }
+  }
+
   function toggleFaq(header) {
     const body = header.nextElementSibling;
     const arrow = header.querySelector('.faq-arrow');
@@ -2354,6 +2374,20 @@ Les probabilités doivent totaliser 100.`;
     if (email) email.textContent = currentUser.email;
     if (prenom) prenom.textContent = currentUser.prenom;
     if (email2) email2.textContent = currentUser.email;
+  }
+
+  function toggleAnalyse(btn) {
+    const short = btn.previousElementSibling.previousElementSibling;
+    const full = btn.previousElementSibling;
+    if (full.style.display === 'none') {
+      full.style.display = 'inline';
+      short.style.display = 'none';
+      btn.textContent = 'Voir moins';
+    } else {
+      full.style.display = 'none';
+      short.style.display = 'inline';
+      btn.textContent = 'Voir plus';
+    }
   }
 
   function toggleFaq(header) {
