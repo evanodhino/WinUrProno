@@ -1363,7 +1363,7 @@
     try {
       const res = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/get-matches', {
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ',
+          'Authorization': 'Bearer sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg',
           'Content-Type': 'application/json'
         }
       });
@@ -1613,7 +1613,7 @@
   }
 
   const SUPABASE_URL = 'https://viocpnpsfkxcrgjvtsep.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ';
+  const SUPABASE_KEY = 'sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let currentUser = null;
 
@@ -2253,7 +2253,7 @@ Les probabilités doivent totaliser 100.`;
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ'
+          'Authorization': 'Bearer sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg'
         },
         body: JSON.stringify({ home, away, sport, competition, formHome, formAway, contexteHome, contexteAway })
       });
@@ -2717,7 +2717,7 @@ Les probabilités doivent totaliser 100.`;
       const stripe = Stripe(STRIPE_PK);
       const response = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ` },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg` },
         body: JSON.stringify({
           priceId,
           email: currentUser.email,
