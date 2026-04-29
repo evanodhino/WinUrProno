@@ -1430,7 +1430,7 @@
     cal.innerHTML = Object.entries(grouped).map(([date, dayMatches]) => {
       const d = new Date(date + 'T12:00:00');
       const isToday = date === today;
-      const dayLabel = isToday ? 'Aujourd'hui' : days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+      const dayLabel = isToday ? 'Auj' : days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
 
       return `
         <div style="background:var(--surface);border:0.5px solid ${isToday ? 'var(--blue)' : 'var(--border)'};border-radius:12px;overflow:hidden;margin-bottom:8px;">
