@@ -2202,6 +2202,10 @@
           </div>
           <div style="display:flex;gap:8px;flex-shrink:0;">
             <button onclick="generateAnalysis(this)" data-id="${match.id}" data-home="${match.equipe_home}" data-away="${match.equipe_away}" data-sport="${match.sport}" data-comp="${match.competition}" data-fh="${match.form_home || ''}" data-fa="${match.form_away || ''}" data-ch="${match.contexte_home || ''}" data-ca="${match.contexte_away || ''}" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">${prono ? 'Regénérer' : 'IA Analyser'}</button>
+            ${prono ? `
+            <button onclick="setPronoResult('${prono.id}', true, this)" style="font-size:12px;background:${prono.result === true ? 'rgba(52,211,153,0.2)' : 'none'};color:var(--green);border:0.5px solid var(--green);padding:6px 10px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;" title="Prono correct">✓</button>
+            <button onclick="setPronoResult('${prono.id}', false, this)" style="font-size:12px;background:${prono.result === false ? 'rgba(248,113,113,0.2)' : 'none'};color:var(--red);border:0.5px solid var(--red);padding:6px 10px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;" title="Prono incorrect">✗</button>
+            ` : ''}
             <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
           </div>
         </div>
@@ -2428,6 +2432,11 @@ Les probabilités doivent totaliser 100.`;
       err.textContent = matches.length === 0 ? 'Aucun match détecté — essaie le format "Lyon vs Auxerre"' : errors + ' erreur(s) lors de l\'import.';
       err.style.display = 'block';
     }
+  }
+
+  async function setPronoResult(pronoId, isCorrect, btn) {
+    await sb.from('pronos').update({ result: isCorrect }).eq('id', pronoId);
+    loadAdminMatches();
   }
 
   async function adminDeleteMatch(id) {
