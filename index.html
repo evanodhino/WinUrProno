@@ -1477,12 +1477,10 @@
     if (!box || !val) return;
 
     try {
-      const pronos = await callEdge('get_pronos_all', {});
-      if (!pronos) return;
-      const withResult = pronos.filter(p => p.result !== null && p.result !== undefined);
-      const correct = pronos.filter(p => p.result === true).length;
-      if (withResult.length > 0) {
-        val.textContent = correct + '/' + withResult.length;
+      const data = await callEdge('get_pronos_all', {});
+      if (!data) return;
+      val.textContent = data.correct + '/' + data.total;
+      if (localStorage.getItem('showScore') === 'true') {
         box.style.display = 'block';
       }
     } catch(e) {}
