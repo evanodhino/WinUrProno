@@ -2161,6 +2161,14 @@
     if (!list) return;
 
     const { data, error } = await sb.from('matches').select('*').order('date', { ascending: true });
+    
+    // Also fetch pronos for these matches
+    let pronosMap = {};
+    if (data && data.length > 0) {
+      const matchIds = data.map(m => m.id);
+      const { data: pronos } = await sb.from('pronos').select('*').in('match_id', matchIds);
+      if (pronos) pronos.forEach(p => pronosMap[p.match_id] = p);
+    }
 
     if (error || !data || data.length === 0) {
       list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Aucun match programmé</div>';
@@ -2176,21 +2184,30 @@
 
     const sportEmoji = { foot: '⚽', basket: '🏀', tennis: '🎾', rugby: '🏉', mma: '🥊', boxe: '🥋' };
 
-    list.innerHTML = data.map(match => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:0.5px solid var(--border-dim);flex-wrap:wrap;gap:10px;">
-        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-          <span style="font-size:20px;">${sportEmoji[match.sport] || '🏆'}</span>
-          <div>
-            <div style="font-size:14px;font-weight:500;color:var(--text);">${match.equipe_home} vs ${match.equipe_away}</div>
-            <div style="font-size:12px;color:var(--text-muted);">${match.competition} · ${match.date} · ${match.heure} ${match.is_free ? '· <span style="color:var(--green);">Gratuit</span>' : ''}</div>
+    list.innerHTML = data.map(match => {
+      const prono = pronosMap[match.id];
+      const stars = prono ? Array.from({length:5}, (_,i) => 
+        `<span style="color:${i < prono.confiance ? '#FBBF24' : '#2A3349'};">★</span>`
+      ).join('') : '';
+      return `
+      <div style="border-bottom:0.5px solid var(--border-dim);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+            <span style="font-size:20px;">${sportEmoji[match.sport] || '🏆'}</span>
+            <div>
+              <div style="font-size:14px;font-weight:500;color:var(--text);">${match.equipe_home} vs ${match.equipe_away}</div>
+              <div style="font-size:12px;color:var(--text-muted);">${match.competition} · ${match.date} · ${match.heure} ${match.is_free ? '· <span style="color:var(--green);">Gratuit</span>' : ''}</div>
+              ${prono ? `<div style="margin-top:4px;font-size:12px;color:var(--green);font-weight:500;">✓ ${prono.verdict} · ${stars}</div>` : '<div style="margin-top:4px;font-size:11px;color:var(--text-muted);">Pas encore analysé</div>'}
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0;">
+            <button onclick="generateAnalysis(this)" data-id="${match.id}" data-home="${match.equipe_home}" data-away="${match.equipe_away}" data-sport="${match.sport}" data-comp="${match.competition}" data-fh="${match.form_home || ''}" data-fa="${match.form_away || ''}" data-ch="${match.contexte_home || ''}" data-ca="${match.contexte_away || ''}" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">${prono ? 'Regénérer' : 'IA Analyser'}</button>
+            <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
           </div>
         </div>
-        <div style="display:flex;gap:8px;flex-shrink:0;">
-          <button onclick="generateAnalysis(this)" data-id="${match.id}" data-home="${match.equipe_home}" data-away="${match.equipe_away}" data-sport="${match.sport}" data-comp="${match.competition}" data-fh="${match.form_home || ''}" data-fa="${match.form_away || ''}" data-ch="${match.contexte_home || ''}" data-ca="${match.contexte_away || ''}" style="font-size:12px;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">IA Analyser</button>
-          <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
-        </div>
-      </div>
-    `).join('');
+        ${prono ? `<div style="padding:0 14px 12px 46px;font-size:12px;color:var(--text-mid);line-height:1.6;">${prono.analyse}</div>` : ''}
+      </div>`;
+    }).join('');
   }
 
   async function generateAnalysis(btn) {
