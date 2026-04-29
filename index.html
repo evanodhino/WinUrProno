@@ -1434,19 +1434,26 @@
 
       return `
         <div style="background:var(--surface);border:0.5px solid ${isToday ? 'var(--blue)' : 'var(--border)'};border-radius:12px;overflow:hidden;margin-bottom:8px;">
-          <div style="padding:8px 14px;background:${isToday ? 'var(--blue-dim)' : 'var(--surface2)'};display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--border-dim);">
-            <span style="font-size:12px;font-weight:600;color:${isToday ? 'var(--blue-light)' : 'var(--text-mid)'};">${dayLabel}</span>
-            <span style="font-size:11px;color:var(--text-muted);">${dayMatches.length} match${dayMatches.length > 1 ? 's' : ''}</span>
+          <div style="padding:8px 14px;background:${isToday ? 'var(--blue-dim)' : 'var(--surface2)'};display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:0.5px solid var(--border-dim);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;font-weight:600;color:${isToday ? 'var(--blue-light)' : 'var(--text-mid)'};">${dayLabel}</span>
+              <span style="font-size:11px;color:var(--text-muted);">${dayMatches.length} match${dayMatches.length > 1 ? 's' : ''}</span>
+            </div>
+            ${!isToday && !(currentUser && (currentUser.plan === 'pro' || currentUser.plan === 'annuel')) ? '<span onclick="showPage('abonnement')" style="font-size:10px;color:var(--blue-light);background:var(--blue-dim);padding:2px 8px;border-radius:99px;cursor:pointer;">🔒 Pro</span>' : ''}
           </div>
           ${dayMatches.map(m => `
-            <div onclick="document.getElementById('matches-date-label').scrollIntoView({behavior:'smooth'})" style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border-dim);cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
-              <span style="font-size:16px;">${sportEmoji[m.sport] || '🏆'}</span>
-              <div style="flex:1;min-width:0;">
-                <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.equipe_home} vs ${m.equipe_away}</div>
-                <div style="font-size:11px;color:var(--text-muted);">${m.competition}</div>
-              </div>
-              <div style="font-size:12px;color:var(--text-muted);flex-shrink:0;">${m.heure}</div>
-            </div>
+            ${(() => {
+              const isPro = currentUser && (currentUser.plan === 'pro' || currentUser.plan === 'annuel');
+              const isBlurred = !isPro && date !== today;
+              return `<div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border-dim);${isBlurred ? 'filter:blur(4px);pointer-events:none;user-select:none;' : 'cursor:pointer;transition:background 0.15s;'}" ${!isBlurred ? 'onclick="document.getElementById('matches-date-label').scrollIntoView({behavior:'smooth'})" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''"' : ''}>
+                <span style="font-size:16px;">${sportEmoji[m.sport] || '🏆'}</span>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.equipe_home} vs ${m.equipe_away}</div>
+                  <div style="font-size:11px;color:var(--text-muted);">${m.competition}</div>
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);flex-shrink:0;">${m.heure}</div>
+              </div>`;
+            })()}
           `).join('')}
         </div>
       `;
