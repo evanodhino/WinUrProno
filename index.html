@@ -329,9 +329,9 @@
         <p style="font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">Résultats indicatifs — non garantis à 100%</p>
         <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:#fff;">Nos derniers pronos — très forte probabilité</h2>
       </div>
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:10px 18px;text-align:center;">
-        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:var(--green);">47/63</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">pronos gagnants ce mois</div>
+      <div id="live-score-box" style="background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:10px 18px;text-align:center;display:none;">
+        <div id="live-score-value" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:600;color:var(--green);">-</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">pronos gagnants</div>
       </div>
     </div>
 
@@ -881,6 +881,7 @@
         <div style="background:var(--surface);border:0.5px solid var(--green);border-radius:12px;padding:18px;text-align:center;">
           <div id="admin-stat-score" style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--green);">-</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Pronos corrects</div>
+          <button id="toggle-score-btn" onclick="toggleScoreDisplay()" style="margin-top:8px;font-size:11px;background:none;color:var(--green);border:0.5px solid var(--green);padding:3px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;">Afficher sur le site</button>
         </div>
       </div>
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:28px;margin-bottom:28px;">
@@ -1458,6 +1459,33 @@
     });
 
     cal.innerHTML = html;
+  }
+
+  function toggleScoreDisplay() {
+    const box = document.getElementById('live-score-box');
+    const btn = document.getElementById('toggle-score-btn');
+    if (!box) return;
+    const isVisible = box.style.display !== 'none';
+    box.style.display = isVisible ? 'none' : 'block';
+    if (btn) btn.textContent = isVisible ? 'Afficher sur le site' : 'Masquer du site';
+    localStorage.setItem('showScore', !isVisible);
+  }
+
+  async function loadLiveScore() {
+    const box = document.getElementById('live-score-box');
+    const val = document.getElementById('live-score-value');
+    if (!box || !val) return;
+
+    try {
+      const pronos = await callEdge('get_pronos_all', {});
+      if (!pronos) return;
+      const withResult = pronos.filter(p => p.result !== null && p.result !== undefined);
+      const correct = pronos.filter(p => p.result === true).length;
+      if (withResult.length > 0) {
+        val.textContent = correct + '/' + withResult.length;
+        box.style.display = 'block';
+      }
+    } catch(e) {}
   }
 
   async function callEdge(action, params) {
@@ -2765,6 +2793,12 @@ Les probabilités doivent totaliser 100.`;
     // Load real matches from API
     loadAndDisplayMatches();
     loadWeekCalendar();
+    loadLiveScore();
+    // Restore score visibility preference
+    if (localStorage.getItem('showScore') === 'true') {
+      const box = document.getElementById('live-score-box');
+      if (box) box.style.display = 'block';
+    }
 
     // Check Supabase session
     const { data: { session } } = await sb.auth.getSession();
