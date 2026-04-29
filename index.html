@@ -1363,7 +1363,7 @@
     try {
       const res = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/get-matches', {
         headers: {
-          'Authorization': 'Bearer sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ',
           'Content-Type': 'application/json'
         }
       });
@@ -1402,13 +1402,7 @@
     const today = now.toISOString().split('T')[0];
     const weekEnd = new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const { data: matches } = await sb
-      .from('matches')
-      .select('id, date, heure, equipe_home, equipe_away, sport, competition')
-      .gte('date', today)
-      .lte('date', weekEnd)
-      .order('date', { ascending: true })
-      .order('heure', { ascending: true });
+    const matches = await callEdge('get_week', { from: today, to: weekEnd });
 
     if (!matches || matches.length === 0) {
       cal.innerHTML = '';
@@ -1462,6 +1456,18 @@
     cal.innerHTML = html;
   }
 
+  async function callEdge(action, params) {
+    const res = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/get-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ'
+      },
+      body: JSON.stringify({ action, params })
+    });
+    return await res.json();
+  }
+
   async function loadAndDisplayMatches() {
     // Update date label
     const dateLabel = document.getElementById('matches-date-label');
@@ -1482,36 +1488,22 @@
       
       console.log('Looking for matches on date:', today);
       
-      const { data: matches, error } = await sb
-        .from('matches')
-        .select('*')
-        .eq('date', today)
-        .order('heure', { ascending: true });
-
-      if (!error && matches && matches.length > 0) {
-        const matchIds = matches.map(m => m.id);
-        const { data: pronos } = await sb
-          .from('pronos')
-          .select('*')
-          .in('match_id', matchIds);
-        
-        if (pronos) {
-          matches.forEach(match => {
-            match.pronos = pronos.filter(p => p.match_id === match.id);
-          });
-        }
-      }
-
+      const matches = await callEdge('get_matches_today', { date: today });
+      
       console.log('Matches found:', matches ? matches.length : 0);
-      console.log('Error:', error ? JSON.stringify(error) : 'none');
-
-      if (error) {
-        console.log('Supabase error:', JSON.stringify(error));
+      
+      if (!matches || matches.length === 0) {
+        console.log('No matches today for date:', today);
         return;
       }
-      if (!matches || matches.length === 0) {
-        console.log('No matches today in Supabase for date:', today);
-        return;
+
+      // Get pronos
+      const matchIds = matches.map(m => m.id);
+      const pronos = await callEdge('get_pronos', { matchIds });
+      if (pronos) {
+        matches.forEach(match => {
+          match.pronos = (pronos || []).filter(p => p.match_id === match.id);
+        });
       }
 
       // Clear demo cards
@@ -1613,7 +1605,7 @@
   }
 
   const SUPABASE_URL = 'https://viocpnpsfkxcrgjvtsep.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let currentUser = null;
 
@@ -2253,7 +2245,7 @@ Les probabilités doivent totaliser 100.`;
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg'
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ'
         },
         body: JSON.stringify({ home, away, sport, competition, formHome, formAway, contexteHome, contexteAway })
       });
@@ -2717,7 +2709,7 @@ Les probabilités doivent totaliser 100.`;
       const stripe = Stripe(STRIPE_PK);
       const response = await fetch('https://viocpnpsfkxcrgjvtsep.supabase.co/functions/v1/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer sb_publishable_MMvvuD4aorW0hEhRFaArOA_gOF2CGlg` },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpb2NwbnBzZmt4Y3JnanZ0c2VwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4Mjk4NTIsImV4cCI6MjA5MTQwNTg1Mn0.LeIch3i46i55ldeYRw4RSvpbycixzgzSbl5DSwYoPgQ` },
         body: JSON.stringify({
           priceId,
           email: currentUser.email,
