@@ -2538,8 +2538,9 @@ Les probabilités doivent totaliser 100.`;
   }
 
   async function adminDeleteMatch(id) {
-    if (!confirm('Archiver ce match ? Le prono sera conservé dans les stats.')) return;
-    await sb.from('matches').update({ archived: true }).eq('id', id);
+    const choice = confirm('Archiver ce match ?\n\nOK = Archiver (prono conservé dans les stats)\nAnnuler = Garder le match');
+    if (!choice) return;
+    await callEdge('archive_match', { id });
     loadAdminMatches();
   }
 
