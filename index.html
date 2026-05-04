@@ -2250,8 +2250,28 @@
               <input id="edit-heure-${match.id}" class="form-input" type="time" value="${match.heure}" style="font-size:13px;padding:8px 12px;"/>
             </div>
             <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Sport</label>
+              <select id="edit-sport-${match.id}" class="form-input" style="font-size:13px;padding:8px 12px;cursor:pointer;">
+                <option value="foot" ${match.sport === 'foot' ? 'selected' : ''} style="background:#131720;">Football</option>
+                <option value="basket" ${match.sport === 'basket' ? 'selected' : ''} style="background:#131720;">Basket</option>
+                <option value="tennis" ${match.sport === 'tennis' ? 'selected' : ''} style="background:#131720;">Tennis</option>
+                <option value="rugby" ${match.sport === 'rugby' ? 'selected' : ''} style="background:#131720;">Rugby</option>
+                <option value="mma" ${match.sport === 'mma' ? 'selected' : ''} style="background:#131720;">MMA</option>
+                <option value="boxe" ${match.sport === 'boxe' ? 'selected' : ''} style="background:#131720;">Boxe</option>
+                <option value="nfl" ${match.sport === 'nfl' ? 'selected' : ''} style="background:#131720;">NFL</option>
+              </select>
+            </div>
+            <div>
               <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Compétition</label>
               <input id="edit-comp-${match.id}" class="form-input" type="text" value="${match.competition}" placeholder="Ligue 1, Champions League..." style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Logo ${match.equipe_home} (URL)</label>
+              <input id="edit-lh-${match.id}" class="form-input" type="text" value="${match.logo_home || ''}" placeholder="https://...png" style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Logo ${match.equipe_away} (URL)</label>
+              <input id="edit-la-${match.id}" class="form-input" type="text" value="${match.logo_away || ''}" placeholder="https://...png" style="font-size:13px;padding:8px 12px;"/>
             </div>
             <div>
               <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Forme ${match.equipe_home}</label>
@@ -2554,8 +2574,13 @@ Les probabilités doivent totaliser 100.`;
     const finalCtxHome = contexteHome + (contexteGeneral ? ' | ' + contexteGeneral : '');
     const finalCtxAway = contexteAway + (contexteGeneral ? ' | ' + contexteGeneral : '');
 
+    const sport = document.getElementById('edit-sport-' + id).value;
+    const logoHome = document.getElementById('edit-lh-' + id).value.trim();
+    const logoAway = document.getElementById('edit-la-' + id).value.trim();
     const { error } = await sb.from('matches').update({
-      heure, competition,
+      heure, competition, sport,
+      logo_home: logoHome,
+      logo_away: logoAway,
       form_home: formHome,
       form_away: formAway,
       contexte_home: finalCtxHome,
