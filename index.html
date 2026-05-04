@@ -2834,6 +2834,7 @@ Les probabilités doivent totaliser 100.`;
   }
 
   async function logout() {
+    if (!confirm('Tu veux vraiment te déconnecter de WinUrProno ?')) return;
     await sb.auth.signOut();
     currentUser = null;
     updateNav();
