@@ -2251,6 +2251,10 @@
               <input id="edit-heure-${match.id}" class="form-input" type="time" value="${match.heure}" style="font-size:13px;padding:8px 12px;"/>
             </div>
             <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Compétition</label>
+              <input id="edit-comp-${match.id}" class="form-input" type="text" value="${match.competition}" placeholder="Ligue 1, Champions League..." style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
               <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Forme ${match.equipe_home}</label>
               <input id="edit-fh-${match.id}" class="form-input" type="text" value="${match.form_home || ''}" maxlength="5" placeholder="VVVDV" style="font-size:13px;padding:8px 12px;"/>
             </div>
@@ -2470,7 +2474,14 @@ Les probabilités doivent totaliser 100.`;
       for (const [key, val] of Object.entries(sportDetect)) {
         if (home.includes(key) || away.includes(key)) { sport = val; break; }
       }
-      const competition = competitionDetect[sport] || 'Ligue 1';
+      // Better competition detection from team names
+      let competition = competitionDetect[sport] || 'Ligue 1';
+      const championsTeams = ['Real Madrid', 'Barcelona', 'Bayern', 'Manchester', 'Arsenal', 'Chelsea', 'Liverpool', 'Juventus', 'Inter', 'Milan', 'PSG', 'Atletico', 'Dortmund', 'Porto', 'Benfica'];
+      const isChampions = championsTeams.some(t => home.includes(t) || away.includes(t));
+      if (sport === 'foot' && isChampions) competition = 'Champions League';
+      const ligue1Teams = ['PSG', 'Monaco', 'Lyon', 'Marseille', 'Lens', 'Lille', 'Nice', 'Rennes', 'Nantes', 'Toulouse', 'Strasbourg', 'Montpellier', 'Brest', 'Reims', 'Angers', 'Auxerre', 'Le Havre', 'Saint-Etienne'];
+      const isLigue1 = ligue1Teams.some(t => home.includes(t) || away.includes(t));
+      if (sport === 'foot' && isLigue1) competition = 'Ligue 1';
       const matchHeure = heure || '20:00';
 
       const importContexte = document.getElementById('import-contexte').value.trim();
@@ -2523,8 +2534,10 @@ Les probabilités doivent totaliser 100.`;
     const finalCtxHome = contexteHome + (contexteGeneral ? ' | ' + contexteGeneral : '');
     const finalCtxAway = contexteAway + (contexteGeneral ? ' | ' + contexteGeneral : '');
 
+    const competition = document.getElementById('edit-comp-' + id).value.trim();
     const { error } = await sb.from('matches').update({
       heure,
+      competition,
       form_home: formHome,
       form_away: formAway,
       contexte_home: finalCtxHome,
