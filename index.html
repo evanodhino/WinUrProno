@@ -2538,6 +2538,38 @@ Les probabilités doivent totaliser 100.`;
   }
 
 
+  function toggleEditMatch(id) {
+    const el = document.getElementById('edit-' + id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function saveEditMatch(id) {
+    const heure = document.getElementById('edit-heure-' + id).value;
+    const competition = document.getElementById('edit-comp-' + id).value.trim();
+    const formHome = document.getElementById('edit-fh-' + id).value.trim().toUpperCase().slice(0,5);
+    const formAway = document.getElementById('edit-fa-' + id).value.trim().toUpperCase().slice(0,5);
+    const contexteHome = document.getElementById('edit-ch-' + id).value.trim();
+    const contexteAway = document.getElementById('edit-ca-' + id).value.trim();
+    const contexteGeneral = document.getElementById('edit-cg-' + id).value.trim();
+    const finalCtxHome = contexteHome + (contexteGeneral ? ' | ' + contexteGeneral : '');
+    const finalCtxAway = contexteAway + (contexteGeneral ? ' | ' + contexteGeneral : '');
+
+    const { error } = await sb.from('matches').update({
+      heure, competition,
+      form_home: formHome,
+      form_away: formAway,
+      contexte_home: finalCtxHome,
+      contexte_away: finalCtxAway
+    }).eq('id', id);
+
+    if (!error) {
+      toggleEditMatch(id);
+      loadAdminMatches();
+    } else {
+      alert('Erreur: ' + error.message);
+    }
+  }
+
   async function adminDeleteMatch(id) {
     const choice = confirm('Archiver ce match ?\n\nOK = Archiver (prono conservé dans les stats)\nAnnuler = Garder le match');
     if (!choice) return;
