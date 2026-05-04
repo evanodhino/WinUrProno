@@ -2184,7 +2184,7 @@
     const list = document.getElementById('admin-matches-list');
     if (!list) return;
 
-    const { data, error } = await sb.from('matches').select('*').order('date', { ascending: true });
+    const { data, error } = await sb.from('matches').select('*').eq('archived', false).order('date', { ascending: true });
     
     // Also fetch pronos for these matches
     let pronosMap = {};
@@ -2538,10 +2538,8 @@ Les probabilités doivent totaliser 100.`;
   }
 
   async function adminDeleteMatch(id) {
-    if (!confirm('Supprimer ce match ?')) return;
-    // Delete prono first, then match
-    await sb.from('pronos').delete().eq('match_id', id);
-    await sb.from('matches').delete().eq('id', id);
+    if (!confirm('Archiver ce match ? Le prono sera conservé dans les stats.')) return;
+    await sb.from('matches').update({ archived: true }).eq('id', id);
     loadAdminMatches();
   }
 
