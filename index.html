@@ -2239,10 +2239,45 @@
             <button onclick="setPronoResult('${prono.id}', true, this)" style="font-size:12px;background:${prono.result === true ? 'rgba(52,211,153,0.2)' : 'none'};color:var(--green);border:0.5px solid var(--green);padding:6px 10px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;" title="Prono correct">✓</button>
             <button onclick="setPronoResult('${prono.id}', false, this)" style="font-size:12px;background:${prono.result === false ? 'rgba(248,113,113,0.2)' : 'none'};color:var(--red);border:0.5px solid var(--red);padding:6px 10px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;" title="Prono incorrect">✗</button>
             ` : ''}
+            <button onclick="toggleEditMatch('${match.id}')" style="font-size:12px;background:none;color:var(--blue-light);border:0.5px solid var(--blue);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Modifier</button>
             <button onclick="adminDeleteMatch('${match.id}')" style="font-size:12px;background:none;color:var(--red);border:0.5px solid var(--red);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Supprimer</button>
           </div>
         </div>
         ${prono ? `<div style="padding:0 14px 12px 46px;font-size:12px;color:var(--text-mid);line-height:1.6;">${prono.analyse}</div>` : ''}
+        <div id="edit-${match.id}" style="display:none;padding:16px;background:var(--surface2);border-top:0.5px solid var(--border-dim);">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Heure</label>
+              <input id="edit-heure-${match.id}" class="form-input" type="time" value="${match.heure}" style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Forme ${match.equipe_home}</label>
+              <input id="edit-fh-${match.id}" class="form-input" type="text" value="${match.form_home || ''}" maxlength="5" placeholder="VVVDV" style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Forme ${match.equipe_away}</label>
+              <input id="edit-fa-${match.id}" class="form-input" type="text" value="${match.form_away || ''}" maxlength="5" placeholder="DVVND" style="font-size:13px;padding:8px 12px;"/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Contexte ${match.equipe_home}</label>
+              <textarea id="edit-ch-${match.id}" class="form-input" style="resize:vertical;min-height:70px;font-size:12px;padding:8px 12px;">${match.contexte_home || ''}</textarea>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Contexte ${match.equipe_away}</label>
+              <textarea id="edit-ca-${match.id}" class="form-input" style="resize:vertical;min-height:70px;font-size:12px;padding:8px 12px;">${match.contexte_away || ''}</textarea>
+            </div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Contexte général</label>
+            <textarea id="edit-cg-${match.id}" class="form-input" style="resize:vertical;min-height:60px;font-size:12px;padding:8px 12px;" placeholder="Infos supplémentaires, météo, enjeu..."></textarea>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="saveEditMatch('${match.id}')" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Sauvegarder</button>
+            <button onclick="toggleEditMatch('${match.id}')" style="font-size:13px;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Annuler</button>
+          </div>
+        </div>
       </div>`;
     }).join('');
   }
@@ -2470,6 +2505,36 @@ Les probabilités doivent totaliser 100.`;
   async function setPronoResult(pronoId, isCorrect, btn) {
     await sb.from('pronos').update({ result: isCorrect }).eq('id', pronoId);
     loadAdminMatches();
+  }
+
+  function toggleEditMatch(id) {
+    const el = document.getElementById('edit-' + id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function saveEditMatch(id) {
+    const heure = document.getElementById('edit-heure-' + id).value;
+    const formHome = document.getElementById('edit-fh-' + id).value.trim().toUpperCase().slice(0,5);
+    const formAway = document.getElementById('edit-fa-' + id).value.trim().toUpperCase().slice(0,5);
+    const contexteHome = document.getElementById('edit-ch-' + id).value.trim();
+    const contexteAway = document.getElementById('edit-ca-' + id).value.trim();
+    const contexteGeneral = document.getElementById('edit-cg-' + id).value.trim();
+
+    const finalCtxHome = contexteHome + (contexteGeneral ? ' | ' + contexteGeneral : '');
+    const finalCtxAway = contexteAway + (contexteGeneral ? ' | ' + contexteGeneral : '');
+
+    const { error } = await sb.from('matches').update({
+      heure,
+      form_home: formHome,
+      form_away: formAway,
+      contexte_home: finalCtxHome,
+      contexte_away: finalCtxAway
+    }).eq('id', id);
+
+    if (!error) {
+      toggleEditMatch(id);
+      loadAdminMatches();
+    }
   }
 
   async function adminDeleteMatch(id) {
