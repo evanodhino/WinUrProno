@@ -970,7 +970,6 @@
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <input id="import-date" class="form-input" type="date" style="width:auto;"/>
-          <input id="import-heure" class="form-input" type="time" style="width:auto;"/>
           <input id="import-is-free" type="checkbox" style="width:16px;height:16px;cursor:pointer;"/>
           <label style="font-size:13px;color:var(--text-mid);">Pronos gratuits</label>
         </div>
@@ -2382,121 +2381,146 @@ Les probabilités doivent totaliser 100.`;
 
   async function importCalendar() {
     const text = document.getElementById('import-calendar-text').value.trim();
-    const date = document.getElementById('import-date').value;
-    const heure = document.getElementById('import-heure').value;
+    const defaultDate = document.getElementById('import-date').value;
+    const defaultHeure = '20:00';
     const isFree = document.getElementById('import-is-free').checked;
+    const importContexte = document.getElementById('import-contexte').value.trim();
     const err = document.getElementById('import-error');
     const suc = document.getElementById('import-success');
     err.style.display = 'none';
     suc.style.display = 'none';
 
-    if (!text || !date) {
+    if (!text || !defaultDate) {
       err.textContent = 'Remplis la date !';
       err.style.display = 'block';
       return;
     }
 
+    // Sport detection by team name
     const sportDetect = {
+      // Football
       'PSG': 'foot', 'Real Madrid': 'foot', 'Barcelona': 'foot', 'Bayern': 'foot',
       'Arsenal': 'foot', 'Chelsea': 'foot', 'Liverpool': 'foot', 'Manchester': 'foot',
       'Juventus': 'foot', 'Inter': 'foot', 'Milan': 'foot', 'Marseille': 'foot',
       'Lyon': 'foot', 'Monaco': 'foot', 'Lens': 'foot', 'Lille': 'foot',
-      'Angers': 'foot', 'Auxerre': 'foot', 'Toulouse': 'foot', 'Nantes': 'foot',
-      'Rennes': 'foot', 'Nice': 'foot', 'Strasbourg': 'foot', 'Montpellier': 'foot',
-      'Brest': 'foot', 'Reims': 'foot', 'Le Havre': 'foot', 'Saint-Etienne': 'foot',
+      'Angers': 'foot', 'Auxerre': 'foot', 'Nantes': 'foot', 'Rennes': 'foot',
+      'Nice': 'foot', 'Strasbourg': 'foot', 'Montpellier': 'foot', 'Brest': 'foot',
+      'Reims': 'foot', 'Le Havre': 'foot', 'Saint-Etienne': 'foot', 'Toulouse FC': 'foot',
       'Atletico': 'foot', 'Dortmund': 'foot', 'Porto': 'foot', 'Benfica': 'foot',
+      'Ajax': 'foot', 'Tottenham': 'foot', 'Napoli': 'foot', 'Roma': 'foot',
+      // Basket
       'Lakers': 'basket', 'Celtics': 'basket', 'Warriors': 'basket', 'Bulls': 'basket',
       'Heat': 'basket', 'Nets': 'basket', 'Knicks': 'basket', 'Spurs': 'basket',
       'Nuggets': 'basket', 'Bucks': 'basket', 'Suns': 'basket', 'Clippers': 'basket',
+      'Boston': 'basket', 'Miami': 'basket', 'Denver': 'basket', 'Phoenix': 'basket',
+      // Tennis
       'Nadal': 'tennis', 'Djokovic': 'tennis', 'Alcaraz': 'tennis', 'Sinner': 'tennis',
       'Medvedev': 'tennis', 'Zverev': 'tennis', 'Swiatek': 'tennis', 'Gauff': 'tennis',
+      'Federer': 'tennis', 'Murray': 'tennis', 'Tsitsipas': 'tennis',
+      // Rugby
+      'Toulouse': 'rugby', 'Stade Toulousain': 'rugby', 'Leinster': 'rugby',
+      'Racing': 'rugby', 'Bordeaux': 'rugby', 'UBB': 'rugby', 'Stade Bordelais': 'rugby',
+      'Clermont': 'rugby', 'La Rochelle': 'rugby', 'Stade Français': 'rugby',
+      'Montpellier Hérault': 'rugby', 'Lyon OU': 'rugby', 'Castres': 'rugby',
+      'Bayonne': 'rugby', 'Perpignan': 'rugby', 'Vannes': 'rugby',
+      'Munster': 'rugby', 'Ulster': 'rugby', 'Exeter': 'rugby', 'Saracens': 'rugby',
+      // MMA
       'Pereira': 'mma', 'Jones': 'mma', 'Adesanya': 'mma', 'Poirier': 'mma',
+      'McGregor': 'mma', 'Ngannou': 'mma', 'Strickland': 'mma', 'Ankalaev': 'mma',
+      // Boxe
       'Fury': 'boxe', 'Usyk': 'boxe', 'Joshua': 'boxe', 'Canelo': 'boxe',
-      'Chiefs': 'nfl', 'Patriots': 'nfl', '49ers': 'nfl', 'Cowboys': 'nfl', 'Eagles': 'nfl', 'Packers': 'nfl', 'Bills': 'nfl', 'Ravens': 'nfl',
-      'Toulouse': 'rugby', 'Leinster': 'rugby', 'Racing': 'rugby', 'Bordeaux': 'rugby',
-      'Stade Francais': 'rugby', 'Clermont': 'rugby', 'La Rochelle': 'rugby'
+      'Bivol': 'boxe', 'Beterbiev': 'boxe', 'Crawford': 'boxe', 'Spence': 'boxe',
+      // NFL
+      'Chiefs': 'nfl', 'Patriots': 'nfl', '49ers': 'nfl', 'Cowboys': 'nfl',
+      'Eagles': 'nfl', 'Packers': 'nfl', 'Bills': 'nfl', 'Ravens': 'nfl',
+      'Dolphins': 'nfl', 'Broncos': 'nfl', 'Seahawks': 'nfl', 'Rams': 'nfl'
     };
 
     const competitionDetect = {
       'foot': 'Ligue 1', 'basket': 'NBA', 'tennis': 'ATP',
-      'mma': 'UFC', 'boxe': 'Combat sans titre', 'rugby': 'Top 14'
+      'mma': 'UFC', 'boxe': 'Combat sans titre', 'rugby': 'Top 14', 'nfl': 'NFL'
     };
 
-    // Parse Flashscore format - extract team names from lines
-    // Flashscore repeats team name twice: Lyon / Lyon / Auxerre / Auxerre
-    // Also handles simple "Lyon vs Auxerre" format
+    const ligue1Teams = ['PSG', 'Monaco', 'Lyon', 'Marseille', 'Lens', 'Lille', 'Nice', 'Rennes', 'Nantes', 'Toulouse FC', 'Strasbourg', 'Montpellier', 'Brest', 'Reims', 'Angers', 'Auxerre', 'Le Havre', 'Saint-Etienne'];
+    const championsTeams = ['Real Madrid', 'Barcelona', 'Bayern', 'Arsenal', 'Chelsea', 'Liverpool', 'Manchester', 'Juventus', 'Inter', 'Milan', 'PSG', 'Atletico', 'Dortmund', 'Porto', 'Benfica'];
+
     const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-    
     const matches = [];
-    
-    // Try simple "vs" format first
-    const vsMatches = lines.filter(l => /\bvs\.?\b/i.test(l));
-    if (vsMatches.length > 0) {
-      for (const line of vsMatches) {
-        const m = line.match(/(.+?)\s+vs\.?\s+(.+)/i);
-        if (m) matches.push({ home: m[1].trim(), away: m[2].trim() });
+
+    for (const line of lines) {
+      // Try to extract time from line (19h, 19:00, 21h30...)
+      let lineHeure = defaultHeure;
+      const timeMatch = line.match(/(\d{1,2})[h:](\d{0,2})/i);
+      if (timeMatch) {
+        const h = timeMatch[1].padStart(2, '0');
+        const m = (timeMatch[2] || '00').padStart(2, '0');
+        lineHeure = h + ':' + m;
       }
-    } else {
-      // Flashscore format: team names appear twice consecutively
-      // Filter out non-team lines (times, scores, competition names)
-      const timeRegex = /^\d{1,2}:\d{2}$/;
-      const scoreRegex = /^\d+$/;
-      const skipWords = ['Terminé', 'En direct', 'À venir', 'Classement', 'FRANCE', 'ESPAGNE', 'ANGLETERRE', 'ALLEMAGNE', 'ITALIE', 'Ligue', 'Liga', 'Premier', 'Bundesliga', 'Serie', 'Champion'];
-      
-      const teamLines = [];
-      for (const line of lines) {
-        if (timeRegex.test(line)) continue;
-        if (scoreRegex.test(line)) continue;
-        if (skipWords.some(w => line.includes(w))) continue;
-        if (line.length < 2) continue;
-        teamLines.push(line);
+
+      // Try to extract date from line (05/05, 5 mai...)
+      let lineDate = defaultDate;
+      const dateMatch = line.match(/(\d{1,2})\/(\d{1,2})/);
+      if (dateMatch) {
+        const now = new Date();
+        const day = dateMatch[1].padStart(2, '0');
+        const month = dateMatch[2].padStart(2, '0');
+        lineDate = now.getFullYear() + '-' + month + '-' + day;
       }
-      
-      // Teams appear twice in Flashscore - deduplicate consecutive duplicates
-      const deduped = [];
-      for (let i = 0; i < teamLines.length; i++) {
-        if (i === 0 || teamLines[i] !== teamLines[i-1]) {
-          deduped.push(teamLines[i]);
+
+      // Clean line - remove time and date patterns for team extraction
+      const cleanLine = line
+        .replace(/(\d{1,2})[h:](\d{0,2})/gi, '')
+        .replace(/(\d{1,2})\/(\d{1,2})/g, '')
+        .trim();
+
+      // Try vs format
+      const vsMatch = cleanLine.match(/(.+?)\s+vs\.?\s+(.+)/i);
+      if (!vsMatch) continue;
+
+      const home = vsMatch[1].trim().replace(/\s+/g, ' ');
+      const away = vsMatch[2].trim().replace(/\s+/g, ' ');
+
+      if (!home || !away) continue;
+
+      // Detect sport
+      let sport = 'foot';
+      for (const [key, val] of Object.entries(sportDetect)) {
+        if (home.toLowerCase().includes(key.toLowerCase()) || away.toLowerCase().includes(key.toLowerCase())) {
+          sport = val;
+          break;
         }
       }
-      
-      // Now pair them up: home, away, home, away...
-      for (let i = 0; i + 1 < deduped.length; i += 2) {
-        matches.push({ home: deduped[i], away: deduped[i+1] });
+
+      // Detect competition
+      let competition = competitionDetect[sport] || 'Ligue 1';
+      if (sport === 'foot') {
+        const isChampions = championsTeams.some(t => home.includes(t) || away.includes(t));
+        const isLigue1 = ligue1Teams.some(t => home.includes(t) || away.includes(t));
+        if (isChampions && !isLigue1) competition = 'Champions League';
+        else if (isLigue1) competition = 'Ligue 1';
       }
+
+      matches.push({ home, away, sport, competition, heure: lineHeure, date: lineDate });
     }
 
     let imported = 0;
     let errors = 0;
 
-    for (const { home, away } of matches) {
-      let sport = 'foot';
-      for (const [key, val] of Object.entries(sportDetect)) {
-        if (home.includes(key) || away.includes(key)) { sport = val; break; }
-      }
-      // Better competition detection from team names
-      let competition = competitionDetect[sport] || 'Ligue 1';
-      const championsTeams = ['Real Madrid', 'Barcelona', 'Bayern', 'Manchester', 'Arsenal', 'Chelsea', 'Liverpool', 'Juventus', 'Inter', 'Milan', 'PSG', 'Atletico', 'Dortmund', 'Porto', 'Benfica'];
-      const isChampions = championsTeams.some(t => home.includes(t) || away.includes(t));
-      if (sport === 'foot' && isChampions) competition = 'Champions League';
-      const ligue1Teams = ['PSG', 'Monaco', 'Lyon', 'Marseille', 'Lens', 'Lille', 'Nice', 'Rennes', 'Nantes', 'Toulouse', 'Strasbourg', 'Montpellier', 'Brest', 'Reims', 'Angers', 'Auxerre', 'Le Havre', 'Saint-Etienne'];
-      const isLigue1 = ligue1Teams.some(t => home.includes(t) || away.includes(t));
-      if (sport === 'foot' && isLigue1) competition = 'Ligue 1';
-      const matchHeure = heure || '20:00';
-
-      const importContexte = document.getElementById('import-contexte').value.trim();
+    for (const m of matches) {
       const { error } = await sb.from('matches').insert({
-        sport, competition,
-        equipe_home: home,
-        equipe_away: away,
-        date, heure: matchHeure,
+        sport: m.sport,
+        competition: m.competition,
+        equipe_home: m.home.replace(/\b\w/g, c => c.toUpperCase()),
+        equipe_away: m.away.replace(/\b\w/g, c => c.toUpperCase()),
+        date: m.date,
+        heure: m.heure,
         logo_home: '', logo_away: '',
         is_free: isFree,
         form_home: '', form_away: '',
         contexte_home: importContexte,
-        contexte_away: importContexte
+        contexte_away: importContexte,
+        archived: false
       });
-
       if (error) errors++;
       else imported++;
     }
@@ -2508,47 +2532,11 @@ Les probabilités doivent totaliser 100.`;
       loadAdminMatches();
     }
     if (errors > 0 || matches.length === 0) {
-      err.textContent = matches.length === 0 ? 'Aucun match détecté — essaie le format "Lyon vs Auxerre"' : errors + ' erreur(s) lors de l\'import.';
+      err.textContent = matches.length === 0 ? 'Aucun match détecté — format: "PSG vs Bayern 21h 05/05"' : errors + ' erreur(s).';
       err.style.display = 'block';
     }
   }
 
-  async function setPronoResult(pronoId, isCorrect, btn) {
-    await sb.from('pronos').update({ result: isCorrect }).eq('id', pronoId);
-    loadAdminMatches();
-  }
-
-  function toggleEditMatch(id) {
-    const el = document.getElementById('edit-' + id);
-    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-  }
-
-  async function saveEditMatch(id) {
-    const heure = document.getElementById('edit-heure-' + id).value;
-    const formHome = document.getElementById('edit-fh-' + id).value.trim().toUpperCase().slice(0,5);
-    const formAway = document.getElementById('edit-fa-' + id).value.trim().toUpperCase().slice(0,5);
-    const contexteHome = document.getElementById('edit-ch-' + id).value.trim();
-    const contexteAway = document.getElementById('edit-ca-' + id).value.trim();
-    const contexteGeneral = document.getElementById('edit-cg-' + id).value.trim();
-
-    const finalCtxHome = contexteHome + (contexteGeneral ? ' | ' + contexteGeneral : '');
-    const finalCtxAway = contexteAway + (contexteGeneral ? ' | ' + contexteGeneral : '');
-
-    const competition = document.getElementById('edit-comp-' + id).value.trim();
-    const { error } = await sb.from('matches').update({
-      heure,
-      competition,
-      form_home: formHome,
-      form_away: formAway,
-      contexte_home: finalCtxHome,
-      contexte_away: finalCtxAway
-    }).eq('id', id);
-
-    if (!error) {
-      toggleEditMatch(id);
-      loadAdminMatches();
-    }
-  }
 
   async function adminDeleteMatch(id) {
     const choice = confirm('Archiver ce match ?\n\nOK = Archiver (prono conservé dans les stats)\nAnnuler = Garder le match');
