@@ -2558,6 +2558,11 @@ Les probabilités doivent totaliser 100.`;
   }
 
 
+  async function setPronoResult(pronoId, isCorrect, btn) {
+    const { error } = await sb.from('pronos').update({ result: isCorrect }).eq('id', pronoId);
+    if (!error) loadAdminMatches();
+  }
+
   function toggleEditMatch(id) {
     const el = document.getElementById('edit-' + id);
     if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
