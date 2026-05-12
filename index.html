@@ -2704,14 +2704,27 @@ Les probabilités doivent totaliser 100.`;
     const err = document.getElementById('prenom-error');
     suc.style.display = 'none'; err.style.display = 'none';
     if (!prenom) { err.textContent = 'Prénom invalide.'; err.style.display = 'block'; return; }
-    const { error } = await sb.auth.updateUser({ data: { prenom } });
+
+    // Check 7 days limit
+    const lastChange = currentUser.prenom_changed_at;
+    if (lastChange) {
+      const daysSince = (Date.now() - new Date(lastChange).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSince < 7) {
+        const daysLeft = Math.ceil(7 - daysSince);
+        err.textContent = `Tu pourras changer ton prénom dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}.`;
+        err.style.display = 'block';
+        return;
+      }
+    }
+
+    const { error } = await sb.auth.updateUser({ data: { prenom, prenom_changed_at: new Date().toISOString() } });
     if (error) { err.textContent = 'Erreur: ' + error.message; err.style.display = 'block'; }
     else {
       currentUser.prenom = prenom;
+      currentUser.prenom_changed_at = new Date().toISOString();
       updateNav();
       initProfil();
       suc.textContent = '✓ Prénom mis à jour !'; suc.style.display = 'block';
-      initProfil();
       setTimeout(() => { suc.style.display = 'none'; closeEditProfil(); }, 1500);
     }
   }
@@ -3109,6 +3122,7 @@ Les probabilités doivent totaliser 100.`;
     if (session) {
       currentUser = {
         prenom: session.user.user_metadata.prenom || session.user.user_metadata.full_name || session.user.email.split('@')[0],
+        prenom_changed_at: session.user.user_metadata.prenom_changed_at || null,
         email: session.user.email,
         plan: session.user.user_metadata.plan || 'gratuit',
         photo: session.user.user_metadata.avatar_url || null
@@ -3176,6 +3190,7 @@ Les probabilités doivent totaliser 100.`;
     if (session) {
       currentUser = {
         prenom: session.user.user_metadata.prenom || session.user.email.split('@')[0],
+        prenom_changed_at: session.user.user_metadata.prenom_changed_at || null,
         email: session.user.email,
         plan: session.user.user_metadata.plan || 'gratuit',
         photo: null
