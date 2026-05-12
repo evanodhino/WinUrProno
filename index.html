@@ -1285,70 +1285,24 @@
       <!-- Infos compte -->
       <!-- Infos compte -->
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:24px;">
-        <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue-light)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Informations du compte
-        </h2>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div style="padding-bottom:14px;border-bottom:0.5px solid var(--border-dim);">
-            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Prénom</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <input id="edit-prenom" class="form-input" type="text" style="font-size:14px;padding:8px 12px;flex:1;"/>
-              <button onclick="savePrenom()" style="font-size:12px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">Sauvegarder</button>
-            </div>
-            <p id="prenom-success" style="display:none;font-size:12px;color:var(--green);margin-top:6px;"></p>
-            <p id="prenom-error" style="display:none;font-size:12px;color:var(--red);margin-top:6px;"></p>
-          </div>
-          <div style="padding-bottom:14px;border-bottom:0.5px solid var(--border-dim);">
-            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Email</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <input id="edit-email" class="form-input" type="email" style="font-size:14px;padding:8px 12px;flex:1;"/>
-              <button onclick="saveEmail()" style="font-size:12px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">Sauvegarder</button>
-            </div>
-            <p id="email-success" style="display:none;font-size:12px;color:var(--green);margin-top:6px;"></p>
-            <p id="email-error" style="display:none;font-size:12px;color:var(--red);margin-top:6px;"></p>
-          </div>
-          <div>
-            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Abonnement</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div id="profil-plan" style="font-size:15px;color:var(--green);font-weight:500;">Gratuit — 3 pronos/jour</div>
-              <button id="profil-upgrade-btn" onclick="showPage('abonnement')" style="font-size:12px;background:var(--blue);color:#fff;border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Passer Pro ✨</button>
-            </div>
-          </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue-light)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Informations du compte
+          </h2>
+          <button onclick="openEditProfil()" style="font-size:12px;font-weight:500;background:var(--blue-dim);color:var(--blue-light);border:0.5px solid var(--blue);padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Modifier mon profil</button>
         </div>
-      </div>
-
-      <!-- Changer mot de passe -->
-      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:24px;">
-        <h2 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue-light)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Changer le mot de passe
-        </h2>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div>
-            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Ancien mot de passe</label>
-            <div style="position:relative;">
-              <input id="pwd-old" class="form-input" type="password" placeholder="Ton mot de passe actuel" style="padding-right:42px;"/>
-              <button type="button" onclick="togglePwd('pwd-old', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-            </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:0.5px solid var(--border-dim);">
+            <div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Prénom</div><div id="profil-prenom" style="font-size:15px;color:var(--text);font-weight:500;"></div></div>
           </div>
-          <div>
-            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Nouveau mot de passe</label>
-            <div style="position:relative;">
-              <input id="pwd-new" class="form-input" type="password" placeholder="8 caractères minimum" style="padding-right:42px;"/>
-              <button type="button" onclick="togglePwd('pwd-new', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-            </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:0.5px solid var(--border-dim);">
+            <div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Email</div><div id="profil-email2" style="font-size:15px;color:var(--text);font-weight:500;"></div></div>
           </div>
-          <div>
-            <label style="font-size:12px;color:var(--text-mid);margin-bottom:6px;display:block;">Confirmer le nouveau mot de passe</label>
-            <div style="position:relative;">
-              <input id="pwd-confirm" class="form-input" type="password" placeholder="Répète le nouveau mot de passe" style="padding-right:42px;"/>
-              <button type="button" onclick="togglePwd('pwd-confirm', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-            </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Abonnement</div><div id="profil-plan" style="font-size:15px;color:var(--green);font-weight:500;">Gratuit — 3 pronos/jour</div></div>
+            <button id="profil-upgrade-btn" onclick="showPage('abonnement')" style="font-size:12px;background:var(--blue);color:#fff;border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Passer Pro ✨</button>
           </div>
-          <p id="pwd-error" style="display:none;font-size:12px;color:var(--red);"></p>
-          <p id="pwd-success" style="display:none;font-size:12px;color:var(--green);"></p>
-          <button onclick="savePassword()" style="font-size:14px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:11px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Changer le mot de passe</button>
         </div>
       </div>
 
@@ -1450,6 +1404,58 @@
     </div>
   </div>
   <footer style="text-align:center;padding:20px 24px 32px;font-size:12px;color:#7B8DB0;border-top:0.5px solid #1E2535;">WinUrProno © 2026 — <span style="color:#60A5FA;cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span> · <span style="color:#60A5FA;cursor:pointer;" onclick="showPage('cgu')">CGU</span></footer>
+</div>
+
+<!-- ===== MODAL EDIT PROFIL ===== -->
+<div id="modal-edit-profil" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;overflow-y:auto;padding:20px;">
+  <div style="max-width:480px;margin:40px auto;background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:32px;position:relative;">
+    <button onclick="closeEditProfil()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-mid);cursor:pointer;font-size:20px;">✕</button>
+    <h2 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:600;color:#fff;margin-bottom:24px;">Modifier mon profil</h2>
+
+    <!-- Prénom -->
+    <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border-dim);">
+      <label style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:block;">Prénom</label>
+      <div style="display:flex;gap:8px;">
+        <input id="edit-prenom" class="form-input" type="text" style="flex:1;"/>
+        <button onclick="savePrenom()" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:0 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">Sauvegarder</button>
+      </div>
+      <p id="prenom-success" style="display:none;font-size:12px;color:var(--green);margin-top:6px;"></p>
+      <p id="prenom-error" style="display:none;font-size:12px;color:var(--red);margin-top:6px;"></p>
+    </div>
+
+    <!-- Email -->
+    <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:0.5px solid var(--border-dim);">
+      <label style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:block;">Email</label>
+      <div style="display:flex;gap:8px;">
+        <input id="edit-email" class="form-input" type="email" style="flex:1;"/>
+        <button onclick="saveEmail()" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:0 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">Sauvegarder</button>
+      </div>
+      <p id="email-success" style="display:none;font-size:12px;color:var(--green);margin-top:6px;"></p>
+      <p id="email-error" style="display:none;font-size:12px;color:var(--red);margin-top:6px;"></p>
+    </div>
+
+    <!-- Mot de passe -->
+    <div>
+      <label style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;display:block;">Mot de passe</label>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="position:relative;">
+          <input id="pwd-old" class="form-input" type="password" placeholder="Ancien mot de passe" style="padding-right:42px;"/>
+          <button type="button" onclick="togglePwd('pwd-old',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div style="position:relative;">
+          <input id="pwd-new" class="form-input" type="password" placeholder="Nouveau mot de passe (8 car. min)" style="padding-right:42px;"/>
+          <button type="button" onclick="togglePwd('pwd-new',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div style="position:relative;">
+          <input id="pwd-confirm" class="form-input" type="password" placeholder="Confirmer le nouveau mot de passe" style="padding-right:42px;"/>
+          <button type="button" onclick="togglePwd('pwd-confirm',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <p id="pwd-error" style="display:none;font-size:12px;color:var(--red);"></p>
+        <p id="pwd-success" style="display:none;font-size:12px;color:var(--green);"></p>
+        <button onclick="savePassword()" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:11px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Changer le mot de passe</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ===== MODAL ANALYSE COMPLETE ===== -->
@@ -2677,6 +2683,21 @@ Les probabilités doivent totaliser 100.`;
     if (!error) loadAdminMatches();
   }
 
+  function openEditProfil() {
+    const modal = document.getElementById('modal-edit-profil');
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    if (currentUser) {
+      document.getElementById('edit-prenom').value = currentUser.prenom || '';
+      document.getElementById('edit-email').value = currentUser.email || '';
+    }
+  }
+
+  function closeEditProfil() {
+    document.getElementById('modal-edit-profil').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
   async function savePrenom() {
     const prenom = document.getElementById('edit-prenom').value.trim();
     const suc = document.getElementById('prenom-success');
@@ -2690,7 +2711,8 @@ Les probabilités doivent totaliser 100.`;
       updateNav();
       initProfil();
       suc.textContent = '✓ Prénom mis à jour !'; suc.style.display = 'block';
-      setTimeout(() => suc.style.display = 'none', 3000);
+      initProfil();
+      setTimeout(() => { suc.style.display = 'none'; closeEditProfil(); }, 1500);
     }
   }
 
