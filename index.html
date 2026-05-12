@@ -598,7 +598,14 @@
         <div class="auth-title">Bon retour !</div>
         <div class="auth-subtitle">Connecte-toi pour accéder à tes pronos</div>
         <div class="form-group"><label class="form-label">Adresse email</label><input id="login-email" class="form-input" type="email" placeholder="ton@email.com"/></div>
-        <div class="form-group"><label class="form-label">Mot de passe</label><input id="login-pwd" class="form-input" type="password" placeholder="••••••••"/></div>
+        <div class="form-group"><label class="form-label">Mot de passe</label>
+          <div style="position:relative;">
+            <input id="login-pwd" class="form-input" type="password" placeholder="••••••••" style="padding-right:42px;"/>
+            <button type="button" onclick="togglePwd('login-pwd', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <div class="forgot"><span onclick="showForgotPassword()" style="cursor:pointer;">Mot de passe oublié ?</span></div>
         <p id="login-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;text-align:center;"></p>
         <button class="btn-full" onclick="login()">Se connecter</button>
@@ -649,7 +656,14 @@
         <div class="auth-subtitle">3 pronos gratuits par jour, sans carte bancaire</div>
         <div class="form-group"><label class="form-label">Prénom</label><input id="signup-prenom" class="form-input" type="text" placeholder="Ton prénom"/></div>
         <div class="form-group"><label class="form-label">Adresse email</label><input id="signup-email" class="form-input" type="email" placeholder="ton@email.com"/></div>
-        <div class="form-group"><label class="form-label">Mot de passe</label><input id="signup-pwd" class="form-input" type="password" placeholder="8 caractères minimum"/></div>
+        <div class="form-group"><label class="form-label">Mot de passe</label>
+          <div style="position:relative;">
+            <input id="signup-pwd" class="form-input" type="password" placeholder="8 caractères minimum" style="padding-right:42px;"/>
+            <button type="button" onclick="togglePwd('signup-pwd', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <p id="signup-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;text-align:center;"></p>
         <button class="btn-full" onclick="signup()">Créer mon compte gratuitement</button>
         <div class="auth-divider"><div class="auth-divider-line"></div><span class="auth-divider-text">ou</span><div class="auth-divider-line"></div></div>
@@ -1757,8 +1771,11 @@
     btn.textContent = 'Créer mon compte gratuitement';
     btn.disabled = false;
     if (error) {
-      if (error.message.includes('already registered') || error.message.includes('already exists') || error.message.includes('duplicate') || error.message.includes('email') || error.status === 422) {
-        showError('signup-error', 'Cet email est déjà utilisé. Connecte-toi plutôt !');
+      if (error.message.includes('already registered') || error.message.includes('already exists') || error.message.includes('duplicate') || error.status === 422 || error.message.includes('User already registered')) {
+        const err = document.getElementById('signup-error');
+        err.innerHTML = 'Un compte existe déjà avec cet email. <span onclick="showPage(\'login\')" style="color:var(--blue-light);cursor:pointer;text-decoration:underline;">Se connecter →</span>';
+        err.style.display = 'block';
+        setTimeout(() => { err.style.display = 'none'; }, 5000);
       } else {
         showError('signup-error', error.message);
       }
@@ -1879,6 +1896,17 @@
 
     suc.textContent = '✓ Email envoyé à ' + email + ' ! Clique sur le lien dans l\'email pour réinitialiser ton mot de passe.';
     suc.style.display = 'block';
+  }
+
+  function togglePwd(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    } else {
+      input.type = 'password';
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    }
   }
 
   function toggleMobileMenu() {
