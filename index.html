@@ -1909,7 +1909,7 @@
     btn.disabled = true;
 
     const { error } = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.href
+      redirectTo: 'https://winurprono.com'
     });
 
     btn.textContent = 'Envoyer le lien de réinitialisation';
