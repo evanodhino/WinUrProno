@@ -1812,7 +1812,9 @@
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('#cards-container .card').forEach(card => {
-      card.style.display = (sport === 'tous' || card.dataset.sport === sport) ? 'flex' : 'none';
+      const cardSport = (card.dataset.sport || '').toLowerCase();
+      const filterSportLower = sport.toLowerCase();
+      card.style.display = (sport === 'tous' || cardSport === filterSportLower) ? 'flex' : 'none';
     });
   }
 
