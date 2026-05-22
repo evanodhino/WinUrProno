@@ -1602,25 +1602,48 @@
 
     cal.innerHTML = html;
 
-    // Show only first 3 days, hide the rest
+    // Add voir plus per day if more than 3 matches
+    cal.querySelectorAll(':scope > div').forEach(dayBlock => {
+      const rows = dayBlock.querySelectorAll('[data-sport]');
+      if (rows.length > 3) {
+        rows.forEach((r, i) => { if (i >= 3) r.style.display = 'none'; });
+        const vpBtn = document.createElement('div');
+        vpBtn.style.cssText = 'text-align:center;padding:8px;';
+        vpBtn.innerHTML = '<span onclick="toggleDayMatches(this, ' + rows.length + ')" style="font-size:12px;color:var(--blue-light);cursor:pointer;">Voir plus (' + (rows.length - 3) + ' matchs) ▼</span>';
+        dayBlock.appendChild(vpBtn);
+      }
+    });
+
+    // Hide future days by default, show today only
     const dayBlocks = cal.querySelectorAll(':scope > div');
-    if (dayBlocks.length > 3) {
-      dayBlocks.forEach((block, i) => {
-        if (i >= 3) block.style.display = 'none';
-      });
-      const voirPlusCal = document.createElement('div');
-      voirPlusCal.id = 'voir-plus-cal';
-      voirPlusCal.style.cssText = 'text-align:center;padding:8px 0 4px;';
-      voirPlusCal.innerHTML = '<button onclick="showAllCalendar()" style="font-size:13px;font-weight:500;background:none;color:var(--blue-light);border:0.5px solid var(--blue);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;">Voir toute la semaine (' + dayBlocks.length + ' jours)</button>';
-      cal.parentElement.appendChild(voirPlusCal);
+    const futureDays = Array.from(dayBlocks).filter((b, i) => i > 0);
+    futureDays.forEach(b => b.style.display = 'none');
+
+    if (futureDays.length > 0) {
+      const showCalBtn = document.createElement('div');
+      showCalBtn.id = 'show-cal-btn';
+      showCalBtn.style.cssText = 'text-align:center;padding:8px 0 4px;';
+      showCalBtn.innerHTML = '<button onclick="toggleWeekCalendar()" style="font-size:13px;font-weight:500;background:none;color:var(--blue-light);border:0.5px solid var(--blue);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;">Afficher le calendrier de la semaine ▼</button>';
+      cal.parentElement.appendChild(showCalBtn);
     }
   }
 
-  function showAllCalendar() {
+  function toggleDayMatches(btn, total) {
+    const dayBlock = btn.closest(':scope > div') || btn.parentElement.parentElement;
+    const rows = dayBlock.querySelectorAll('[data-sport]');
+    const hidden = Array.from(rows).some(r => r.style.display === 'none');
+    rows.forEach((r, i) => { if (i >= 3) r.style.display = hidden ? 'flex' : 'none'; });
+    btn.textContent = hidden ? 'Voir moins ▲' : 'Voir plus (' + (total - 3) + ' matchs) ▼';
+  }
+
+  function toggleWeekCalendar() {
     const cal = document.getElementById('week-calendar');
-    if (cal) cal.querySelectorAll(':scope > div').forEach(b => b.style.display = '');
-    const btn = document.getElementById('voir-plus-cal');
-    if (btn) btn.style.display = 'none';
+    const btn = document.getElementById('show-cal-btn');
+    const dayBlocks = cal.querySelectorAll(':scope > div');
+    const futureDays = Array.from(dayBlocks).filter((b, i) => i > 0);
+    const isHidden = futureDays.length > 0 && futureDays[0].style.display === 'none';
+    futureDays.forEach(b => b.style.display = isHidden ? '' : 'none');
+    if (btn) btn.querySelector('button').textContent = isHidden ? 'Masquer le calendrier ▲' : 'Afficher le calendrier de la semaine ▼';
   }
 
   function toggleScoreDisplay() {
