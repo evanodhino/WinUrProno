@@ -1528,7 +1528,7 @@
   };
   const sportLabels = {
     foot: 'Football', basket: 'Basket', tennis: 'Tennis',
-    rugby: 'Rugby', mma: 'MMA', boxe: 'Boxe', nfl: 'NFL'
+    rugby: 'Rugby', mma: 'Combat MMA', boxe: 'Combat Boxe', nfl: 'NFL'
   };
 
   function colorizeForm(form) {
@@ -1666,6 +1666,7 @@
       
       if (!matches || matches.length === 0) {
         console.log('No matches today for date:', today);
+        if (container) container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Aucun match prévu aujourd\'hui. Revenez demain !</div>';
         return;
       }
 
@@ -1826,15 +1827,32 @@
 
     // Show/hide day blocks based on visible rows
     document.querySelectorAll('#week-calendar > div').forEach(dayBlock => {
-      // First show all day blocks
       dayBlock.style.display = '';
-      // Then check if any rows are visible
       const rows = dayBlock.querySelectorAll('[data-sport]');
       if (rows.length > 0) {
         const hasVisible = Array.from(rows).some(r => r.style.display !== 'none');
         dayBlock.style.display = hasVisible ? '' : 'none';
       }
     });
+
+    // Show empty message if no cards visible
+    const container = document.getElementById('cards-container');
+    const visibleCards = container ? Array.from(container.querySelectorAll('.card')).filter(c => c.style.display !== 'none') : [];
+    let emptyMsg = document.getElementById('no-matches-msg');
+    if (visibleCards.length === 0 && sport !== 'tous') {
+      if (!emptyMsg) {
+        emptyMsg = document.createElement('div');
+        emptyMsg.id = 'no-matches-msg';
+        emptyMsg.style.cssText = 'text-align:center;padding:40px;color:var(--text-muted);font-size:14px;width:100%;';
+        emptyMsg.textContent = 'Aucun match ' + sport + ' aujourd\'hui.';
+        container.appendChild(emptyMsg);
+      } else {
+        emptyMsg.style.display = 'block';
+        emptyMsg.textContent = 'Aucun match ' + sport + ' aujourd\'hui.';
+      }
+    } else if (emptyMsg) {
+      emptyMsg.style.display = 'none';
+    }
   }
 
   function updateNav() {
