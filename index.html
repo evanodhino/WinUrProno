@@ -1844,7 +1844,7 @@
     // Filter calendar rows
     document.querySelectorAll('#week-calendar [data-sport]').forEach(row => {
       const rowSport = (row.getAttribute('data-sport') || '').toLowerCase();
-      row.style.display = (sport === 'tous' || rowSport === sport.toLowerCase()) ? '' : 'none';
+      row.style.display = (sport === 'tous' || rowSport === sport.toLowerCase()) ? 'flex' : 'none';
     });
 
     // Show/hide day blocks based on visible rows
