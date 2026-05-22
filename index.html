@@ -1811,10 +1811,23 @@
   function filterSport(sport, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    
+    // Filter cards
     document.querySelectorAll('#cards-container .card').forEach(card => {
       const cardSport = (card.getAttribute('data-sport') || '').toLowerCase();
-      const filterSportLower = sport.toLowerCase();
-      card.style.display = (sport === 'tous' || cardSport === filterSportLower) ? 'flex' : 'none';
+      card.style.display = (sport === 'tous' || cardSport === sport.toLowerCase()) ? 'flex' : 'none';
+    });
+
+    // Filter calendar rows
+    document.querySelectorAll('#week-calendar [data-sport]').forEach(row => {
+      const rowSport = (row.getAttribute('data-sport') || '').toLowerCase();
+      row.style.display = (sport === 'tous' || rowSport === sport.toLowerCase()) ? 'flex' : 'none';
+    });
+
+    // Hide empty day blocks in calendar
+    document.querySelectorAll('#week-calendar > div').forEach(dayBlock => {
+      const visibleRows = dayBlock.querySelectorAll('[data-sport]:not([style*="display: none"])');
+      dayBlock.style.display = visibleRows.length > 0 ? 'block' : 'none';
     });
   }
 
