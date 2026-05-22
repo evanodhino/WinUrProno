@@ -1601,6 +1601,26 @@
     });
 
     cal.innerHTML = html;
+
+    // Show only first 3 days, hide the rest
+    const dayBlocks = cal.querySelectorAll(':scope > div');
+    if (dayBlocks.length > 3) {
+      dayBlocks.forEach((block, i) => {
+        if (i >= 3) block.style.display = 'none';
+      });
+      const voirPlusCal = document.createElement('div');
+      voirPlusCal.id = 'voir-plus-cal';
+      voirPlusCal.style.cssText = 'text-align:center;padding:8px 0 4px;';
+      voirPlusCal.innerHTML = '<button onclick="showAllCalendar()" style="font-size:13px;font-weight:500;background:none;color:var(--blue-light);border:0.5px solid var(--blue);padding:8px 20px;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;">Voir toute la semaine (' + dayBlocks.length + ' jours)</button>';
+      cal.parentElement.appendChild(voirPlusCal);
+    }
+  }
+
+  function showAllCalendar() {
+    const cal = document.getElementById('week-calendar');
+    if (cal) cal.querySelectorAll(':scope > div').forEach(b => b.style.display = '');
+    const btn = document.getElementById('voir-plus-cal');
+    if (btn) btn.style.display = 'none';
   }
 
   function toggleScoreDisplay() {
@@ -1773,19 +1793,7 @@
 
       console.log('Loaded', matches.length, 'matches from Supabase');
 
-      // Show only first 3 cards, hide the rest with a "Voir plus" button
-      const allCards = container.querySelectorAll('.card');
-      if (allCards.length > 3) {
-        allCards.forEach((card, i) => {
-          if (i >= 3) card.style.display = 'none';
-        });
-        // Add voir plus button
-        const voirPlus = document.createElement('div');
-        voirPlus.id = 'voir-plus-btn';
-        voirPlus.style.cssText = 'text-align:center;padding:16px;';
-        voirPlus.innerHTML = '<button onclick="showAllMatches()" style="font-size:13px;font-weight:500;background:none;color:var(--blue-light);border:0.5px solid var(--blue);padding:9px 24px;border-radius:8px;cursor:pointer;font-family:Inter,sans-serif;">Voir tous les matchs (' + allCards.length + ')</button>';
-        container.parentElement.appendChild(voirPlus);
-      }
+
     } catch(e) {
       console.log('Error loading matches:', e);
     }
@@ -1822,17 +1830,6 @@
 
   // Handle initial load with hash
 
-
-  function showAllMatches() {
-    document.querySelectorAll('#cards-container .card').forEach(card => {
-      card.style.display = 'flex';
-    });
-    const btn = document.getElementById('voir-plus-btn');
-    if (btn) btn.style.display = 'none';
-    // Re-apply active filter
-    const activeFilter = document.querySelector('.filter-btn.active');
-    if (activeFilter) activeFilter.click();
-  }
 
   function filterSport(sport, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
