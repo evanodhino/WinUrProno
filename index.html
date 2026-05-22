@@ -1821,13 +1821,19 @@
     // Filter calendar rows
     document.querySelectorAll('#week-calendar [data-sport]').forEach(row => {
       const rowSport = (row.getAttribute('data-sport') || '').toLowerCase();
-      row.style.display = (sport === 'tous' || rowSport === sport.toLowerCase()) ? 'flex' : 'none';
+      row.style.display = (sport === 'tous' || rowSport === sport.toLowerCase()) ? '' : 'none';
     });
 
-    // Hide empty day blocks in calendar
+    // Show/hide day blocks based on visible rows
     document.querySelectorAll('#week-calendar > div').forEach(dayBlock => {
-      const visibleRows = dayBlock.querySelectorAll('[data-sport]:not([style*="display: none"])');
-      dayBlock.style.display = visibleRows.length > 0 ? 'block' : 'none';
+      // First show all day blocks
+      dayBlock.style.display = '';
+      // Then check if any rows are visible
+      const rows = dayBlock.querySelectorAll('[data-sport]');
+      if (rows.length > 0) {
+        const hasVisible = Array.from(rows).some(r => r.style.display !== 'none');
+        dayBlock.style.display = hasVisible ? '' : 'none';
+      }
     });
   }
 
