@@ -1587,7 +1587,7 @@
 
       dayMatches.forEach(function(m) {
         const blurred = !isToday && !isPro;
-        html += '<div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border-dim);' + (blurred ? 'filter:blur(4px);pointer-events:none;user-select:none;' : 'cursor:pointer;') + '">';
+        html += '<div data-sport="' + m.sport + '" style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border-dim);' + (blurred ? 'filter:blur(4px);pointer-events:none;user-select:none;' : 'cursor:pointer;') + '">';
         html += '<span style="font-size:16px;">' + (sportEmoji[m.sport] || '🏆') + '</span>';
         html += '<div style="flex:1;min-width:0;">';
         html += '<div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + m.equipe_home + ' vs ' + m.equipe_away + '</div>';
