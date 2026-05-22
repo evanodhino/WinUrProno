@@ -306,7 +306,7 @@
     <button class="nav-link" id="nav-faq" onclick="showPage('faq')">FAQ</button>
     <button class="nav-link" id="nav-contact" onclick="showPage('contact')">Contact</button>
   </div>
-  <div class="nav-right" id="nav-right">
+  <div class="nav-right" id="nav-right" style="opacity:0;transition:opacity 0.2s;">
     <button class="btn-ghost" onclick="showPage('login')">Se connecter</button>
     <button class="btn-primary" onclick="showPage('signup')">S'inscrire</button>
   </div>
@@ -1849,6 +1849,7 @@
         <button class="btn-ghost" onclick="showPage('login')">Se connecter</button>
         <button class="btn-primary" onclick="showPage('signup')">S'inscrire</button>`;
     }
+    navRight.style.opacity = '1';
   }
 
   function toggleDropdown(e) {
