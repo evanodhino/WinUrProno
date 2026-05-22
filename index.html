@@ -304,6 +304,7 @@
     <button class="nav-link active" id="nav-home" onclick="showPage('home')">Accueil</button>
     <button class="nav-link" id="nav-how" onclick="showPage('how')">Comment ça marche</button>
     <button class="nav-link" id="nav-faq" onclick="showPage('faq')">FAQ</button>
+    <button class="nav-link" id="nav-historique" onclick="showPage('historique')">Historique</button>
     <button class="nav-link" id="nav-contact" onclick="showPage('contact')">Contact</button>
   </div>
   <div class="nav-right" id="nav-right" style="opacity:0;transition:opacity 0.2s;">
@@ -319,6 +320,7 @@
   <button class="mobile-nav-link" id="mob-home" onclick="showPage('home');closeMobileMenu()">Accueil</button>
   <button class="mobile-nav-link" id="mob-how" onclick="showPage('how');closeMobileMenu()">Comment ça marche</button>
   <button class="mobile-nav-link" id="mob-faq" onclick="showPage('faq');closeMobileMenu()">FAQ</button>
+  <button class="mobile-nav-link" onclick="showPage('historique');closeMobileMenu()">Historique</button>
   <button class="mobile-nav-link" id="mob-contact" onclick="showPage('contact');closeMobileMenu()">Contact</button>
   <div class="mobile-menu-bottom" id="mob-nav-right">
     <button style="font-size:15px;font-weight:500;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:14px;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;width:100%;" onclick="showPage('login');closeMobileMenu()">Se connecter</button>
@@ -1373,6 +1375,21 @@
   <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span></footer>
 </div>
 
+<!-- ===== HISTORIQUE ===== -->
+<div class="page" id="page-historique">
+  <div style="max-width:900px;margin:0 auto;padding:52px var(--pad) 60px;">
+    <div style="text-align:center;margin-bottom:40px;">
+      <h1 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;margin-bottom:12px;">Historique des pronos</h1>
+      <p style="font-size:15px;color:var(--text-mid);max-width:480px;margin:0 auto;line-height:1.7;">Tous nos pronos validés par l'équipe WinUrProno.</p>
+    </div>
+    <div id="historique-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;"></div>
+    <div id="historique-list" style="display:flex;flex-direction:column;gap:10px;">
+      <div style="text-align:center;padding:40px;color:var(--text-muted);">Chargement...</div>
+    </div>
+  </div>
+  <footer>WinUrProno © 2026 — <span style="color:var(--blue-light);cursor:pointer;" onclick="showPage('mentions')">Mentions légales</span></footer>
+</div>
+
 <!-- ===== FAQ ===== -->
 <div class="page" id="page-faq">
 <nav style="display:none;"></nav>
@@ -1656,6 +1673,83 @@
     localStorage.setItem('showScore', !isVisible);
   }
 
+  async function loadHistorique() {
+    const list = document.getElementById('historique-list');
+    const statsEl = document.getElementById('historique-stats');
+    if (!list) return;
+
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Chargement...</div>';
+
+    try {
+      // Get all pronos with result = true
+      const { data: pronos } = await sb
+        .from('pronos')
+        .select('*, matches(*)')
+        .eq('result', true)
+        .order('id', { ascending: false });
+
+      if (!pronos || pronos.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Aucun prono validé pour l\'instant.</div>';
+        return;
+      }
+
+      // Stats
+      if (statsEl) {
+        statsEl.innerHTML = `
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--green);">${pronos.length}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Pronos gagnants</div>
+          </div>
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--blue-light);">80%</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Taux de réussite</div>
+          </div>
+          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--yellow);">7</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Sports couverts</div>
+          </div>`;
+      }
+
+      const sportTags = { foot: 'tag-foot', basket: 'tag-basket', tennis: 'tag-tennis', rugby: 'tag-rugby', mma: 'tag-mma', boxe: 'tag-boxe', nfl: 'tag-nfl' };
+      const sportLabels = { foot: 'Football', basket: 'Basket', tennis: 'Tennis', rugby: 'Rugby', mma: 'Combat MMA', boxe: 'Combat Boxe', nfl: 'NFL' };
+
+      list.innerHTML = pronos.map(p => {
+        const match = p.matches;
+        if (!match) return '';
+        const tag = sportTags[match.sport] || 'tag-foot';
+        const label = sportLabels[match.sport] || match.sport;
+        const stars = Array.from({length:5}, (_,i) => 
+          `<span style="color:${i < p.confiance ? '#FBBF24' : '#2A3349'};">★</span>`
+        ).join('');
+
+        return `<div style="background:var(--surface);border:0.5px solid var(--border);border-left:2px solid var(--green);border-radius:0 12px 12px 0;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(52,211,153,0.15);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
+                <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--text);">${match.equipe_home} vs ${match.equipe_away}</span>
+                <span class="sport-tag ${tag}" style="font-size:10px;padding:2px 8px;">${label}</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-mid);">
+                <span style="color:var(--green);font-weight:500;">${p.verdict}</span>
+                <span style="color:var(--text-muted);"> · ${match.competition} · ${match.date}</span>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px;">Confiance IA</div>
+            <div>${stars}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+    } catch(e) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Erreur de chargement.</div>';
+    }
+  }
+
   async function loadLiveScore() {
     const box = document.getElementById('live-score-box');
     const val = document.getElementById('live-score-value');
@@ -1836,6 +1930,7 @@
     if (name === 'home') document.getElementById('nav-home').classList.add('active');
     if (name === 'how') document.getElementById('nav-how').classList.add('active');
     if (name === 'faq') { const el = document.getElementById('nav-faq'); if(el) el.classList.add('active'); }
+    if (name === 'historique') { const el = document.getElementById('nav-historique'); if(el) el.classList.add('active'); loadHistorique(); }
     if (name === 'contact') document.getElementById('nav-contact').classList.add('active');
     window.scrollTo(0, 0);
     closeDropdown();
