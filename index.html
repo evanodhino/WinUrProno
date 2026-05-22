@@ -1572,7 +1572,7 @@
     Object.entries(grouped).forEach(function([date, dayMatches]) {
       const d = new Date(date + 'T12:00:00');
       const isToday = date === today;
-      const dayLabel = isToday ? "Aujourd'hui" : (dayNames[d.getDay()] + ' ' + d.getDate() + ' ' + monthNames[d.getMonth()]);
+      const dayLabel = isToday ? "Auj." : (dayNames[d.getDay()] + ' ' + d.getDate() + ' ' + monthNames[d.getMonth()]);
 
       html += '<div style="background:var(--surface);border:0.5px solid ' + (isToday ? 'var(--blue)' : 'var(--border)') + ';border-radius:12px;overflow:hidden;margin-bottom:8px;">';
       html += '<div style="padding:8px 14px;background:' + (isToday ? 'var(--blue-dim)' : 'var(--surface2)') + ';display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:0.5px solid var(--border-dim);">';
@@ -1700,7 +1700,7 @@
         const isLocked = !isFree && !isPro;
         const card = document.createElement('div');
         card.className = isLocked ? 'card card-locked' : 'card';
-        card.dataset.sport = match.sport;
+        card.setAttribute('data-sport', match.sport);
         card.innerHTML = `
           <div class="card-top">
             <div style="display:flex;align-items:center;gap:6px;">
@@ -1812,7 +1812,7 @@
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('#cards-container .card').forEach(card => {
-      const cardSport = (card.dataset.sport || '').toLowerCase();
+      const cardSport = (card.getAttribute('data-sport') || '').toLowerCase();
       const filterSportLower = sport.toLowerCase();
       card.style.display = (sport === 'tous' || cardSport === filterSportLower) ? 'flex' : 'none';
     });
