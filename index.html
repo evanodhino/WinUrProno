@@ -2818,12 +2818,21 @@ Les probabilités doivent totaliser 100.`;
         .replace(/(\d{1,2})\/(\d{1,2})/g, '')
         .trim();
 
-      // Try vs format
+      // Try vs format - also extract competition after /
       const vsMatch = cleanLine.match(/(.+?)\s+vs\.?\s+(.+)/i);
       if (!vsMatch) continue;
 
       const home = vsMatch[1].trim().replace(/\s+/g, ' ');
-      const away = vsMatch[2].trim().replace(/\s+/g, ' ');
+      let awayRaw = vsMatch[2].trim().replace(/\s+/g, ' ');
+      
+      // Extract competition if separated by /
+      let extractedCompetition = null;
+      if (awayRaw.includes('/')) {
+        const parts = awayRaw.split('/');
+        awayRaw = parts[0].trim();
+        extractedCompetition = parts[1].trim();
+      }
+      const away = awayRaw;
 
       if (!home || !away) continue;
 
@@ -2837,8 +2846,8 @@ Les probabilités doivent totaliser 100.`;
       }
 
       // Detect competition
-      let competition = competitionDetect[sport] || 'Ligue 1';
-      if (sport === 'foot') {
+      let competition = extractedCompetition || competitionDetect[sport] || 'Ligue 1';
+      if (!extractedCompetition && sport === 'foot') {
         const isChampions = championsTeams.some(t => home.includes(t) || away.includes(t));
         const isLigue1 = ligue1Teams.some(t => home.includes(t) || away.includes(t));
         if (isChampions && !isLigue1) competition = 'Champions League';
