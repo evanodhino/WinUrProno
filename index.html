@@ -1382,7 +1382,7 @@
       <h1 style="font-family:'Syne',sans-serif;font-size:32px;font-weight:600;color:#fff;margin-bottom:12px;">Historique des pronos</h1>
       <p style="font-size:15px;color:var(--text-mid);max-width:480px;margin:0 auto;line-height:1.7;">Tous nos pronos validés par l'équipe WinUrProno.</p>
     </div>
-    <div id="historique-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;"></div>
+    <div id="historique-stats" style="display:grid;grid-template-columns:repeat(1,1fr);gap:12px;margin-bottom:28px;max-width:200px;"></div>
     <div id="historique-list" style="display:flex;flex-direction:column;gap:10px;">
       <div style="text-align:center;padding:40px;color:var(--text-muted);">Chargement...</div>
     </div>
@@ -1681,12 +1681,8 @@
     list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">Chargement...</div>';
 
     try {
-      // Get all pronos with result = true
-      const { data: pronos } = await sb
-        .from('pronos')
-        .select('*, matches(*)')
-        .eq('result', true)
-        .order('id', { ascending: false });
+      // Get all pronos with result = true via Edge Function
+      const pronos = await callEdge('get_historique', {});
 
       if (!pronos || pronos.length === 0) {
         list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Aucun prono validé pour l\'instant.</div>';
@@ -1696,17 +1692,9 @@
       // Stats
       if (statsEl) {
         statsEl.innerHTML = `
-          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
+          <div style="background:var(--surface);border:0.5px solid var(--green);border-radius:12px;padding:18px;text-align:center;">
             <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--green);">${pronos.length}</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Pronos gagnants</div>
-          </div>
-          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--blue-light);">80%</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Taux de réussite</div>
-          </div>
-          <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;">
-            <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:600;color:var(--yellow);">7</div>
-            <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">Sports couverts</div>
           </div>`;
       }
 
