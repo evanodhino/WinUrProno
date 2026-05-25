@@ -2575,6 +2575,14 @@
         <div id="edit-${match.id}" style="display:none;padding:16px;background:var(--surface2);border-top:0.5px solid var(--border-dim);">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px;">
             <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Équipe 1</label>
+              <input id="edit-home-${match.id}" class="form-input" type="text" value="${match.equipe_home}" style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Équipe 2</label>
+              <input id="edit-away-${match.id}" class="form-input" type="text" value="${match.equipe_away}" style="font-size:13px;padding:8px 12px;"/>
+            </div>
+            <div>
               <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Heure</label>
               <input id="edit-heure-${match.id}" class="form-input" type="time" value="${match.heure}" style="font-size:13px;padding:8px 12px;"/>
             </div>
@@ -2999,6 +3007,8 @@ Les probabilités doivent totaliser 100.`;
 
   async function saveEditMatch(id) {
     const heure = document.getElementById('edit-heure-' + id).value;
+    const equipeHome = document.getElementById('edit-home-' + id).value.trim();
+    const equipeAway = document.getElementById('edit-away-' + id).value.trim();
     const competition = document.getElementById('edit-comp-' + id).value.trim();
     const formHome = document.getElementById('edit-fh-' + id).value.trim().toUpperCase().slice(0,5);
     const formAway = document.getElementById('edit-fa-' + id).value.trim().toUpperCase().slice(0,5);
@@ -3013,6 +3023,8 @@ Les probabilités doivent totaliser 100.`;
     const logoAway = document.getElementById('edit-la-' + id).value.trim();
     const { error } = await sb.from('matches').update({
       heure, competition, sport,
+      equipe_home: equipeHome || undefined,
+      equipe_away: equipeAway || undefined,
       logo_home: logoHome,
       logo_away: logoAway,
       form_home: formHome,
