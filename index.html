@@ -2508,6 +2508,10 @@
     const list = document.getElementById('admin-matches-list');
     if (!list) return;
 
+    // Auto-archive past matches
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    await sb.from('matches').update({ archived: true }).lt('date', yesterday).eq('archived', false);
+
     const { data, error } = await sb.from('matches').select('*').eq('archived', false).order('date', { ascending: true });
     
     // Also fetch pronos for these matches
