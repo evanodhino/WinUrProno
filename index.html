@@ -2633,6 +2633,10 @@
             <label style="font-size:11px;color:var(--text-muted);margin-bottom:4px;display:block;">Contexte général</label>
             <textarea id="edit-cg-${match.id}" class="form-input" style="resize:vertical;min-height:60px;font-size:12px;padding:8px 12px;" placeholder="Infos supplémentaires, météo, enjeu..."></textarea>
           </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <input id="edit-isfree-${match.id}" type="checkbox" ${match.is_free ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;"/>
+            <label style="font-size:13px;color:var(--text-mid);cursor:pointer;">Prono gratuit</label>
+          </div>
           <div style="display:flex;gap:8px;">
             <button onclick="saveEditMatch('${match.id}')" style="font-size:13px;font-weight:500;background:var(--blue);color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Sauvegarder</button>
             <button onclick="toggleEditMatch('${match.id}')" style="font-size:13px;background:none;color:var(--text-mid);border:0.5px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;">Annuler</button>
@@ -3021,6 +3025,7 @@ Les probabilités doivent totaliser 100.`;
     const sport = document.getElementById('edit-sport-' + id).value;
     const logoHome = document.getElementById('edit-lh-' + id).value.trim();
     const logoAway = document.getElementById('edit-la-' + id).value.trim();
+    const isFree = document.getElementById('edit-isfree-' + id).checked;
     const { error } = await sb.from('matches').update({
       heure, competition, sport,
       equipe_home: equipeHome || undefined,
@@ -3030,7 +3035,8 @@ Les probabilités doivent totaliser 100.`;
       form_home: formHome,
       form_away: formAway,
       contexte_home: finalCtxHome,
-      contexte_away: finalCtxAway
+      contexte_away: finalCtxAway,
+      is_free: isFree
     }).eq('id', id);
 
     if (!error) {
